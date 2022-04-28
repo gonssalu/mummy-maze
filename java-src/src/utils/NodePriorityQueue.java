@@ -1,9 +1,10 @@
 package utils;
 
 import agent.State;
+import searchmethods.Node;
+
 import java.util.HashMap;
 import java.util.PriorityQueue;
-import searchmethods.Node;
 
 public class NodePriorityQueue extends PriorityQueue<Node> implements NodeCollection {
 
@@ -25,7 +26,7 @@ public class NodePriorityQueue extends PriorityQueue<Node> implements NodeCollec
         super.clear();
         contents.clear();
     }
-    
+
     @Override
     public boolean remove(Object o) {
         if (o instanceof Node) {
@@ -47,8 +48,8 @@ public class NodePriorityQueue extends PriorityQueue<Node> implements NodeCollec
         Node n = super.poll();
         contents.remove(n.getState());
         return n;
-    }    
-    
+    }
+
     @Override
     public boolean containsState(State e) {
         return contents.containsKey(e);

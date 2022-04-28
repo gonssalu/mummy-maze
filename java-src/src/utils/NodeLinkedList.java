@@ -1,9 +1,10 @@
 package utils;
 
 import agent.State;
+import searchmethods.Node;
+
 import java.util.HashMap;
 import java.util.LinkedList;
-import searchmethods.Node;
 
 public class NodeLinkedList extends LinkedList<Node> implements NodeCollection {
 

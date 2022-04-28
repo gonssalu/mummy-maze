@@ -4,15 +4,8 @@ import mummymaze.MummyMazeEvent;
 import mummymaze.MummyMazeListener;
 import mummymaze.MummyMazeState;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
-
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 public class GameArea extends JPanel implements MummyMazeListener {
 
@@ -24,7 +17,7 @@ public class GameArea extends JPanel implements MummyMazeListener {
     private Image stairsLeft;
     private Image scorpion;
     private Image hero;
-    private Image beackground;
+    private Image background;
     private Image mummyWhite;
     private Image mummyRed;
     private Image wallHorizontal;
@@ -33,10 +26,6 @@ public class GameArea extends JPanel implements MummyMazeListener {
     private Image doorHorizontalClosed;
     private Image doorVerticalOpen;
     private Image doorVerticalClosed;
-
-    private int xStart = 63;
-    private int yStart = 79;
-
     private MummyMazeState state = null;
     private boolean showSolutionCost;
     private double solutionCost;
@@ -49,29 +38,29 @@ public class GameArea extends JPanel implements MummyMazeListener {
     }
 
     private void loadImages() {
-        trap = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/armadilha.png"));
-        key = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/chave.png"));
-        stairsDown = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/escadaBaixo.png"));
-        stairsUp = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/escadaCima.png"));
-        stairsRight = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/escadaDireita.png"));
-        stairsLeft = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/escadaEsquerda.png"));
-        scorpion = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/escorpiao.png"));
-        hero = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/explorador.png"));
-        beackground = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/fundo.png"));
-        mummyWhite = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/mumiaBranca.png"));
-        mummyRed = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/mumiaVermelha.png"));
-        wallHorizontal = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/paredeHorizontal.png"));
-        wallVertical = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/paredeVertical.png"));
-        doorHorizontalOpen = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/portaHorizontalAberta.png"));
-        doorHorizontalClosed = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/portaHorizontalFechada.png"));
-        doorVerticalOpen = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/portaVerticalAberta.png"));
-        doorVerticalClosed = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/portaVerticalFechada.png"));
+        trap = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/trap.png"));
+        key = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/key.png"));
+        stairsDown = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/stairsDown.png"));
+        stairsUp = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/stairsUp.png"));
+        stairsRight = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/stairsRight.png"));
+        stairsLeft = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/stairsLeft.png"));
+        scorpion = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/scorpion.png"));
+        hero = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/explorer.png"));
+        background = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/background.png"));
+        mummyWhite = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/mummyWhite.png"));
+        mummyRed = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/mummyRed.png"));
+        wallHorizontal = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/wallHorizontal.png"));
+        wallVertical = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/wallVertical.png"));
+        doorHorizontalOpen = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/doorHorizontalOpen.png"));
+        doorHorizontalClosed = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/doorHorizontalClosed.png"));
+        doorVerticalOpen = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/doorVerticalOpen.png"));
+        doorVerticalClosed = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sprites/doorVerticalClosed.png"));
     }
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        g.drawImage(beackground, 0, 0, this);
+        g.drawImage(background, 0, 0, this);
 
         if (state == null) return;
 
@@ -79,6 +68,12 @@ public class GameArea extends JPanel implements MummyMazeListener {
 
         for (int i = 0; i < 13; i++) {
             for (int j = 0; j < 13; j++) {
+                int xStart = 63;
+                int yStart = 79;
+
+                int cond1 = j == 0 ? xStart + (j - 2) / 2 * 60 : xStart + j / 2 * 60;
+                int cond2 = i == 0 ? yStart + (i - 2) / 2 * 60 - 6 : yStart + i / 2 * 60;
+
                 switch (matrix[i][j]) {
                     case '-':
                         g.drawImage(wallHorizontal, xStart + j / 2 * 60, yStart + i / 2 * 60 - 6, this);
@@ -102,7 +97,7 @@ public class GameArea extends JPanel implements MummyMazeListener {
                         g.drawImage(mummyWhite, xStart + j / 2 * 60, yStart + i / 2 * 60, this);
                         break;
                     case 'H':
-                        g.drawImage(hero, j == 0 ? xStart + (j - 2) / 2 * 60 : xStart + j / 2 * 60, i == 0 ? yStart + (i - 2) / 2 * 60 - 6 : yStart + i / 2 * 60, this);
+                        g.drawImage(hero, cond1, cond2, this);
                         break;
                     case 'V':
                         g.drawImage(mummyRed, xStart + j / 2 * 60, yStart + i / 2 * 60, this);
@@ -117,7 +112,7 @@ public class GameArea extends JPanel implements MummyMazeListener {
                         g.drawImage(key, xStart + j / 2 * 60, yStart + i / 2 * 60, this);
                         break;
                     case 'S':
-                        g.drawImage(i == 0 ? stairsUp : i == 12 ? stairsDown : j == 0 ? stairsLeft : stairsRight, j == 0 ? xStart + (j - 2) / 2 * 60 : xStart + j / 2 * 60, i == 0 ? yStart + (i - 2) / 2 * 60 - 6 : yStart + i / 2 * 60, this);
+                        g.drawImage(i == 0 ? stairsUp : i == 12 ? stairsDown : j == 0 ? stairsLeft : stairsRight, cond1, cond2, this);
                         break;
                 }
             }

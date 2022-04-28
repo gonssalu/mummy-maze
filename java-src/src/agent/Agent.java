@@ -1,7 +1,8 @@
 package agent;
 
-import java.util.ArrayList;
 import searchmethods.*;
+
+import java.util.ArrayList;
 
 public class Agent<E extends State> {
 
@@ -37,8 +38,8 @@ public class Agent<E extends State> {
         return solution;
     }
 
-    public void executeSolution() {    
-        for(Action action : solution.getActions()){
+    public void executeSolution() {
+        for (Action action : solution.getActions()) {
             environment.executeAction(action);
         }
     }
@@ -95,7 +96,7 @@ public class Agent<E extends State> {
         if (solution == null) {
             sb.append("No solution found\n");
         } else {
-            sb.append("Solution cost: " + Double.toString(solution.getCost()) + "\n");
+            sb.append("Solution cost: " + solution.getCost() + "\n");
         }
         sb.append("Num of expanded nodes: " + searchMethod.getStatistics().numExpandedNodes + "\n");
         sb.append("Max frontier size: " + searchMethod.getStatistics().maxFrontierSize + "\n");

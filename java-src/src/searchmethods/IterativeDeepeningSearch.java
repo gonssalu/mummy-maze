@@ -44,7 +44,7 @@ public class IterativeDeepeningSearch extends DepthLimitedSearch {
         statistics.numGeneratedSates++; //specific to this algorithm
 
         while (!frontier.isEmpty() && !stopped) {
-            Node n = (Node) frontier.poll();
+            Node n = frontier.poll();
             State state = n.getState();
             if (n.getDepth() == limit - 1 && problem.isGoal(state))
                 return new Solution(problem, n);

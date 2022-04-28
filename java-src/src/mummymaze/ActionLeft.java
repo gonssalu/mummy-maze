@@ -2,20 +2,20 @@ package mummymaze;
 
 import agent.Action;
 
-public class ActionLeft extends Action<MummyMazeState>{
+public class ActionLeft extends Action<MummyMazeState> {
 
-    public ActionLeft(){
+    public ActionLeft() {
         super(1);
     }
 
     @Override
-    public void execute(MummyMazeState state){
+    public void execute(MummyMazeState state) {
         state.moveLeft();
         state.setAction(this);
     }
 
     @Override
-    public boolean isValid(MummyMazeState state){
+    public boolean isValid(MummyMazeState state) {
         return state.canMoveLeft();
     }
 }

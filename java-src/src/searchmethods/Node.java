@@ -4,7 +4,7 @@ import agent.State;
 
 public class Node implements Comparable<Node> {
 
-    private State state;
+    private final State state;
     private double cost;
     private double f;
     private Node parent;
@@ -16,8 +16,8 @@ public class Node implements Comparable<Node> {
 
     public Node(State state, Node parent) {
         this(state, parent, 0, 0);
-    }    
-    
+    }
+
     public Node(State state, Node parent, double cost, double f) {
         this.state = state;
         this.cost = cost;
@@ -53,18 +53,18 @@ public class Node implements Comparable<Node> {
 
     public boolean isCycle(State state) {
         Node aux = this;
-        do{
+        do {
             if (state.equals(aux.getState())) {
                 return true;
             }
             aux = aux.getParent();
-        }while (aux != null);
+        } while (aux != null);
 
         return false;
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         return "" + f;
     }
 }

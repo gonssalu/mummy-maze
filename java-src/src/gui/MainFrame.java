@@ -2,27 +2,6 @@ package gui;
 
 import agent.Heuristic;
 import agent.Solution;
-
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.IOException;
-import java.util.NoSuchElementException;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingWorker;
-
 import mummymaze.MummyMazeAgent;
 import mummymaze.MummyMazeProblem;
 import mummymaze.MummyMazeState;
@@ -30,20 +9,29 @@ import searchmethods.BeamSearch;
 import searchmethods.DepthLimitedSearch;
 import searchmethods.SearchMethod;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+
 public class MainFrame extends JFrame {
 
     //private int[][] initialMatrix = {{1, 0, 2}, {3, 4, 5}, {6, 7, 8}};
-    private char[][] initialMatrix = {{8, 7, 6}, {5, 4, 3}, {2, 1, 0}};
-    private MummyMazeAgent agent = new MummyMazeAgent(new MummyMazeState(initialMatrix));
+    private final char[][] initialMatrix = {{8, 7, 6}, {5, 4, 3}, {2, 1, 0}};
+    private final MummyMazeAgent agent = new MummyMazeAgent(new MummyMazeState(initialMatrix));
+    private final JLabel labelSearchParameter = new JLabel("limit/beam size:");
+    private final JTextField textFieldSearchParameter = new JTextField("0", 5);
+    private final JButton buttonInitialState = new JButton("Read initial state");
+    private final JButton buttonSolve = new JButton("Solve");
+    private final JButton buttonStop = new JButton("Stop");
+    private final JButton buttonShowSolution = new JButton("Show solution");
+    private final JButton buttonReset = new JButton("Reset to initial state");
     private JComboBox comboBoxSearchMethods;
     private JComboBox comboBoxHeuristics;
-    private JLabel labelSearchParameter = new JLabel("limit/beam size:");
-    private JTextField textFieldSearchParameter = new JTextField("0", 5);
-    private JButton buttonInitialState = new JButton("Read initial state");
-    private JButton buttonSolve = new JButton("Solve");
-    private JButton buttonStop = new JButton("Stop");
-    private JButton buttonShowSolution = new JButton("Show solution");
-    private JButton buttonReset = new JButton("Reset to initial state");
     private JTextArea textArea;
     private GameArea game;
 
@@ -138,7 +126,7 @@ public class MainFrame extends JFrame {
         labelSearchParameter.setEnabled(index == 3 || index == 7); // limited depth or beam search
     }
 
-    public void comboBoxHeuristics_ActionPerformed(ActionEvent e) {
+    public void comboBoxHeuristics_ActionPerformed() {
         int index = comboBoxHeuristics.getSelectedIndex();
         agent.setHeuristic((Heuristic) comboBoxHeuristics.getItemAt(index));
         game.setState(agent.resetEnvironment());
@@ -148,7 +136,7 @@ public class MainFrame extends JFrame {
         textArea.setText("");
     }
 
-    public void buttonSolve_ActionPerformed(ActionEvent e) {
+    public void buttonSolve_ActionPerformed() {
 
         SwingWorker worker = new SwingWorker<Solution, Void>() {
             @Override
@@ -158,7 +146,7 @@ public class MainFrame extends JFrame {
                 buttonSolve.setEnabled(false);
                 try {
                     prepareSearchAlgorithm();
-                    MummyMazeProblem problem = new MummyMazeProblem((MummyMazeState) agent.getEnvironment().clone());
+                    MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
                     agent.solveProblem(problem);
                 } catch (Exception e) {
                     e.printStackTrace(System.err);
@@ -251,7 +239,7 @@ class ComboBoxHeuristics_ActionAdapter implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        adaptee.comboBoxHeuristics_ActionPerformed(e);
+        adaptee.comboBoxHeuristics_ActionPerformed();
     }
 }
 
@@ -279,7 +267,7 @@ class ButtonSolve_ActionAdapter implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        adaptee.buttonSolve_ActionPerformed(e);
+        adaptee.buttonSolve_ActionPerformed();
     }
 }
 

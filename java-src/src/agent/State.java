@@ -1,21 +1,22 @@
 package agent;
 
-public abstract class State{
+public abstract class State {
 
     /**
      * Action that generated this state.
      */
     protected Action action;
 
-    public State(){}
+    public State() {
+    }
 
     public abstract void executeAction(Action action);
-    
-    public Action getAction(){
+
+    public Action getAction() {
         return action;
     }
 
-    public void setAction(Action action){
+    public void setAction(Action action) {
         this.action = action;
     }
 

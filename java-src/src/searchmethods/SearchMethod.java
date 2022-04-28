@@ -6,7 +6,7 @@ import agent.Solution;
 public interface SearchMethod {
 
     Solution search(Problem problem);
- 
+
     Statistics getStatistics();
 
     void stop();

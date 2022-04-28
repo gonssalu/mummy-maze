@@ -4,8 +4,9 @@ import agent.Action;
 import agent.Problem;
 import agent.Solution;
 import agent.State;
-import java.util.List;
 import utils.NodeLinkedList;
+
+import java.util.List;
 
 public class DepthFirstSearch extends GraphSearch<NodeLinkedList> {
 
@@ -25,7 +26,7 @@ public class DepthFirstSearch extends GraphSearch<NodeLinkedList> {
                 return new Solution(problem, n);
             }
             List<Action> actions = problem.getActions(state);
-            for(Action action : actions){
+            for (Action action : actions) {
                 State successor = problem.getSuccessor(state, action);
                 addSuccessorToFrontier(successor, n);
             }

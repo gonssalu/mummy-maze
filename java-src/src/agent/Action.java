@@ -1,10 +1,10 @@
 package agent;
 
 
-public abstract class Action <S extends State>{
+public abstract class Action<S extends State> {
     private final double cost;
 
-    public Action(double cost){
+    public Action(double cost) {
         this.cost = cost;
     }
 
@@ -12,7 +12,7 @@ public abstract class Action <S extends State>{
 
     public abstract boolean isValid(S State);
 
-    public double getCost(){
+    public double getCost() {
         return cost;
     }
 }

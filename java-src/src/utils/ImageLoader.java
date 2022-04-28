@@ -1,11 +1,8 @@
 package utils;
 
-import java.awt.Component;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
-import javax.swing.ImageIcon;
 
 /**
  * <p>Title: ImageLoader</p> <p>Description: Singleton responsible for the
@@ -17,19 +14,28 @@ import javax.swing.ImageIcon;
 public class ImageLoader {
 
     /**
-     * Hash map that shall contain the images.
-     */
-    private HashMap<String, Image> images;
-    /**
      * The singleton
      */
     private static final ImageLoader loader = new ImageLoader();
+    /**
+     * Hash map that shall contain the images.
+     */
+    private final HashMap<String, Image> images;
 
     /**
      * Private constructor so that no external entities may create ImageLoaders.
      */
     private ImageLoader() {
         images = new HashMap<String, Image>();
+    }
+
+    /**
+     * Return the singleton.
+     *
+     * @return ImageLoader
+     */
+    public static ImageLoader getLoader() {
+        return loader;
     }
 
     /**
@@ -44,7 +50,7 @@ public class ImageLoader {
             return null;
         }
 
-        Image img = (Image) images.get(name);
+        Image img = images.get(name);
 
         if (img != null) {
             return img;
@@ -81,16 +87,7 @@ public class ImageLoader {
      * @return Image: the icon
      */
     public ImageIcon getIcon(String name) {
-        Image img = (Image) getImage(name);
+        Image img = getImage(name);
         return (img != null) ? new ImageIcon(img) : null;
-    }
-
-    /**
-     * Return the singleton.
-     *
-     * @return ImageLoader
-     */
-    public static ImageLoader getLoader() {
-        return loader;
     }
 }
