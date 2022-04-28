@@ -1,7 +1,7 @@
 package mummymaze;
 
 public enum TileType {
-    AGENT('H'),
+    HERO('H'),
     V_WALL('|'),
     H_WALL('-'),
     EMPTY('.'),

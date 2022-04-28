@@ -5,6 +5,7 @@ import agent.Solution;
 import mummymaze.MummyMazeAgent;
 import mummymaze.MummyMazeProblem;
 import mummymaze.MummyMazeState;
+import mummymaze.TileType;
 import searchmethods.BeamSearch;
 import searchmethods.DepthLimitedSearch;
 import searchmethods.SearchMethod;
@@ -21,7 +22,7 @@ import java.util.NoSuchElementException;
 public class MainFrame extends JFrame {
 
     //private int[][] initialMatrix = {{1, 0, 2}, {3, 4, 5}, {6, 7, 8}};
-    private final char[][] initialMatrix = {{8, 7, 6}, {5, 4, 3}, {2, 1, 0}};
+    private final TileType[][] initialMatrix = new TileType[13][13];
     private final MummyMazeAgent agent = new MummyMazeAgent(new MummyMazeState(initialMatrix));
     private final JLabel labelSearchParameter = new JLabel("limit/beam size:");
     private final JTextField textFieldSearchParameter = new JTextField("0", 5);
@@ -46,7 +47,7 @@ public class MainFrame extends JFrame {
     private void jbInit() {
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setTitle("Eight Puzzle");
+        this.setTitle("Mummy Maze");
 
         JPanel contentPane = (JPanel) this.getContentPane();
         contentPane.setLayout(new BorderLayout());

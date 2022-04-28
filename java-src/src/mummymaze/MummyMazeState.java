@@ -9,19 +9,19 @@ import java.util.Arrays;
 public class MummyMazeState extends State implements Cloneable {
     final int[] rowsFinalMatrix = {0, 0, 0, 1, 1, 1, 2, 2, 2};
     final int[] colsFinalMatrix = {0, 1, 2, 0, 1, 2, 0, 1, 2};
-    private final char[][] matrix;
+    private final TileType[][] matrix;
     //Listeners
     private final transient ArrayList<MummyMazeListener> listeners = new ArrayList<>(3);
     private int heroRow;
     private int heroCol;
 
-    public MummyMazeState(char[][] matrix) {
-        this.matrix = new char[matrix.length][matrix.length];
+    public MummyMazeState(TileType[][] matrix) {
+        this.matrix = new TileType[matrix.length][matrix.length];
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
                 this.matrix[i][j] = matrix[i][j];
-                if (this.matrix[i][j] == 0) {
+                if (this.matrix[i][j] == TileType.HERO) {
                     heroRow = i;
                     heroCol = j;
                 }
@@ -36,38 +36,20 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public boolean canMoveUp() {
-        return heroRow > 0 && matrix[heroRow - 1][heroCol] != '#';
+        return true;
     }
 
     public boolean canMoveDown() {
-        return heroRow < matrix.length - 1 && matrix[heroRow + 1][heroCol] != '#';
+        return true;
     }
 
     public boolean canMoveLeft() {
-        return heroCol > 0 && matrix[heroRow][heroCol - 1] != '#';
+        return true;
     }
 
     public boolean canMoveRight() {
-        return heroCol < matrix.length - 1 && matrix[heroRow][heroCol + 1] != '#';
+        return true;
     }
-
-    /*
-    public boolean canMoveUp() {
-        return heroRow != 0;
-    }
-
-    public boolean canMoveRight() {
-        return heroCol != matrix.length - 1;
-    }
-
-    public boolean canMoveDown() {
-        return heroRow != matrix.length - 1;
-    }
-
-    public boolean canMoveLeft() {
-        return heroCol != 0;
-    }
-    */
 
     /*
      * In the next four methods we don't verify if the actions are valid.
@@ -76,23 +58,19 @@ public class MummyMazeState extends State implements Cloneable {
      * state was created whether the operation could be executed or not.
      */
     public void moveUp() {
-        matrix[heroRow][heroCol] = matrix[--heroRow][heroCol];
-        matrix[heroRow][heroCol] = 0;
+        //TODO
     }
 
     public void moveRight() {
-        matrix[heroRow][heroCol] = matrix[heroRow][++heroCol];
-        matrix[heroRow][heroCol] = 0;
+        //TODO
     }
 
     public void moveDown() {
-        matrix[heroRow][heroCol] = matrix[++heroRow][heroCol];
-        matrix[heroRow][heroCol] = 0;
+        //TODO
     }
 
     public void moveLeft() {
-        matrix[heroRow][heroCol] = matrix[heroRow][--heroCol];
-        matrix[heroRow][heroCol] = 0;
+        //TODO
     }
 
     public double computeTilesOutOfPlace() {
@@ -101,15 +79,17 @@ public class MummyMazeState extends State implements Cloneable {
 //            for (int j = 0; j < matrix.length; j++)
 //                if (matrix[i][j] != 0 && matrix[i][j] != finalState.matrix[i][j]) h++;
 //        return h;
+        //TODO
         return 0;
     }
 
     public double computeTileDistances() {
         double h = 0;
-        for (int i = 0; i < matrix.length; i++)
+        /*for (int i = 0; i < matrix.length; i++)
             for (int j = 0; j < matrix.length; j++)
                 if (this.matrix[i][j] != 0) // Blank is ignored so that the heuristic is admissible
-                    h += Math.abs(i - rowsFinalMatrix[this.matrix[i][j]]) + Math.abs(j - colsFinalMatrix[this.matrix[i][j]]);
+                    h += Math.abs(i - rowsFinalMatrix[this.matrix[i][j]]) + Math.abs(j - colsFinalMatrix[this.matrix[i][j]]);*/
+        //TODO
         return h;
     }
 
@@ -121,7 +101,7 @@ public class MummyMazeState extends State implements Cloneable {
         return matrix[0].length;
     }
 
-    public int getTileValue(int row, int col) {
+    public TileType getTileValue(int row, int col) {
         if (!isValidPosition(row, col)) {
             throw new IndexOutOfBoundsException("Invalid position!");
         }
@@ -154,10 +134,10 @@ public class MummyMazeState extends State implements Cloneable {
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder();
-        for (char[] chars : matrix) {
+        for (TileType[] tileRow : matrix) {
             buffer.append('\n');
             for (int j = 0; j < matrix.length; j++) {
-                buffer.append(chars[j]);
+                buffer.append(tileRow[j].getIdentifier());
                 buffer.append(' ');
             }
         }
@@ -187,7 +167,7 @@ public class MummyMazeState extends State implements Cloneable {
         }
     }
 
-    public char[][] getMatrix() {
+    public TileType[][] getMatrix() {
         return matrix;
     }
 }

@@ -3,6 +3,7 @@ package gui;
 import mummymaze.MummyMazeEvent;
 import mummymaze.MummyMazeListener;
 import mummymaze.MummyMazeState;
+import mummymaze.TileType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,7 +65,7 @@ public class GameArea extends JPanel implements MummyMazeListener {
 
         if (state == null) return;
 
-        char[][] matrix = state.getMatrix();
+        TileType[][] matrix = state.getMatrix();
 
         for (int i = 0; i < 13; i++) {
             for (int j = 0; j < 13; j++) {
@@ -75,43 +76,43 @@ public class GameArea extends JPanel implements MummyMazeListener {
                 int cond2 = i == 0 ? yStart + (i - 2) / 2 * 60 - 6 : yStart + i / 2 * 60;
 
                 switch (matrix[i][j]) {
-                    case '-':
+                    case H_WALL:
                         g.drawImage(wallHorizontal, xStart + j / 2 * 60, yStart + i / 2 * 60 - 6, this);
                         break;
-                    case '=':
+                    case H_DOOR_CLOSED:
                         g.drawImage(doorHorizontalClosed, xStart + j / 2 * 60, yStart + i / 2 * 60 - 6, this);
                         break;
-                    case '_':
+                    case H_DOOR_OPEN:
                         g.drawImage(doorHorizontalOpen, xStart + j / 2 * 60, yStart + i / 2 * 60 - 6, this);
                         break;
-                    case '|':
+                    case V_WALL:
                         g.drawImage(wallVertical, xStart + j / 2 * 60, yStart + i / 2 * 60 - 6, this);
                         break;
-                    case '"':
+                    case V_DOOR_CLOSED:
                         g.drawImage(doorVerticalClosed, xStart + j / 2 * 60, yStart + i / 2 * 60 - 6, this);
                         break;
-                    case ')':
+                    case V_DOOR_OPEN:
                         g.drawImage(doorVerticalOpen, xStart + j / 2 * 60, yStart + i / 2 * 60 - 6, this);
                         break;
-                    case 'M':
+                    case WHITE_MUMMY:
                         g.drawImage(mummyWhite, xStart + j / 2 * 60, yStart + i / 2 * 60, this);
                         break;
-                    case 'H':
+                    case HERO:
                         g.drawImage(hero, cond1, cond2, this);
                         break;
-                    case 'V':
+                    case RED_MUMMY:
                         g.drawImage(mummyRed, xStart + j / 2 * 60, yStart + i / 2 * 60, this);
                         break;
-                    case 'A':
+                    case TRAP:
                         g.drawImage(trap, xStart + j / 2 * 60, yStart + i / 2 * 60, this);
                         break;
-                    case 'E':
+                    case SCORPION:
                         g.drawImage(scorpion, xStart + j / 2 * 60, yStart + i / 2 * 60, this);
                         break;
-                    case 'C':
+                    case KEY:
                         g.drawImage(key, xStart + j / 2 * 60, yStart + i / 2 * 60, this);
                         break;
-                    case 'S':
+                    case EXIT:
                         g.drawImage(i == 0 ? stairsUp : i == 12 ? stairsDown : j == 0 ? stairsLeft : stairsRight, cond1, cond2, this);
                         break;
                 }
