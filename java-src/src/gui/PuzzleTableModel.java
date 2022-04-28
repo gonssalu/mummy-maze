@@ -19,7 +19,7 @@ public class PuzzleTableModel extends AbstractTableModel implements MummyMazeLis
 
     @Override
     public int getColumnCount() {
-        return puzzle.getNumLines();
+        return puzzle.getNumRows();
     }
 
     @Override

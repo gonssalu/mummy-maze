@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MummyMazeState extends State implements Cloneable {
-    final int[] linesfinalMatrix = {0, 0, 0, 1, 1, 1, 2, 2, 2};
-    final int[] colsfinalMatrix = {0, 1, 2, 0, 1, 2, 0, 1, 2};
+    final int[] rowsFinalMatrix = {0, 0, 0, 1, 1, 1, 2, 2, 2};
+    final int[] colsFinalMatrix = {0, 1, 2, 0, 1, 2, 0, 1, 2};
     private final char[][] matrix;
-    private int lineBlank;
-    private int columnBlank;
+    private int heroRow;
+    private int heroCol;
     //Listeners
     private transient ArrayList<MummyMazeListener> listeners = new ArrayList<MummyMazeListener>(3);
 
@@ -22,8 +22,8 @@ public class MummyMazeState extends State implements Cloneable {
             for (int j = 0; j < matrix.length; j++) {
                 this.matrix[i][j] = matrix[i][j];
                 if (this.matrix[i][j] == 0) {
-                    lineBlank = i;
-                    columnBlank = j;
+                    heroRow = i;
+                    heroCol = j;
                 }
             }
         }
@@ -36,19 +36,19 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public boolean canMoveUp() {
-        return lineBlank != 0;
+        return heroRow != 0;
     }
 
     public boolean canMoveRight() {
-        return columnBlank != matrix.length - 1;
+        return heroCol != matrix.length - 1;
     }
 
     public boolean canMoveDown() {
-        return lineBlank != matrix.length - 1;
+        return heroRow != matrix.length - 1;
     }
 
     public boolean canMoveLeft() {
-        return columnBlank != 0;
+        return heroCol != 0;
     }
 
     /*
@@ -58,23 +58,23 @@ public class MummyMazeState extends State implements Cloneable {
      * state was created whether the operation could be executed or not.
      */
     public void moveUp() {
-        matrix[lineBlank][columnBlank] = matrix[--lineBlank][columnBlank];
-        matrix[lineBlank][columnBlank] = 0;
+        matrix[heroRow][heroCol] = matrix[--heroRow][heroCol];
+        matrix[heroRow][heroCol] = 0;
     }
 
     public void moveRight() {
-        matrix[lineBlank][columnBlank] = matrix[lineBlank][++columnBlank];
-        matrix[lineBlank][columnBlank] = 0;
+        matrix[heroRow][heroCol] = matrix[heroRow][++heroCol];
+        matrix[heroRow][heroCol] = 0;
     }
 
     public void moveDown() {
-        matrix[lineBlank][columnBlank] = matrix[++lineBlank][columnBlank];
-        matrix[lineBlank][columnBlank] = 0;
+        matrix[heroRow][heroCol] = matrix[++heroRow][heroCol];
+        matrix[heroRow][heroCol] = 0;
     }
 
     public void moveLeft() {
-        matrix[lineBlank][columnBlank] = matrix[lineBlank][--columnBlank];
-        matrix[lineBlank][columnBlank] = 0;
+        matrix[heroRow][heroCol] = matrix[heroRow][--heroCol];
+        matrix[heroRow][heroCol] = 0;
     }
 
     public double computeTilesOutOfPlace() {
@@ -91,11 +91,11 @@ public class MummyMazeState extends State implements Cloneable {
         for (int i = 0; i < matrix.length; i++)
             for (int j = 0; j < matrix.length; j++)
                 if (this.matrix[i][j] != 0) // Blank is ignored so that the heuristic is admissible
-                    h += Math.abs(i - linesfinalMatrix[this.matrix[i][j]]) + Math.abs(j - colsfinalMatrix[this.matrix[i][j]]);
+                    h += Math.abs(i - rowsFinalMatrix[this.matrix[i][j]]) + Math.abs(j - colsFinalMatrix[this.matrix[i][j]]);
         return h;
     }
 
-    public int getNumLines() {
+    public int getNumRows() {
         return matrix.length;
     }
 
@@ -103,15 +103,15 @@ public class MummyMazeState extends State implements Cloneable {
         return matrix[0].length;
     }
 
-    public int getTileValue(int line, int column) {
-        if (!isValidPosition(line, column)) {
+    public int getTileValue(int row, int col) {
+        if (!isValidPosition(row, col)) {
             throw new IndexOutOfBoundsException("Invalid position!");
         }
-        return matrix[line][column];
+        return matrix[row][col];
     }
 
-    public boolean isValidPosition(int line, int column) {
-        return line >= 0 && line < matrix.length && column >= 0 && column < matrix[0].length;
+    public boolean isValidPosition(int row, int col) {
+        return row >= 0 && row < matrix.length && col >= 0 && col < matrix[0].length;
     }
 
     @Override
