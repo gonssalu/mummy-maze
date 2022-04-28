@@ -12,14 +12,14 @@ public class MummyMazeState extends State implements Cloneable {
     static final int[][] GOAL_MATRIX = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
     final int[] linesfinalMatrix = {0, 0, 0, 1, 1, 1, 2, 2, 2};
     final int[] colsfinalMatrix = {0, 1, 2, 0, 1, 2, 0, 1, 2};
-    private final int[][] matrix;
+    private final char[][] matrix;
     private int lineBlank;
     private int columnBlank;
     //Listeners
     private transient ArrayList<MummyMazeListener> listeners = new ArrayList<MummyMazeListener>(3);
 
-    public MummyMazeState(int[][] matrix) {
-        this.matrix = new int[matrix.length][matrix.length];
+    public MummyMazeState(char[][] matrix) {
+        this.matrix = new char[matrix.length][matrix.length];
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {

@@ -25,13 +25,10 @@ public class MummyMazeAgent extends Agent<MummyMazeState> {
     public MummyMazeState readInitialStateFromFile(File file) throws IOException {
         java.util.Scanner scanner = new java.util.Scanner(file);
 
-        int[][] matrix = new int[3][3];
+        char[][] matrix = new char[13][13];
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                matrix[i][j] = scanner.nextInt();
-            }
-            scanner.nextLine();
+        for (int i = 0; i < 13; i++) {
+            matrix[i] = scanner.nextLine().toCharArray();
         }
         initialEnvironment = new MummyMazeState(matrix);
         resetEnvironment();
