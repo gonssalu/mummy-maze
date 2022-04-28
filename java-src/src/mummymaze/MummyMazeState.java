@@ -36,6 +36,23 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public boolean canMoveUp() {
+        return heroRow > 0 && matrix[heroRow - 1][heroCol] != '#';
+    }
+
+    public boolean canMoveDown() {
+        return heroRow < matrix.length - 1 && matrix[heroRow + 1][heroCol] != '#';
+    }
+
+    public boolean canMoveLeft() {
+        return heroCol > 0 && matrix[heroRow][heroCol - 1] != '#';
+    }
+
+    public boolean canMoveRight() {
+        return heroCol < matrix.length - 1 && matrix[heroRow][heroCol + 1] != '#';
+    }
+
+    /*
+    public boolean canMoveUp() {
         return heroRow != 0;
     }
 
@@ -50,6 +67,7 @@ public class MummyMazeState extends State implements Cloneable {
     public boolean canMoveLeft() {
         return heroCol != 0;
     }
+    */
 
     /*
      * In the next four methods we don't verify if the actions are valid.
