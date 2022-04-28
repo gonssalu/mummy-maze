@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MummyMazeState extends State implements Cloneable {
-
-    public static final int SIZE = 3;
-    static final int[][] GOAL_MATRIX = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
     final int[] linesfinalMatrix = {0, 0, 0, 1, 1, 1, 2, 2, 2};
     final int[] colsfinalMatrix = {0, 1, 2, 0, 1, 2, 0, 1, 2};
     private final char[][] matrix;
@@ -84,8 +81,7 @@ public class MummyMazeState extends State implements Cloneable {
         int h = 0;
         for (int i = 0; i < matrix.length; i++)
             for (int j = 0; j < matrix.length; j++)
-                if (matrix[i][j] != 0 && matrix[i][j] != finalState.matrix[i][j])
-                    h++;
+                if (matrix[i][j] != 0 && matrix[i][j] != finalState.matrix[i][j]) h++;
         return h;
     }
 
