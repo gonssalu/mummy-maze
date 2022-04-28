@@ -41,6 +41,10 @@ public class MummyMazeProblem extends Problem<MummyMazeState> {
 
     @Override
     public boolean isGoal(MummyMazeState state) {
+        for (TileType[] row : state.getMatrix())
+            for (TileType tile : row)
+                if (tile == TileType.HERO)
+                    return false;
         return true;
     }
 

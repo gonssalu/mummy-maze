@@ -12,6 +12,8 @@ public class MummyMazeState extends State implements Cloneable {
     private final transient ArrayList<MummyMazeListener> listeners = new ArrayList<>(3);
     private int heroRow;
     private int heroCol;
+    private int exitRow;
+    private int exitCol;
 
     public MummyMazeState(TileType[][] matrix) {
         this.matrix = new TileType[matrix.length][matrix.length];
@@ -19,9 +21,15 @@ public class MummyMazeState extends State implements Cloneable {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
                 this.matrix[i][j] = matrix[i][j];
+
                 if (this.matrix[i][j] == TileType.HERO) {
                     heroRow = i;
                     heroCol = j;
+                }
+
+                if (this.matrix[i][j] == TileType.EXIT) {
+                    exitRow = i;
+                    exitCol = j;
                 }
             }
         }
@@ -30,7 +38,7 @@ public class MummyMazeState extends State implements Cloneable {
     @Override
     public void executeAction(Action action) {
         action.execute(this);
-        firePuzzleChanged();
+        fireMazeChanged();
     }
 
     public boolean canMoveUp() {
@@ -40,7 +48,7 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public boolean canMoveDown() {
-        return (heroCol != matrix.length - 1) &&
+        return (heroCol != getNumRows() - 1) &&
                 !TileType.blocksVerticalPassage(matrix[heroRow + 1][heroCol]) &&
                 !TileType.isDangerous(matrix[heroRow + 2][heroCol]);
     }
@@ -52,7 +60,7 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public boolean canMoveRight() {
-        return (heroRow != matrix[0].length - 1) &&
+        return (heroRow != getNumColumns() - 1) &&
                 !TileType.blocksHorizontalPassage(matrix[heroRow][heroCol + 1]) &&
                 !TileType.isDangerous(matrix[heroRow][heroCol + 2]);
     }
@@ -89,20 +97,15 @@ public class MummyMazeState extends State implements Cloneable {
 
     public double computeTilesOutOfPlace() {
         int h = 0;
-        /*for (int i = 0; i < matrix.length; i++)
-            for (int j = 0; j < matrix.length; j++)
-                if (matrix[i][j] != 0 && matrix[i][j] != finalState.matrix[i][j]) h++;*/
+        for (TileType[] tileRow : matrix)
+            for (TileType tile : tileRow)
+                if (TileType.isTileRelevantForHeuristic(tile))
+                    h++;
         return h;
     }
 
     public double computeTileDistances() {
-        double h = 0;
-        /*for (int i = 0; i < matrix.length; i++)
-            for (int j = 0; j < matrix.length; j++)
-                if (this.matrix[i][j] != 0) // Blank is ignored so that the heuristic is admissible
-                    h += Math.abs(i - rowsFinalMatrix[this.matrix[i][j]]) + Math.abs(j - colsFinalMatrix[this.matrix[i][j]]);*/
-        //TODO
-        return h;
+        return Math.abs(heroRow - exitRow) + Math.abs(heroRow - exitCol);
     }
 
     public int getNumRows() {
@@ -173,7 +176,7 @@ public class MummyMazeState extends State implements Cloneable {
         }
     }
 
-    public void firePuzzleChanged() {
+    public void fireMazeChanged() {
         for (MummyMazeListener listener : listeners) {
             listener.puzzleChanged(null);
         }

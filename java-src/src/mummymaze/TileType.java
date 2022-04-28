@@ -46,4 +46,8 @@ public enum TileType {
     public static boolean blocksHorizontalPassage(TileType tileType) {
         return (tileType == TileType.V_WALL || tileType == TileType.V_DOOR_CLOSED);
     }
+
+    public static boolean isTileRelevantForHeuristic(TileType tileType) {
+        return (tileType == TileType.H_DOOR_CLOSED || tileType == TileType.V_DOOR_CLOSED);
+    }
 }
