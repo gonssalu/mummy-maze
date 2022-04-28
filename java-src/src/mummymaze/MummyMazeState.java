@@ -46,14 +46,14 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public boolean canMoveLeft() {
-        return (heroRow != 0)
-                && !TileType.blocksHorizontalPassage(matrix[heroRow][heroCol - 1]) &&
+        return (heroRow != 0) &&
+                !TileType.blocksHorizontalPassage(matrix[heroRow][heroCol - 1]) &&
                 !TileType.isDangerous(matrix[heroRow][heroCol - 2]);
     }
 
     public boolean canMoveRight() {
-        return (heroRow != matrix[0].length - 1)
-                && !TileType.blocksHorizontalPassage(matrix[heroRow][heroCol + 1]) &&
+        return (heroRow != matrix[0].length - 1) &&
+                !TileType.blocksHorizontalPassage(matrix[heroRow][heroCol + 1]) &&
                 !TileType.isDangerous(matrix[heroRow][heroCol + 2]);
     }
 
@@ -65,25 +65,25 @@ public class MummyMazeState extends State implements Cloneable {
      */
     public void moveUp() {
         matrix[heroRow][heroCol] = TileType.EMPTY;
-        heroRow-=2;
+        heroRow -= 2;
         matrix[heroRow][heroCol] = TileType.HERO;
     }
 
     public void moveDown() {
         matrix[heroRow][heroCol] = TileType.EMPTY;
-        heroRow+=2;
+        heroRow += 2;
         matrix[heroRow][heroCol] = TileType.HERO;
     }
 
     public void moveRight() {
         matrix[heroRow][heroCol] = TileType.EMPTY;
-        heroCol+=2;
+        heroCol += 2;
         matrix[heroRow][heroCol] = TileType.HERO;
     }
 
     public void moveLeft() {
         matrix[heroRow][heroCol] = TileType.EMPTY;
-        heroCol-=2;
+        heroCol -= 2;
         matrix[heroRow][heroCol] = TileType.HERO;
     }
 
