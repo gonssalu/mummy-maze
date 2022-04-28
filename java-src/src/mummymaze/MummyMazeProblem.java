@@ -1,17 +1,17 @@
-package eightpuzzle;
+package mummymaze;
 
 import agent.Action;
 import agent.Problem;
-import java.util.ArrayList;
+
 import java.util.LinkedList;
 import java.util.List;
 
-public class EightPuzzleProblem extends Problem<EightPuzzleState> {
+public class MummyMazeProblem extends Problem<MummyMazeState> {
 
     protected List<Action> actions;
-    private final EightPuzzleState goalState;
+    private final MummyMazeState goalState;
 
-    public EightPuzzleProblem(EightPuzzleState initialState) {
+    public MummyMazeProblem(MummyMazeState initialState) {
         super(initialState);
         actions = new LinkedList<Action>() {{
             add(new ActionDown());
@@ -19,12 +19,12 @@ public class EightPuzzleProblem extends Problem<EightPuzzleState> {
             add(new ActionRight());
             add(new ActionLeft());
         }};
-        goalState = new EightPuzzleState(EightPuzzleState.GOAL_MATRIX);
+        goalState = new MummyMazeState(MummyMazeState.GOAL_MATRIX);
     }
 
     @Override
-    public List<Action<EightPuzzleState>> getActions(EightPuzzleState state) {
-        List<Action<EightPuzzleState>> possibleActions = new LinkedList<>();
+    public List<Action<MummyMazeState>> getActions(MummyMazeState state) {
+        List<Action<MummyMazeState>> possibleActions = new LinkedList<>();
 
         for (Action action : actions) {
             if (action.isValid(state)) {
@@ -35,14 +35,14 @@ public class EightPuzzleProblem extends Problem<EightPuzzleState> {
     }
 
     @Override
-    public EightPuzzleState getSuccessor(EightPuzzleState state, Action action){
-        EightPuzzleState successor = state.clone();
+    public MummyMazeState getSuccessor(MummyMazeState state, Action action){
+        MummyMazeState successor = state.clone();
         action.execute(successor);
         return successor;
     }
 
     @Override
-    public boolean isGoal(EightPuzzleState state) {
+    public boolean isGoal(MummyMazeState state) {
         return goalState.equals(state);
     }
 
@@ -51,7 +51,7 @@ public class EightPuzzleProblem extends Problem<EightPuzzleState> {
         return path.size();
     }
 
-    public EightPuzzleState getGoalState() {
+    public MummyMazeState getGoalState() {
         return goalState;
     }
 }

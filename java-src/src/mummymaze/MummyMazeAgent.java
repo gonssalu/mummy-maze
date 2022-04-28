@@ -1,28 +1,28 @@
-package eightpuzzle;
+package mummymaze;
 
 import agent.Agent;
 
 import java.io.File;
 import java.io.IOException;
 
-public class EightPuzzleAgent extends Agent<EightPuzzleState> {
+public class MummyMazeAgent extends Agent<MummyMazeState> {
 
-    protected EightPuzzleState initialEnvironment;
+    protected MummyMazeState initialEnvironment;
 
-    public EightPuzzleAgent(EightPuzzleState environemt) {
+    public MummyMazeAgent(MummyMazeState environemt) {
         super(environemt);
-        initialEnvironment = (EightPuzzleState) environemt.clone();
+        initialEnvironment = (MummyMazeState) environemt.clone();
         heuristics.add(new HeuristicTileDistance());
         heuristics.add(new HeuristicTilesOutOfPlace());
         heuristic = heuristics.get(0);
     }
 
-    public EightPuzzleState resetEnvironment() {
-        environment = (EightPuzzleState) initialEnvironment.clone();
+    public MummyMazeState resetEnvironment() {
+        environment = (MummyMazeState) initialEnvironment.clone();
         return environment;
     }
 
-    public EightPuzzleState readInitialStateFromFile(File file) throws IOException {
+    public MummyMazeState readInitialStateFromFile(File file) throws IOException {
         java.util.Scanner scanner = new java.util.Scanner(file);
 
         int[][] matrix = new int[3][3];
@@ -33,7 +33,7 @@ public class EightPuzzleAgent extends Agent<EightPuzzleState> {
             }
             scanner.nextLine();
         }
-        initialEnvironment = new EightPuzzleState(matrix);
+        initialEnvironment = new MummyMazeState(matrix);
         resetEnvironment();
         return environment;
     }

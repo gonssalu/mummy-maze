@@ -1,4 +1,4 @@
-package eightpuzzle;
+package mummymaze;
 
 import agent.Action;
 import agent.State;
@@ -6,7 +6,7 @@ import agent.State;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class EightPuzzleState extends State implements Cloneable {
+public class MummyMazeState extends State implements Cloneable {
 
     public static final int SIZE = 3;
     static final int[][] GOAL_MATRIX = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
@@ -16,9 +16,9 @@ public class EightPuzzleState extends State implements Cloneable {
     private int lineBlank;
     private int columnBlank;
     //Listeners
-    private transient ArrayList<EightPuzzleListener> listeners = new ArrayList<EightPuzzleListener>(3);
+    private transient ArrayList<MummyMazeListener> listeners = new ArrayList<MummyMazeListener>(3);
 
-    public EightPuzzleState(int[][] matrix) {
+    public MummyMazeState(int[][] matrix) {
         this.matrix = new int[matrix.length][matrix.length];
 
         for (int i = 0; i < matrix.length; i++) {
@@ -80,7 +80,7 @@ public class EightPuzzleState extends State implements Cloneable {
         matrix[lineBlank][columnBlank] = 0;
     }
 
-    public double computeTilesOutOfPlace(EightPuzzleState finalState) {
+    public double computeTilesOutOfPlace(MummyMazeState finalState) {
         int h = 0;
         for (int i = 0; i < matrix.length; i++)
             for (int j = 0; j < matrix.length; j++)
@@ -89,7 +89,7 @@ public class EightPuzzleState extends State implements Cloneable {
         return h;
     }
 
-    public double computeTileDistances(EightPuzzleState finalState) {
+    public double computeTileDistances(MummyMazeState finalState) {
         double h = 0;
         for (int i = 0; i < matrix.length; i++)
             for (int j = 0; j < matrix.length; j++)
@@ -119,11 +119,11 @@ public class EightPuzzleState extends State implements Cloneable {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof EightPuzzleState)) {
+        if (!(other instanceof MummyMazeState)) {
             return false;
         }
 
-        EightPuzzleState o = (EightPuzzleState) other;
+        MummyMazeState o = (MummyMazeState) other;
         if (matrix.length != o.matrix.length) {
             return false;
         }
@@ -150,24 +150,24 @@ public class EightPuzzleState extends State implements Cloneable {
     }
 
     @Override
-    public EightPuzzleState clone() {
-        return new EightPuzzleState(matrix);
+    public MummyMazeState clone() {
+        return new MummyMazeState(matrix);
     }
 
-    public synchronized void removeListener(EightPuzzleListener l) {
+    public synchronized void removeListener(MummyMazeListener l) {
         if (listeners != null && listeners.contains(l)) {
             listeners.remove(l);
         }
     }
 
-    public synchronized void addListener(EightPuzzleListener l) {
+    public synchronized void addListener(MummyMazeListener l) {
         if (!listeners.contains(l)) {
             listeners.add(l);
         }
     }
 
-    public void firePuzzleChanged(EightPuzzleEvent pe) {
-        for (EightPuzzleListener listener : listeners) {
+    public void firePuzzleChanged(MummyMazeEvent pe) {
+        for (MummyMazeListener listener : listeners) {
             listener.puzzleChanged(null);
         }
     }

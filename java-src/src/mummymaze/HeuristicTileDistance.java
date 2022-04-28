@@ -1,11 +1,11 @@
-package eightpuzzle;
+package mummymaze;
 
 import agent.Heuristic;
 
-public class HeuristicTileDistance extends Heuristic<EightPuzzleProblem, EightPuzzleState> {
+public class HeuristicTileDistance extends Heuristic<MummyMazeProblem, MummyMazeState> {
 
     @Override
-    public double compute(EightPuzzleState state) {
+    public double compute(MummyMazeState state) {
         return state.computeTileDistances(problem.getGoalState());
     }
 

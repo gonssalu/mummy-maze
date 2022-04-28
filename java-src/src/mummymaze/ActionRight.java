@@ -1,21 +1,21 @@
-package eightpuzzle;
+package mummymaze;
 
 import agent.Action;
 
-public class ActionRight extends Action<EightPuzzleState>{
+public class ActionRight extends Action<MummyMazeState>{
 
     public ActionRight(){
         super(1);
     }
 
     @Override
-    public void execute(EightPuzzleState state){
+    public void execute(MummyMazeState state){
         state.moveRight();
         state.setAction(this);
     }
 
     @Override
-    public boolean isValid(EightPuzzleState state){
+    public boolean isValid(MummyMazeState state){
         return state.canMoveRight();
     }
 }

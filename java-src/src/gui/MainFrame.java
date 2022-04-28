@@ -2,11 +2,8 @@ package gui;
 
 import agent.Heuristic;
 import agent.Solution;
-import eightpuzzle.EightPuzzleAgent;
-import eightpuzzle.EightPuzzleProblem;
-import eightpuzzle.EightPuzzleState;
+
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,7 +11,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.NoSuchElementException;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -27,6 +23,10 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
+
+import mummymaze.MummyMazeAgent;
+import mummymaze.MummyMazeProblem;
+import mummymaze.MummyMazeState;
 import searchmethods.BeamSearch;
 import searchmethods.DepthLimitedSearch;
 import searchmethods.SearchMethod;
@@ -35,19 +35,19 @@ public class MainFrame extends JFrame {
 
     //private int[][] initialMatrix = {{1, 0, 2}, {3, 4, 5}, {6, 7, 8}};
     private int[][] initialMatrix = {{8, 7, 6}, {5, 4, 3}, {2, 1, 0}};
-    private EightPuzzleAgent agent = new EightPuzzleAgent(new EightPuzzleState(initialMatrix));
+    private MummyMazeAgent agent = new MummyMazeAgent(new MummyMazeState(initialMatrix));
     private JComboBox comboBoxSearchMethods;
     private JComboBox comboBoxHeuristics;
     private JLabel labelSearchParameter = new JLabel("limit/beam size:");
     private JTextField textFieldSearchParameter = new JTextField("0", 5);
-    private PuzzleTableModel puzzleTableModel;
-    private JTable tablePuzzle = new JTable();
+    private GameArea gameArea;
     private JButton buttonInitialState = new JButton("Read initial state");
     private JButton buttonSolve = new JButton("Solve");
     private JButton buttonStop = new JButton("Stop");
     private JButton buttonShowSolution = new JButton("Show solution");
     private JButton buttonReset = new JButton("Reset to initial state");
     private JTextArea textArea;
+    private GameArea jogo;
 
     public MainFrame() {
         try {
@@ -95,7 +95,8 @@ public class MainFrame extends JFrame {
         comboBoxHeuristics.addActionListener(new ComboBoxHeuristics_ActionAdapter(this));
 
         JPanel puzzlePanel = new JPanel(new FlowLayout());
-        puzzlePanel.add(tablePuzzle);
+        jogo=new GameArea();
+        puzzlePanel.add(jogo);
         textArea = new JTextArea(15, 31);
         JScrollPane scrollPane = new JScrollPane(textArea);
         textArea.setEditable(false);
@@ -107,27 +108,14 @@ public class MainFrame extends JFrame {
         mainPanel.add(puzzlePanel, BorderLayout.SOUTH);
         contentPane.add(mainPanel);
 
-        configureTabel(tablePuzzle);
-
         pack();
-    }
-
-    private void configureTabel(JTable table) {
-        puzzleTableModel = new PuzzleTableModel(agent.getEnvironment());
-        tablePuzzle.setModel(puzzleTableModel);
-        table.setDefaultRenderer(Object.class, new PuzzleTileCellRenderer());
-        for (int i = 0; i < table.getColumnCount(); i++) {
-            table.getColumnModel().getColumn(i).setPreferredWidth(Properties.CELL_WIDTH);
-        }
-        table.setRowHeight(Properties.CELL_HEIGHT);
-        table.setBorder(BorderFactory.createLineBorder(Color.black));
     }
 
     public void buttonInitialState_ActionPerformed(ActionEvent e) {
         JFileChooser fc = new JFileChooser(new java.io.File("."));
         try {
             if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                puzzleTableModel.setPuzzle(agent.readInitialStateFromFile(fc.getSelectedFile()));
+                gameArea.setState(agent.readInitialStateFromFile(fc.getSelectedFile()));
                 buttonSolve.setEnabled(true);
                 buttonShowSolution.setEnabled(false);
                 buttonReset.setEnabled(false);
@@ -142,7 +130,7 @@ public class MainFrame extends JFrame {
     public void comboBoxSearchMethods_ActionPerformed(ActionEvent e) {
         int index = comboBoxSearchMethods.getSelectedIndex();
         agent.setSearchMethod((SearchMethod) comboBoxSearchMethods.getItemAt(index));
-        puzzleTableModel.setPuzzle(agent.resetEnvironment());
+        gameArea.setState(agent.resetEnvironment());
         buttonSolve.setEnabled(true);
         buttonShowSolution.setEnabled(false);
         buttonReset.setEnabled(false);
@@ -155,7 +143,7 @@ public class MainFrame extends JFrame {
     public void comboBoxHeuristics_ActionPerformed(ActionEvent e) {
         int index = comboBoxHeuristics.getSelectedIndex();
         agent.setHeuristic((Heuristic) comboBoxHeuristics.getItemAt(index));
-        puzzleTableModel.setPuzzle(agent.resetEnvironment());
+        gameArea.setState(agent.resetEnvironment());
         buttonSolve.setEnabled(true);
         buttonShowSolution.setEnabled(false);
         buttonReset.setEnabled(false);
@@ -172,7 +160,7 @@ public class MainFrame extends JFrame {
                 buttonSolve.setEnabled(false);
                 try {
                     prepareSearchAlgorithm();
-                    EightPuzzleProblem problem = new EightPuzzleProblem((EightPuzzleState) agent.getEnvironment().clone());
+                    MummyMazeProblem problem = new MummyMazeProblem((MummyMazeState) agent.getEnvironment().clone());
                     agent.solveProblem(problem);
                 } catch (Exception e) {
                     e.printStackTrace(System.err);
@@ -225,7 +213,7 @@ public class MainFrame extends JFrame {
     }
 
     public void buttonReset_ActionPerformed(ActionEvent e) {
-        puzzleTableModel.setPuzzle(agent.resetEnvironment());
+        gameArea.setState(agent.resetEnvironment());
         buttonShowSolution.setEnabled(true);
         buttonReset.setEnabled(false);
     }
