@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MummyMazeState extends State implements Cloneable {
-    final int[] rowsFinalMatrix = {0, 0, 0, 1, 1, 1, 2, 2, 2};
-    final int[] colsFinalMatrix = {0, 1, 2, 0, 1, 2, 0, 1, 2};
     private final TileType[][] matrix;
     //Listeners
     private final transient ArrayList<MummyMazeListener> listeners = new ArrayList<>(3);
@@ -36,19 +34,27 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public boolean canMoveUp() {
-        return true;
+        return (heroCol != 0) &&
+                !TileType.blocksVerticalPassage(matrix[heroRow - 1][heroCol]) &&
+                !TileType.isDangerous(matrix[heroRow - 2][heroCol]);
     }
 
     public boolean canMoveDown() {
-        return true;
+        return (heroCol != matrix.length - 1) &&
+                !TileType.blocksVerticalPassage(matrix[heroRow + 1][heroCol]) &&
+                !TileType.isDangerous(matrix[heroRow + 2][heroCol]);
     }
 
     public boolean canMoveLeft() {
-        return true;
+        return (heroRow != 0)
+                && !TileType.blocksHorizontalPassage(matrix[heroRow][heroCol - 1]) &&
+                !TileType.isDangerous(matrix[heroRow][heroCol - 2]);
     }
 
     public boolean canMoveRight() {
-        return true;
+        return (heroRow != matrix[0].length - 1)
+                && !TileType.blocksHorizontalPassage(matrix[heroRow][heroCol + 1]) &&
+                !TileType.isDangerous(matrix[heroRow][heroCol + 2]);
     }
 
     /*
@@ -58,29 +64,35 @@ public class MummyMazeState extends State implements Cloneable {
      * state was created whether the operation could be executed or not.
      */
     public void moveUp() {
-        //TODO
-    }
-
-    public void moveRight() {
-        //TODO
+        matrix[heroRow][heroCol] = TileType.EMPTY;
+        heroRow-=2;
+        matrix[heroRow][heroCol] = TileType.HERO;
     }
 
     public void moveDown() {
-        //TODO
+        matrix[heroRow][heroCol] = TileType.EMPTY;
+        heroRow+=2;
+        matrix[heroRow][heroCol] = TileType.HERO;
+    }
+
+    public void moveRight() {
+        matrix[heroRow][heroCol] = TileType.EMPTY;
+        heroCol+=2;
+        matrix[heroRow][heroCol] = TileType.HERO;
     }
 
     public void moveLeft() {
-        //TODO
+        matrix[heroRow][heroCol] = TileType.EMPTY;
+        heroCol-=2;
+        matrix[heroRow][heroCol] = TileType.HERO;
     }
 
     public double computeTilesOutOfPlace() {
-//        int h = 0;
-//        for (int i = 0; i < matrix.length; i++)
-//            for (int j = 0; j < matrix.length; j++)
-//                if (matrix[i][j] != 0 && matrix[i][j] != finalState.matrix[i][j]) h++;
-//        return h;
-        //TODO
-        return 0;
+        int h = 0;
+        /*for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix.length; j++)
+                if (matrix[i][j] != 0 && matrix[i][j] != finalState.matrix[i][j]) h++;*/
+        return h;
     }
 
     public double computeTileDistances() {

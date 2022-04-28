@@ -34,20 +34,16 @@ public enum TileType {
         throw new IllegalArgumentException("No tile type was found with that identifier.");
     }
 
-    private static boolean blocksPassage(TileType tileType) {
+    public static boolean isDangerous(TileType tileType) {
         return (tileType == TileType.WHITE_MUMMY || tileType == TileType.RED_MUMMY ||
                 tileType == TileType.TRAP || tileType == TileType.SCORPION);
     }
 
     public static boolean blocksVerticalPassage(TileType tileType) {
-        return (blocksPassage(tileType) || (
-                tileType == TileType.H_WALL || tileType == TileType.H_DOOR_CLOSED
-        ));
+        return (tileType == TileType.H_WALL || tileType == TileType.H_DOOR_CLOSED);
     }
 
     public static boolean blocksHorizontalPassage(TileType tileType) {
-        return (blocksPassage(tileType) || (
-                tileType == TileType.V_WALL || tileType == TileType.V_DOOR_CLOSED
-        ));
+        return (tileType == TileType.V_WALL || tileType == TileType.V_DOOR_CLOSED);
     }
 }
