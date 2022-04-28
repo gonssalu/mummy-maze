@@ -19,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
@@ -34,20 +33,19 @@ import searchmethods.SearchMethod;
 public class MainFrame extends JFrame {
 
     //private int[][] initialMatrix = {{1, 0, 2}, {3, 4, 5}, {6, 7, 8}};
-    private int[][] initialMatrix = {{8, 7, 6}, {5, 4, 3}, {2, 1, 0}};
+    private char[][] initialMatrix = {{8, 7, 6}, {5, 4, 3}, {2, 1, 0}};
     private MummyMazeAgent agent = new MummyMazeAgent(new MummyMazeState(initialMatrix));
     private JComboBox comboBoxSearchMethods;
     private JComboBox comboBoxHeuristics;
     private JLabel labelSearchParameter = new JLabel("limit/beam size:");
     private JTextField textFieldSearchParameter = new JTextField("0", 5);
-    private GameArea gameArea;
     private JButton buttonInitialState = new JButton("Read initial state");
     private JButton buttonSolve = new JButton("Solve");
     private JButton buttonStop = new JButton("Stop");
     private JButton buttonShowSolution = new JButton("Show solution");
     private JButton buttonReset = new JButton("Reset to initial state");
     private JTextArea textArea;
-    private GameArea jogo;
+    private GameArea game;
 
     public MainFrame() {
         try {
@@ -57,7 +55,7 @@ public class MainFrame extends JFrame {
         }
     }
 
-    private void jbInit() throws Exception {
+    private void jbInit() {
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("Eight Puzzle");
@@ -95,8 +93,8 @@ public class MainFrame extends JFrame {
         comboBoxHeuristics.addActionListener(new ComboBoxHeuristics_ActionAdapter(this));
 
         JPanel puzzlePanel = new JPanel(new FlowLayout());
-        jogo=new GameArea();
-        puzzlePanel.add(jogo);
+        game = new GameArea();
+        puzzlePanel.add(game);
         textArea = new JTextArea(15, 31);
         JScrollPane scrollPane = new JScrollPane(textArea);
         textArea.setEditable(false);
@@ -111,11 +109,11 @@ public class MainFrame extends JFrame {
         pack();
     }
 
-    public void buttonInitialState_ActionPerformed(ActionEvent e) {
+    public void buttonInitialState_ActionPerformed() {
         JFileChooser fc = new JFileChooser(new java.io.File("."));
         try {
             if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                gameArea.setState(agent.readInitialStateFromFile(fc.getSelectedFile()));
+                game.setState(agent.readInitialStateFromFile(fc.getSelectedFile()));
                 buttonSolve.setEnabled(true);
                 buttonShowSolution.setEnabled(false);
                 buttonReset.setEnabled(false);
@@ -127,15 +125,15 @@ public class MainFrame extends JFrame {
         }
     }
 
-    public void comboBoxSearchMethods_ActionPerformed(ActionEvent e) {
+    public void comboBoxSearchMethods_ActionPerformed() {
         int index = comboBoxSearchMethods.getSelectedIndex();
         agent.setSearchMethod((SearchMethod) comboBoxSearchMethods.getItemAt(index));
-        gameArea.setState(agent.resetEnvironment());
+        game.setState(agent.resetEnvironment());
         buttonSolve.setEnabled(true);
         buttonShowSolution.setEnabled(false);
         buttonReset.setEnabled(false);
         textArea.setText("");
-        comboBoxHeuristics.setEnabled(index > 4); //Informed serch methods
+        comboBoxHeuristics.setEnabled(index > 4); //Informed search methods
         textFieldSearchParameter.setEnabled(index == 3 || index == 7); // limited depth or beam search
         labelSearchParameter.setEnabled(index == 3 || index == 7); // limited depth or beam search
     }
@@ -143,7 +141,7 @@ public class MainFrame extends JFrame {
     public void comboBoxHeuristics_ActionPerformed(ActionEvent e) {
         int index = comboBoxHeuristics.getSelectedIndex();
         agent.setHeuristic((Heuristic) comboBoxHeuristics.getItemAt(index));
-        gameArea.setState(agent.resetEnvironment());
+        game.setState(agent.resetEnvironment());
         buttonSolve.setEnabled(true);
         buttonShowSolution.setEnabled(false);
         buttonReset.setEnabled(false);
@@ -184,14 +182,14 @@ public class MainFrame extends JFrame {
         worker.execute();
     }
 
-    public void buttonStop_ActionPerformed(ActionEvent e) {
+    public void buttonStop_ActionPerformed() {
         agent.stop();
         buttonShowSolution.setEnabled(false);
         buttonStop.setEnabled(false);
         buttonSolve.setEnabled(true);
     }
 
-    public void buttonShowSolution_ActionPerformed(ActionEvent e) {
+    public void buttonShowSolution_ActionPerformed() {
         buttonShowSolution.setEnabled(false);
         buttonStop.setEnabled(false);
         buttonSolve.setEnabled(false);
@@ -212,8 +210,8 @@ public class MainFrame extends JFrame {
         worker.execute();
     }
 
-    public void buttonReset_ActionPerformed(ActionEvent e) {
-        gameArea.setState(agent.resetEnvironment());
+    public void buttonReset_ActionPerformed() {
+        game.setState(agent.resetEnvironment());
         buttonShowSolution.setEnabled(true);
         buttonReset.setEnabled(false);
     }
@@ -239,7 +237,7 @@ class ComboBoxSearchMethods_ActionAdapter implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        adaptee.comboBoxSearchMethods_ActionPerformed(e);
+        adaptee.comboBoxSearchMethods_ActionPerformed();
     }
 }
 
@@ -267,7 +265,7 @@ class ButtonInitialState_ActionAdapter implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        adaptee.buttonInitialState_ActionPerformed(e);
+        adaptee.buttonInitialState_ActionPerformed();
     }
 }
 
@@ -295,7 +293,7 @@ class ButtonStop_ActionAdapter implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        adaptee.buttonStop_ActionPerformed(e);
+        adaptee.buttonStop_ActionPerformed();
     }
 }
 
@@ -309,7 +307,7 @@ class ButtonShowSolution_ActionAdapter implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        adaptee.buttonShowSolution_ActionPerformed(e);
+        adaptee.buttonShowSolution_ActionPerformed();
     }
 }
 
@@ -323,7 +321,7 @@ class ButtonReset_ActionAdapter implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        adaptee.buttonReset_ActionPerformed(e);
+        adaptee.buttonReset_ActionPerformed();
     }
 }
 

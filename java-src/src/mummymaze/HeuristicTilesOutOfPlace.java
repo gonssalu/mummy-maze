@@ -6,11 +6,11 @@ public class HeuristicTilesOutOfPlace extends Heuristic<MummyMazeProblem, MummyM
 
     @Override
     public double compute(MummyMazeState state) {
-        return state.computeTilesOutOfPlace(problem.getGoalState());
+        return state.computeTilesOutOfPlace();
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         return "Tiles out of place";
-    }    
+    }
 }

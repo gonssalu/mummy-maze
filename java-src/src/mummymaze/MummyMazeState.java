@@ -77,15 +77,16 @@ public class MummyMazeState extends State implements Cloneable {
         matrix[lineBlank][columnBlank] = 0;
     }
 
-    public double computeTilesOutOfPlace(MummyMazeState finalState) {
-        int h = 0;
-        for (int i = 0; i < matrix.length; i++)
-            for (int j = 0; j < matrix.length; j++)
-                if (matrix[i][j] != 0 && matrix[i][j] != finalState.matrix[i][j]) h++;
-        return h;
+    public double computeTilesOutOfPlace() {
+//        int h = 0;
+//        for (int i = 0; i < matrix.length; i++)
+//            for (int j = 0; j < matrix.length; j++)
+//                if (matrix[i][j] != 0 && matrix[i][j] != finalState.matrix[i][j]) h++;
+//        return h;
+        return 0;
     }
 
-    public double computeTileDistances(MummyMazeState finalState) {
+    public double computeTileDistances() {
         double h = 0;
         for (int i = 0; i < matrix.length; i++)
             for (int j = 0; j < matrix.length; j++)
@@ -166,5 +167,9 @@ public class MummyMazeState extends State implements Cloneable {
         for (MummyMazeListener listener : listeners) {
             listener.puzzleChanged(null);
         }
+    }
+
+    public char[][] getMatrix() {
+        return matrix;
     }
 }
