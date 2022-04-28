@@ -43,26 +43,26 @@ public class MummyMazeState extends State implements Cloneable {
 
     public boolean canMoveUp() {
         return (heroCol != 0) &&
-                !TileType.blocksVerticalPassage(matrix[heroRow - 1][heroCol]) &&
-                !TileType.isDangerous(matrix[heroRow - 2][heroCol]);
+                TileType.canVerticallyPass(matrix[heroRow - 1][heroCol]) &&
+                TileType.isSafe(matrix[heroRow - 2][heroCol]);
     }
 
     public boolean canMoveDown() {
         return (heroCol != getNumRows() - 1) &&
-                !TileType.blocksVerticalPassage(matrix[heroRow + 1][heroCol]) &&
-                !TileType.isDangerous(matrix[heroRow + 2][heroCol]);
+                TileType.canVerticallyPass(matrix[heroRow + 1][heroCol]) &&
+                TileType.isSafe(matrix[heroRow + 2][heroCol]);
     }
 
     public boolean canMoveLeft() {
         return (heroRow != 0) &&
-                !TileType.blocksHorizontalPassage(matrix[heroRow][heroCol - 1]) &&
-                !TileType.isDangerous(matrix[heroRow][heroCol - 2]);
+                TileType.canHorizontallyPass(matrix[heroRow][heroCol - 1]) &&
+                TileType.isSafe(matrix[heroRow][heroCol - 2]);
     }
 
     public boolean canMoveRight() {
         return (heroRow != getNumColumns() - 1) &&
-                !TileType.blocksHorizontalPassage(matrix[heroRow][heroCol + 1]) &&
-                !TileType.isDangerous(matrix[heroRow][heroCol + 2]);
+                TileType.canHorizontallyPass(matrix[heroRow][heroCol + 1]) &&
+                TileType.isSafe(matrix[heroRow][heroCol + 2]);
     }
 
     /*

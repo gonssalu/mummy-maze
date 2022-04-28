@@ -34,17 +34,17 @@ public enum TileType {
         throw new IllegalArgumentException("No tile type was found with that identifier.");
     }
 
-    public static boolean isDangerous(TileType tileType) {
-        return (tileType == TileType.WHITE_MUMMY || tileType == TileType.RED_MUMMY ||
-                tileType == TileType.TRAP || tileType == TileType.SCORPION);
+    public static boolean isSafe(TileType tileType) {
+        return (tileType != TileType.WHITE_MUMMY && tileType != TileType.RED_MUMMY &&
+                tileType != TileType.TRAP && tileType != TileType.SCORPION);
     }
 
-    public static boolean blocksVerticalPassage(TileType tileType) {
-        return (tileType == TileType.H_WALL || tileType == TileType.H_DOOR_CLOSED);
+    public static boolean canVerticallyPass(TileType tileType) {
+        return (tileType != TileType.H_WALL && tileType != TileType.H_DOOR_CLOSED);
     }
 
-    public static boolean blocksHorizontalPassage(TileType tileType) {
-        return (tileType == TileType.V_WALL || tileType == TileType.V_DOOR_CLOSED);
+    public static boolean canHorizontallyPass(TileType tileType) {
+        return (tileType != TileType.V_WALL && tileType != TileType.V_DOOR_CLOSED);
     }
 
     public static boolean isTileRelevantForHeuristic(TileType tileType) {
