@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/materials/MummyMazeShowSolution/MummyMazeShowSolution.iml" filepath="$PROJECT_DIR$/materials/MummyMazeShowSolution/MummyMazeShowSolution.iml" />
+      <module fileurl="file://$PROJECT_DIR$/materials/MumyMazeShowSolutionExample/MumyMazeShowSolutionExample.iml" filepath="$PROJECT_DIR$/materials/MumyMazeShowSolutionExample/MumyMazeShowSolutionExample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/java-src/java-src.iml" filepath="$PROJECT_DIR$/java-src/java-src.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/mummy-maze.iml" filepath="$PROJECT_DIR$/.idea/mummy-maze.iml" />
+    </modules>
+  </component>
+</project>

@@ -10,9 +10,9 @@ public class MummyMazeAgent extends Agent<MummyMazeState> {
 
     protected MummyMazeState initialEnvironment;
 
-    public MummyMazeAgent(MummyMazeState enviroment) {
-        super(enviroment);
-        initialEnvironment = enviroment.clone();
+    public MummyMazeAgent(MummyMazeState environment) {
+        super(environment);
+        initialEnvironment = environment.clone();
         heuristics.add(new HeuristicTileDistance());
         heuristics.add(new HeuristicTilesOutOfPlace());
         heuristic = heuristics.get(0);
@@ -25,16 +25,14 @@ public class MummyMazeAgent extends Agent<MummyMazeState> {
 
     public MummyMazeState readInitialStateFromFile(File file) throws IOException {
         Scanner scanner = new java.util.Scanner(file);
-
         TileType[][] matrix = new TileType[13][13];
 
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < 13; i++) {
+            String line = scanner.nextLine();
             for (int j = 0; j < 13; j++)
-                matrix[i][j] = TileType.getTileType(scanner.next().charAt(0));
+                matrix[i][j] = TileType.getTileType(line.charAt(j));
+        }
 
-        
-        
-        
         initialEnvironment = new MummyMazeState(matrix);
         resetEnvironment();
         return environment;

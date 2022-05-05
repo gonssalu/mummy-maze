@@ -117,9 +117,8 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public TileType getTileValue(int row, int col) {
-        if (!isValidPosition(row, col)) {
+        if (!isValidPosition(row, col))
             throw new IndexOutOfBoundsException("Invalid position!");
-        }
         return matrix[row][col];
     }
 
@@ -129,14 +128,11 @@ public class MummyMazeState extends State implements Cloneable {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof MummyMazeState)) {
+        if (!(other instanceof MummyMazeState o))
             return false;
-        }
 
-        MummyMazeState o = (MummyMazeState) other;
-        if (matrix.length != o.matrix.length) {
+        if (matrix.length != o.matrix.length)
             return false;
-        }
 
         return Arrays.deepEquals(matrix, o.matrix);
     }
@@ -165,21 +161,18 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public synchronized void removeListener(MummyMazeListener l) {
-        if (listeners != null) {
+        if (listeners != null)
             listeners.remove(l);
-        }
     }
 
     public synchronized void addListener(MummyMazeListener l) {
-        if (!listeners.contains(l)) {
+        if (!listeners.contains(l))
             listeners.add(l);
-        }
     }
 
     public void fireMazeChanged() {
-        for (MummyMazeListener listener : listeners) {
+        for (MummyMazeListener listener : listeners)
             listener.puzzleChanged(null);
-        }
     }
 
     public TileType[][] getMatrix() {
