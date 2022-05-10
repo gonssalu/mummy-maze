@@ -1,5 +1,5 @@
 package mummymaze;
 
 public interface MummyMazeListener {
-    void puzzleChanged(MummyMazeEvent pe);
+    void mazeChanged(MummyMazeEvent pe);
 }

@@ -42,27 +42,31 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public boolean canMoveUp() {
-        return (heroCol != 0) &&
-                TileType.canVerticallyPass(matrix[heroRow - 1][heroCol]) &&
+        if (heroRow > 1)
+            return TileType.canVerticallyPass(matrix[heroRow - 1][heroCol]) &&
                 TileType.isSafe(matrix[heroRow - 2][heroCol]);
+        return false;
     }
 
     public boolean canMoveDown() {
-        return (heroCol != getNumRows() - 1) &&
-                TileType.canVerticallyPass(matrix[heroRow + 1][heroCol]) &&
+        if (heroRow < getNumRows() - 2)
+            return TileType.canVerticallyPass(matrix[heroRow + 1][heroCol]) &&
                 TileType.isSafe(matrix[heroRow + 2][heroCol]);
+        return false;
     }
 
     public boolean canMoveLeft() {
-        return (heroRow != 0) &&
-                TileType.canHorizontallyPass(matrix[heroRow][heroCol - 1]) &&
-                TileType.isSafe(matrix[heroRow][heroCol - 2]);
+        if(heroCol > 1)
+            return TileType.canHorizontallyPass(matrix[heroRow][heroCol - 1]) &&
+                    TileType.isSafe(matrix[heroRow][heroCol - 2]);
+        return false;
     }
 
     public boolean canMoveRight() {
-        return (heroRow != getNumColumns() - 1) &&
-                TileType.canHorizontallyPass(matrix[heroRow][heroCol + 1]) &&
-                TileType.isSafe(matrix[heroRow][heroCol + 2]);
+        if (heroCol < getNumColumns() - 2)
+            return TileType.canHorizontallyPass(matrix[heroRow][heroCol + 1]) &&
+                            TileType.isSafe(matrix[heroRow][heroCol + 2]);
+        return false;
     }
 
     /*
@@ -105,7 +109,7 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public double computeTileDistances() {
-        return Math.abs(heroRow - exitRow) + Math.abs(heroRow - exitCol);
+        return Math.abs(heroRow - exitRow) + Math.abs(heroCol - exitCol);
     }
 
     public int getNumRows() {
@@ -172,7 +176,7 @@ public class MummyMazeState extends State implements Cloneable {
 
     public void fireMazeChanged() {
         for (MummyMazeListener listener : listeners)
-            listener.puzzleChanged(null);
+            listener.mazeChanged(null);
     }
 
     public TileType[][] getMatrix() {
