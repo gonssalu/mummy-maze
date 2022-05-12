@@ -99,7 +99,9 @@ public class MainFrame extends JFrame {
     }
 
     public void buttonInitialState_ActionPerformed() {
-        JFileChooser fc = new JFileChooser(new java.io.File("."));
+        JFileChooser fc = new JFileChooser(new java.io.File("materials/Niveis"));
+        // Temporary
+        // JFileChooser fc = new JFileChooser(new java.io.File("."));
         try {
             if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 game.setState(agent.readInitialStateFromFile(fc.getSelectedFile()));

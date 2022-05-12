@@ -13,3 +13,7 @@ se a coluna-1 da múmia está vazia
 quando a múmia não se consegue mexer, move-se para a mesma linha
 
 basta comparar as colunas e verificar se uma é menor que a outra
+
+estado tem de ter forma de verificar se o herói morreu
+
+antes de mover a mumia, verificar se o heroi está na saída (dentro do move(), dar um return)
