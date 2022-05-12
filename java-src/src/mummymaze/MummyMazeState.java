@@ -15,6 +15,22 @@ public class MummyMazeState extends State implements Cloneable {
     private int exitRow;
     private int exitCol;
 
+    public int getHeroRow() {
+        return heroRow;
+    }
+
+    public int getHeroCol() {
+        return heroCol;
+    }
+
+    public int getExitRow() {
+        return exitRow;
+    }
+
+    public int getExitCol() {
+        return exitCol;
+    }
+
     public MummyMazeState(TileType[][] matrix) {
         this.matrix = new TileType[matrix.length][matrix.length];
 
@@ -44,19 +60,19 @@ public class MummyMazeState extends State implements Cloneable {
     public boolean canMoveUp() {
         if (heroRow > 1)
             return TileType.canVerticallyPass(matrix[heroRow - 1][heroCol]) &&
-                TileType.isSafe(matrix[heroRow - 2][heroCol]);
+                    TileType.isSafe(matrix[heroRow - 2][heroCol]);
         return false;
     }
 
     public boolean canMoveDown() {
         if (heroRow < getNumRows() - 2)
             return TileType.canVerticallyPass(matrix[heroRow + 1][heroCol]) &&
-                TileType.isSafe(matrix[heroRow + 2][heroCol]);
+                    TileType.isSafe(matrix[heroRow + 2][heroCol]);
         return false;
     }
 
     public boolean canMoveLeft() {
-        if(heroCol > 1)
+        if (heroCol > 1)
             return TileType.canHorizontallyPass(matrix[heroRow][heroCol - 1]) &&
                     TileType.isSafe(matrix[heroRow][heroCol - 2]);
         return false;
@@ -65,7 +81,7 @@ public class MummyMazeState extends State implements Cloneable {
     public boolean canMoveRight() {
         if (heroCol < getNumColumns() - 2)
             return TileType.canHorizontallyPass(matrix[heroRow][heroCol + 1]) &&
-                            TileType.isSafe(matrix[heroRow][heroCol + 2]);
+                    TileType.isSafe(matrix[heroRow][heroCol + 2]);
         return false;
     }
 
