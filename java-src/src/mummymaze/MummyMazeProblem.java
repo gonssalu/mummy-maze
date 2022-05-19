@@ -23,12 +23,10 @@ public class MummyMazeProblem extends Problem<MummyMazeState> {
     @Override
     public List<Action<MummyMazeState>> getActions(MummyMazeState state) {
         List<Action<MummyMazeState>> possibleActions = new LinkedList<>();
-
-        for (Action action : actions) {
-            if (action.isValid(state)) {
+        if (state.isHeroDead()) return possibleActions;
+        for (Action action : actions)
+            if (action.isValid(state)) 
                 possibleActions.add(action);
-            }
-        }
         return possibleActions;
     }
 
