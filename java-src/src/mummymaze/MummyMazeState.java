@@ -47,6 +47,11 @@ public class MummyMazeState extends State implements Cloneable {
     @Override
     public void executeAction(Action action) {
         action.execute(this);
+
+        if(!isAtGoal()){
+            updateEnemies();
+        }
+
         fireMazeChanged();
     }
 
@@ -89,17 +94,11 @@ public class MummyMazeState extends State implements Cloneable {
      * state was created whether the operation could be executed or not.
      */
 
-    public void updateEnemies(){
-        if (!isHeroDead && matrix[heroRow][heroCol] != TileType.EXIT)
-            moveWhiteMummy();
-    }
-
     public void moveUp() {
         matrix[heroRow][heroCol] = TileType.EMPTY;
         if (heroRow == 1) heroRow--;
         else heroRow -= 2;
         matrix[heroRow][heroCol] = TileType.HERO;
-        updateEnemies();
     }
 
     public void moveDown() {
@@ -107,7 +106,6 @@ public class MummyMazeState extends State implements Cloneable {
         if (heroRow == 11) heroRow++;
         else heroRow += 2;
         matrix[heroRow][heroCol] = TileType.HERO;
-        updateEnemies();
     }
 
     public void moveRight() {
@@ -115,7 +113,6 @@ public class MummyMazeState extends State implements Cloneable {
         if (heroCol == 11) heroCol += 1;
         else heroCol += 2;
         matrix[heroRow][heroCol] = TileType.HERO;
-        updateEnemies();
     }
 
     public void moveLeft() {
@@ -123,82 +120,78 @@ public class MummyMazeState extends State implements Cloneable {
         if (heroCol == 1) heroCol -= 1;
         else heroCol -= 2;
         matrix[heroRow][heroCol] = TileType.HERO;
-        updateEnemies();
     }
 
-    public void moveWhiteMummy() {
-        // If the mummy is in the same row and column as the hero, the hero dies
-        if (wMummyRow == heroRow && wMummyCol == heroCol) {
-            isHeroDead = true;
-            return;
+    private void updateEnemies(){
+        if (matrix[heroRow][heroCol] == TileType.EXIT) return;
+        int cont = 0;
+        while(!isHeroDead && cont<2){
+            moveWhiteMummy();
+            cont++;
         }
+    }
+
+    private void moveMummyUp(){
+        if (TileType.canVerticallyPass(matrix[wMummyRow - 1][heroCol])) {
+            matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
+            wMummyRow -= 2;
+            matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
+        }
+    }
+
+    private void moveMummyDown(){
+        if (TileType.canVerticallyPass(matrix[wMummyRow + 1][heroCol])) {
+            matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
+            wMummyRow += 2;
+            matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
+        }
+    }
+
+    private void moveMummyLeft(){
+        if (TileType.canHorizontallyPass(matrix[wMummyRow][wMummyCol - 1])) {
+            matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
+            wMummyCol -= 2;
+            matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
+        }
+    }
+    private void moveMummyRight(){
+        if (TileType.canHorizontallyPass(matrix[wMummyRow][wMummyCol + 1])) {
+            matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
+            wMummyCol += 2;
+            matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
+        }
+    }
+
+    private void moveWhiteMummy() {
 
         // If the mummy is in the same column as the hero, it moves vertically
         if (wMummyCol == heroCol) {
             if (wMummyRow > heroRow) {
-                if (matrix[wMummyRow - 1][wMummyCol] == TileType.EMPTY) {
-                    matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
-                    wMummyRow -= 2;
-                    matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
-                }
+                moveMummyUp();
             } else {
-                if (matrix[wMummyRow + 1][wMummyCol] == TileType.EMPTY) {
-                    matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
-                    wMummyRow += 2;
-                    matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
-                }
+                moveMummyDown();
             }
         }
         // If the mummy is in the same row as the hero, it moves horizontally
         else if (wMummyRow == heroRow) {
             if (wMummyCol > heroCol) {
-                if (matrix[wMummyRow][wMummyCol - 1] == TileType.EMPTY) {
-                    matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
-                    wMummyCol -= 2;
-                    matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
-                }
+                moveMummyLeft();
             } else {
-                if (matrix[wMummyRow][wMummyCol + 1] == TileType.EMPTY) {
-                    matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
-                    wMummyCol += 2;
-                    matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
-                }
+                moveMummyRight();
             }
         }
-
         // If the mummy is in a different row and column from the hero, it moves to the hero's column
         else {
-            if (wMummyRow > heroRow) {
-                if (matrix[wMummyRow - 1][wMummyCol] == TileType.EMPTY) {
-                    matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
-                    wMummyRow -= 2;
-                    matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
-                }
-            }
-
-            if (wMummyRow < heroRow) {
-                if (matrix[wMummyRow + 1][wMummyCol] == TileType.EMPTY) {
-                    matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
-                    wMummyRow += 2;
-                    matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
-                }
-            }
-
             if (wMummyCol > heroCol) {
-                if (matrix[wMummyRow][wMummyCol - 1] == TileType.EMPTY) {
-                    matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
-                    wMummyCol -= 2;
-                    matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
-                }
+                moveMummyLeft();
+            }else{
+                // Mummy column is lower, because we already know it isn't equal.
+                moveMummyRight();
             }
-
-            if (wMummyCol < heroCol) {
-                if (matrix[wMummyRow][wMummyCol + 1] == TileType.EMPTY) {
-                    matrix[wMummyRow][wMummyCol] = TileType.EMPTY;
-                    wMummyCol += 2;
-                    matrix[wMummyRow][wMummyCol] = TileType.WHITE_MUMMY;
-                }
-            }
+        }
+        // If the mummy is in the same row and column as the hero, the hero dies
+        if (wMummyRow == heroRow && wMummyCol == heroCol) {
+            isHeroDead = true;
         }
     }
 
@@ -297,5 +290,10 @@ public class MummyMazeState extends State implements Cloneable {
 
     public boolean isHeroDead() {
         return isHeroDead;
+    }
+
+    @Override
+    public boolean isAtGoal(){
+        return (heroCol==exitCol && heroRow==exitRow);
     }
 }

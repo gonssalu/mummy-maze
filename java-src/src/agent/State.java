@@ -25,4 +25,6 @@ public abstract class State {
 
     @Override
     public abstract boolean equals(Object obj);
+
+    public abstract boolean isAtGoal();
 }

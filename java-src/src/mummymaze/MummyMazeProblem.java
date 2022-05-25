@@ -39,7 +39,7 @@ public class MummyMazeProblem extends Problem<MummyMazeState> {
 
     @Override
     public boolean isGoal(MummyMazeState state) {
-        return (state.getHeroCol() == state.getExitCol() && state.getHeroRow() == state.getExitRow());
+        return state.isAtGoal();
     }
 
     @Override
