@@ -88,13 +88,18 @@ public class MummyMazeState extends State implements Cloneable {
      * Doing the verification in these methods would imply that a clone of the
      * state was created whether the operation could be executed or not.
      */
+
+    public void updateEnemies(){
+        if (!isHeroDead && matrix[heroRow][heroCol] != TileType.EXIT)
+            moveWhiteMummy();
+    }
+
     public void moveUp() {
         matrix[heroRow][heroCol] = TileType.EMPTY;
         if (heroRow == 1) heroRow--;
         else heroRow -= 2;
         matrix[heroRow][heroCol] = TileType.HERO;
-        if (!isHeroDead && matrix[heroRow][heroCol] != TileType.EXIT)
-            moveWhiteMummy();
+        updateEnemies();
     }
 
     public void moveDown() {
@@ -102,8 +107,7 @@ public class MummyMazeState extends State implements Cloneable {
         if (heroRow == 11) heroRow++;
         else heroRow += 2;
         matrix[heroRow][heroCol] = TileType.HERO;
-        if (!isHeroDead && matrix[heroRow][heroCol] != TileType.EXIT)
-            moveWhiteMummy();
+        updateEnemies();
     }
 
     public void moveRight() {
@@ -111,8 +115,7 @@ public class MummyMazeState extends State implements Cloneable {
         if (heroCol == 11) heroCol += 1;
         else heroCol += 2;
         matrix[heroRow][heroCol] = TileType.HERO;
-        if (!isHeroDead && matrix[heroRow][heroCol] != TileType.EXIT)
-            moveWhiteMummy();
+        updateEnemies();
     }
 
     public void moveLeft() {
@@ -120,8 +123,7 @@ public class MummyMazeState extends State implements Cloneable {
         if (heroCol == 1) heroCol -= 1;
         else heroCol -= 2;
         matrix[heroRow][heroCol] = TileType.HERO;
-        if (!isHeroDead && matrix[heroRow][heroCol] != TileType.EXIT)
-            moveWhiteMummy();
+        updateEnemies();
     }
 
     public void moveWhiteMummy() {

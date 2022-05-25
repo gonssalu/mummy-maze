@@ -99,7 +99,7 @@ public class MainFrame extends JFrame {
     }
 
     public void buttonInitialState_ActionPerformed() {
-        JFileChooser fc = new JFileChooser(new java.io.File("materials/Niveis"));
+        JFileChooser fc = new JFileChooser(new java.io.File("../materials/Niveis"));
         // Temporary
         // JFileChooser fc = new JFileChooser(new java.io.File("."));
         try {
