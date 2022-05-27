@@ -4,6 +4,7 @@ import agent.Action;
 import agent.Problem;
 import agent.Solution;
 import agent.State;
+import mummymaze.MummyMazeState;
 import utils.NodeCollection;
 
 import java.util.HashSet;
@@ -50,7 +51,17 @@ public abstract class GraphSearch<L extends NodeCollection> implements SearchMet
             explored.add(state);
             List<Action> actions = problem.getActions(state);
             for (Action action : actions) {
+                MummyMazeState nst = (MummyMazeState) n.getState();
+                //System.out.println("\n\n");
+                //System.out.println("nst: " + nst.getHeroRow() + " " + nst.getHeroCol() + " / " + action.toString());
+                //System.out.println(nst.stateNum+"-"+(nst.getAction()!=null?nst.getAction().getClass().getName():"null"));
                 State successor = problem.getSuccessor(state, action);
+                MummyMazeState st = (MummyMazeState) successor;
+                //System.out.println("st: " + st.getHeroRow() + " " + st.getHeroCol() + " / " + action.toString());
+                //System.out.println(st.stateNum + " \n " + st.toString());
+                //System.out.println(st.isHeroDead());
+                //System.out.println("\n\n");
+
                 addSuccessorToFrontier(successor, n);
             }
             computeStatistics(actions.size());
