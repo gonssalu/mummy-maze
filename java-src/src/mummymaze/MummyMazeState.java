@@ -18,9 +18,13 @@ public class MummyMazeState extends State implements Cloneable {
     private boolean redMummyExists = false;
     private int redMummyRow;
     private int redMummyCol;
+    private boolean scorpionExists = false;
+    private int scorpionRow;
+    private int scorpionCol;
     private int exitRow;
     private int exitCol;
     private boolean isHeroDead;
+    private boolean thereWasMovement;
 
     public MummyMazeState(TileType[][] matrix) {
         this.matrix = new TileType[matrix.length][matrix.length];
@@ -45,6 +49,12 @@ public class MummyMazeState extends State implements Cloneable {
                     redMummyRow = i;
                     redMummyCol = j;
                     redMummyExists = true;
+                }
+
+                if (this.matrix[i][j] == TileType.SCORPION) {
+                    scorpionRow = i;
+                    scorpionCol = j;
+                    scorpionExists = true;
                 }
 
                 if (this.matrix[i][j] == TileType.EXIT) {
@@ -135,6 +145,10 @@ public class MummyMazeState extends State implements Cloneable {
 
     private void updateEnemies(){
         int cont = 0;
+
+        if(scorpionExists)
+            moveScorpion();
+
         while(!isHeroDead && cont<2){
             if(whiteMummyExists)
                 moveWhiteMummy();
@@ -151,6 +165,7 @@ public class MummyMazeState extends State implements Cloneable {
             matrix[enemyRow][enemyCol] = enemy;
 
             saveEnemyState(enemyRow, enemyCol, enemy);
+            thereWasMovement = true;
         }
     }
 
@@ -161,6 +176,7 @@ public class MummyMazeState extends State implements Cloneable {
             matrix[enemyRow][enemyCol] = enemy;
 
             saveEnemyState(enemyRow, enemyCol, enemy);
+            thereWasMovement = true;
         }
     }
 
@@ -171,6 +187,7 @@ public class MummyMazeState extends State implements Cloneable {
             matrix[enemyRow][enemyCol] = enemy;
 
             saveEnemyState(enemyRow, enemyCol, enemy);
+            thereWasMovement = true;
         }
     }
     private void moveEnemyRight(int enemyRow, int enemyCol, TileType enemy){
@@ -180,21 +197,29 @@ public class MummyMazeState extends State implements Cloneable {
             matrix[enemyRow][enemyCol] = enemy;
 
             saveEnemyState(enemyRow, enemyCol, enemy);
+            thereWasMovement = true;
         }
     }
 
     private void saveEnemyState(int enemyRow, int enemyCol, TileType enemy){
-        if(enemy == TileType.WHITE_MUMMY) {
-            whiteMummyRow = enemyRow;
-            whiteMummyCol = enemyCol;
-        }
-        else{
-            redMummyRow = enemyRow;
-            redMummyCol = enemyCol;
+        switch (enemy) {
+            case WHITE_MUMMY -> {
+                whiteMummyRow = enemyRow;
+                whiteMummyCol = enemyCol;
+            }
+            case RED_MUMMY -> {
+                redMummyRow = enemyRow;
+                redMummyCol = enemyCol;
+            }
+            case SCORPION -> {
+                scorpionRow = enemyRow;
+                scorpionCol = enemyCol;
+            }
         }
     }
 
     private void moveEnemy(int enemyRow, int enemyCol, TileType enemy, boolean rowFirst){
+        thereWasMovement = false;
         if(performEnemyDefaultMovement(enemyRow, enemyCol, enemy))
             if(rowFirst) {
                 if (enemyRow > heroRow)
@@ -209,8 +234,8 @@ public class MummyMazeState extends State implements Cloneable {
                     // Enemy column is lower, because we already know it isn't equal.
                     moveEnemyRight(enemyRow, enemyCol, enemy);
             }
-
-        checkIfEnemyKilledHero(enemyRow, enemyCol);
+        if(thereWasMovement)
+            checkIfEnemyKilledHero(enemyRow, enemyCol);
     }
 
     private void moveWhiteMummy(){
@@ -219,6 +244,10 @@ public class MummyMazeState extends State implements Cloneable {
 
     private void moveRedMummy(){
         moveEnemy(redMummyRow, redMummyCol, TileType.RED_MUMMY, true);
+    }
+
+    private void moveScorpion(){
+        moveEnemy(scorpionRow, scorpionCol, TileType.SCORPION, false);
     }
 
     private void checkIfEnemyKilledHero(int enemyRow, int enemyCol){

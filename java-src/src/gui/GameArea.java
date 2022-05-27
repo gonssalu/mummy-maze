@@ -151,7 +151,7 @@ public class GameArea extends JPanel implements MummyMazeListener {
     public void mazeChanged(MummyMazeEvent pe) {
         repaint();
         try {
-            Thread.sleep(100);
+            Thread.sleep(2000);
         } catch (InterruptedException ignore) {
         }
     }
