@@ -144,105 +144,108 @@ public class MummyMazeState extends State implements Cloneable {
         }
     }
 
-    private void moveMummyUp(int mummyRow, int mummyCol, TileType mummy){
-        if (TileType.canVerticallyPass(matrix[mummyRow - 1][mummyCol])) {
-            matrix[mummyRow][mummyCol] = TileType.EMPTY;
-            mummyRow -= 2;
-            matrix[mummyRow][mummyCol] = mummy;
+    private void moveEnemyUp(int enemyRow, int enemyCol, TileType enemy){
+        if (TileType.canVerticallyPass(matrix[enemyRow - 1][enemyCol])) {
+            matrix[enemyRow][enemyCol] = TileType.EMPTY;
+            enemyRow -= 2;
+            matrix[enemyRow][enemyCol] = enemy;
 
-            saveMummyState(mummyRow, mummyCol, mummy);
+            saveEnemyState(enemyRow, enemyCol, enemy);
         }
     }
 
-    private void moveMummyDown(int mummyRow, int mummyCol, TileType mummy){
-        if (TileType.canVerticallyPass(matrix[mummyRow + 1][mummyCol])) {
-            matrix[mummyRow][mummyCol] = TileType.EMPTY;
-            mummyRow += 2;
-            matrix[mummyRow][mummyCol] = mummy;
+    private void moveEnemyDown(int enemyRow, int enemyCol, TileType enemy){
+        if (TileType.canVerticallyPass(matrix[enemyRow + 1][enemyCol])) {
+            matrix[enemyRow][enemyCol] = TileType.EMPTY;
+            enemyRow += 2;
+            matrix[enemyRow][enemyCol] = enemy;
 
-            saveMummyState(mummyRow, mummyCol, mummy);
+            saveEnemyState(enemyRow, enemyCol, enemy);
         }
     }
 
-    private void moveMummyLeft(int mummyRow, int mummyCol, TileType mummy){
-        if (TileType.canHorizontallyPass(matrix[mummyRow][mummyCol - 1])) {
-            matrix[mummyRow][mummyCol] = TileType.EMPTY;
-            mummyCol -= 2;
-            matrix[mummyRow][mummyCol] = mummy;
+    private void moveEnemyLeft(int enemyRow, int enemyCol, TileType enemy){
+        if (TileType.canHorizontallyPass(matrix[enemyRow][enemyCol - 1])) {
+            matrix[enemyRow][enemyCol] = TileType.EMPTY;
+            enemyCol -= 2;
+            matrix[enemyRow][enemyCol] = enemy;
 
-            saveMummyState(mummyRow, mummyCol, mummy);
+            saveEnemyState(enemyRow, enemyCol, enemy);
         }
     }
-    private void moveMummyRight(int mummyRow, int mummyCol, TileType mummy){
-        if (TileType.canHorizontallyPass(matrix[mummyRow][mummyCol + 1])) {
-            matrix[mummyRow][mummyCol] = TileType.EMPTY;
-            mummyCol += 2;
-            matrix[mummyRow][mummyCol] = mummy;
+    private void moveEnemyRight(int enemyRow, int enemyCol, TileType enemy){
+        if (TileType.canHorizontallyPass(matrix[enemyRow][enemyCol + 1])) {
+            matrix[enemyRow][enemyCol] = TileType.EMPTY;
+            enemyCol += 2;
+            matrix[enemyRow][enemyCol] = enemy;
 
-            saveMummyState(mummyRow, mummyCol, mummy);
+            saveEnemyState(enemyRow, enemyCol, enemy);
         }
     }
 
-    private void saveMummyState(int mummyRow, int mummyCol, TileType mummy){
-        if(mummy == TileType.WHITE_MUMMY) {
-            whiteMummyRow = mummyRow;
-            whiteMummyCol = mummyCol;
+    private void saveEnemyState(int enemyRow, int enemyCol, TileType enemy){
+        if(enemy == TileType.WHITE_MUMMY) {
+            whiteMummyRow = enemyRow;
+            whiteMummyCol = enemyCol;
         }
         else{
-            redMummyRow = mummyRow;
-            redMummyCol = mummyCol;
+            redMummyRow = enemyRow;
+            redMummyCol = enemyCol;
         }
+    }
+
+    private void moveEnemy(int enemyRow, int enemyCol, TileType enemy, boolean rowFirst){
+        if(performEnemyDefaultMovement(enemyRow, enemyCol, enemy))
+            if(rowFirst) {
+                if (enemyRow > heroRow)
+                    moveEnemyUp(enemyRow, enemyCol, enemy);
+                else
+                    // Enemy row is lower, because we already know it isn't equal.
+                    moveEnemyDown(enemyRow, enemyCol, enemy);
+            }else{
+                if (enemyCol > heroCol)
+                    moveEnemyLeft(enemyRow, enemyCol, enemy);
+                else
+                    // Enemy column is lower, because we already know it isn't equal.
+                    moveEnemyRight(enemyRow, enemyCol, enemy);
+            }
+
+        checkIfEnemyKilledHero(enemyRow, enemyCol);
     }
 
     private void moveWhiteMummy(){
-        if(performMummyDefaultMovement(whiteMummyRow, whiteMummyCol, TileType.WHITE_MUMMY))
-            if (whiteMummyCol > heroCol) {
-                moveMummyLeft(whiteMummyRow, whiteMummyCol, TileType.WHITE_MUMMY);
-            }else{
-                // Mummy column is lower, because we already know it isn't equal.
-                moveMummyRight(whiteMummyRow, whiteMummyCol, TileType.WHITE_MUMMY);
-            }
-
-        checkIfMummyKilledHero(whiteMummyRow, whiteMummyCol);
+        moveEnemy(whiteMummyRow, whiteMummyCol, TileType.WHITE_MUMMY, false);
     }
 
     private void moveRedMummy(){
-        if(performMummyDefaultMovement(redMummyRow, redMummyCol, TileType.RED_MUMMY))
-            if (redMummyRow > heroRow) {
-                moveMummyUp(redMummyRow, redMummyCol,TileType.RED_MUMMY);
-            }else{
-                // Mummy row is lower, because we already know it isn't equal.
-                moveMummyDown(redMummyRow, redMummyCol,TileType.RED_MUMMY);
-            }
-
-        checkIfMummyKilledHero(redMummyRow, redMummyCol);
+        moveEnemy(redMummyRow, redMummyCol, TileType.RED_MUMMY, true);
     }
 
-    private void checkIfMummyKilledHero(int mummyRow, int mummyCol){
+    private void checkIfEnemyKilledHero(int enemyRow, int enemyCol){
         // If the mummy is in the same row and column as the hero, the hero dies
-        if (mummyRow == heroRow && mummyCol == heroCol) {
+        if (enemyRow == heroRow && enemyCol == heroCol) {
             isHeroDead = true;
         }
     }
 
-    private boolean performMummyDefaultMovement(int mummyRow, int mummyCol, TileType mummy) {
-        // If the mummy is in the same column as the hero, it moves vertically
-        if (mummyCol == heroCol) {
-            if (mummyRow > heroRow) {
-                moveMummyUp(mummyRow, mummyCol, mummy);
+    private boolean performEnemyDefaultMovement(int enemyRow, int enemyCol, TileType enemy) {
+        // If the enemy is in the same column as the hero, it moves vertically
+        if (enemyCol == heroCol) {
+            if (enemyRow > heroRow) {
+                moveEnemyUp(enemyRow, enemyCol, enemy);
             } else {
-                moveMummyDown(mummyRow, mummyCol, mummy);
+                moveEnemyDown(enemyRow, enemyCol, enemy);
             }
         }
-        // If the mummy is in the same row as the hero, it moves horizontally
-        else if (mummyRow == heroRow) {
-            if (mummyCol > heroCol) {
-                moveMummyLeft(mummyRow, mummyCol, mummy);
+        // If the enemy is in the same row as the hero, it moves horizontally
+        else if (enemyRow == heroRow) {
+            if (enemyCol > heroCol) {
+                moveEnemyLeft(enemyRow, enemyCol, enemy);
             } else {
-                moveMummyRight(mummyRow, mummyCol, mummy);
+                moveEnemyRight(enemyRow, enemyCol, enemy);
             }
         }
-        // If the mummy is in a different row and column from the hero, it moves to the hero's column, therefore it is mummy-specific code
+        // If the enemy is in a different row and column from the hero, it moves to the hero's column, therefore it is enemy-specific code
         else {
             return true;
         }
