@@ -1,2 +1,8 @@
-Falar com a stora sobre o outro bug
-Programar as fights: Mummy vs Mummy is 50/50, Mummy vs Scorpion is 100/0
+	-Falar com a stora sobre o outro bug??
+	Its fixed for now i think nao era bem um bug simplesmente nao temos tudo implementado de modo a permitir o jogo ser possivel...
+
+Falar com a stora sobre o que seria a heurística.
+
+Testar as fights!!
+
+Implementar a Ação "ficar no sítio" do herói.
