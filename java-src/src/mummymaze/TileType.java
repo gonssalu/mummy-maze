@@ -34,9 +34,13 @@ public enum TileType {
         throw new IllegalArgumentException("No tile type was found with that identifier.");
     }
 
-    public static boolean isSafe(TileType tileType) {
+    public static boolean allowsHeroMovement(TileType tileType) {
         return (tileType != TileType.WHITE_MUMMY && tileType != TileType.RED_MUMMY &&
                 tileType != TileType.TRAP && tileType != TileType.SCORPION);
+    }
+
+    public static boolean allowsEnemyMovement(TileType tileType) {
+        return (tileType != TileType.TRAP);
     }
 
     public static boolean canVerticallyPass(TileType tileType) {

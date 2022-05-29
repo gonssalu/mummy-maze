@@ -6,6 +6,8 @@ import agent.State;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static mummymaze.TileType.allowsEnemyMovement;
+
 public class MummyMazeState extends State implements Cloneable {
     private final TileType[][] matrix;
     //Listeners
@@ -81,7 +83,7 @@ public class MummyMazeState extends State implements Cloneable {
 
     public boolean canMoveUp() {
         if (heroRow > 1)
-            return TileType.canVerticallyPass(matrix[heroRow - 1][heroCol]) && TileType.isSafe(matrix[heroRow - 2][heroCol]);
+            return TileType.canVerticallyPass(matrix[heroRow - 1][heroCol]) && TileType.allowsHeroMovement(matrix[heroRow - 2][heroCol]);
         if (heroRow == 1)
             return matrix[heroRow - 1][heroCol] == TileType.EXIT;
         return false;
@@ -89,7 +91,7 @@ public class MummyMazeState extends State implements Cloneable {
 
     public boolean canMoveDown() {
         if (heroRow < getNumRows() - 2)
-            return TileType.canVerticallyPass(matrix[heroRow + 1][heroCol]) && TileType.isSafe(matrix[heroRow + 2][heroCol]);
+            return TileType.canVerticallyPass(matrix[heroRow + 1][heroCol]) && TileType.allowsHeroMovement(matrix[heroRow + 2][heroCol]);
         if (heroRow == 11)
             return matrix[heroRow + 1][heroCol] == TileType.EXIT;
         return false;
@@ -97,7 +99,7 @@ public class MummyMazeState extends State implements Cloneable {
 
     public boolean canMoveLeft() {
         if (heroCol > 1)
-            return TileType.canHorizontallyPass(matrix[heroRow][heroCol - 1]) && TileType.isSafe(matrix[heroRow][heroCol - 2]);
+            return TileType.canHorizontallyPass(matrix[heroRow][heroCol - 1]) && TileType.allowsHeroMovement(matrix[heroRow][heroCol - 2]);
         if (heroCol == 1)
             return matrix[heroRow][heroCol - 1] == TileType.EXIT;
         return false;
@@ -105,7 +107,7 @@ public class MummyMazeState extends State implements Cloneable {
 
     public boolean canMoveRight() {
         if (heroCol < getNumCols() - 2)
-            return TileType.canHorizontallyPass(matrix[heroRow][heroCol + 1]) && TileType.isSafe(matrix[heroRow][heroCol + 2]);
+            return TileType.canHorizontallyPass(matrix[heroRow][heroCol + 1]) && TileType.allowsHeroMovement(matrix[heroRow][heroCol + 2]);
         if (heroCol == 11)
             return matrix[heroRow][heroCol + 1] == TileType.EXIT;
         return false;
@@ -161,57 +163,74 @@ public class MummyMazeState extends State implements Cloneable {
         }
     }
 
+    private boolean canEnemyMoveUp(int enemyRow, int enemyCol){
+        return TileType.canVerticallyPass(matrix[enemyRow - 1][enemyCol]) && allowsEnemyMovement(matrix[enemyRow - 2][enemyCol]);
+    }
+
+    private boolean canEnemyMoveDown(int enemyRow, int enemyCol){
+        return TileType.canVerticallyPass(matrix[enemyRow + 1][enemyCol]) && allowsEnemyMovement(matrix[enemyRow + 2][enemyCol]);
+    }
+
+    private boolean canEnemyMoveLeft(int enemyRow, int enemyCol){
+        return TileType.canHorizontallyPass(matrix[enemyRow][enemyCol - 1]) && allowsEnemyMovement(matrix[enemyRow][enemyCol - 2]);
+    }
+
+    private boolean canEnemyMoveRight(int enemyRow, int enemyCol){
+        return TileType.canHorizontallyPass(matrix[enemyRow][enemyCol + 1]) && allowsEnemyMovement(matrix[enemyRow][enemyCol + 2]);
+    }
+
     private void moveEnemyUp(int enemyRow, int enemyCol, TileType enemy){
-        if (TileType.canVerticallyPass(matrix[enemyRow - 1][enemyCol])) {
+        if (canEnemyMoveUp(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyRow -= 2;
             matrix[enemyRow][enemyCol] = enemy;
-            saveEnemyState(enemyRow, enemyCol, enemy);
+
+            changeEnemyPosition(enemy, enemyRow, enemyCol);
         }
     }
 
     private void moveEnemyDown(int enemyRow, int enemyCol, TileType enemy){
-        if (TileType.canVerticallyPass(matrix[enemyRow + 1][enemyCol])) {
+        if (canEnemyMoveDown(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyRow += 2;
             matrix[enemyRow][enemyCol] = enemy;
 
-            saveEnemyState(enemyRow, enemyCol, enemy);
+            changeEnemyPosition(enemy, enemyRow, enemyCol);
         }
     }
 
     private void moveEnemyLeft(int enemyRow, int enemyCol, TileType enemy){
-        if (TileType.canHorizontallyPass(matrix[enemyRow][enemyCol - 1])) {
+        if (canEnemyMoveLeft(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyCol -= 2;
             matrix[enemyRow][enemyCol] = enemy;
 
-            saveEnemyState(enemyRow, enemyCol, enemy);
+            changeEnemyPosition(enemy, enemyRow, enemyCol);
         }
     }
     private void moveEnemyRight(int enemyRow, int enemyCol, TileType enemy){
-        if (TileType.canHorizontallyPass(matrix[enemyRow][enemyCol + 1])) {
+        if (canEnemyMoveRight(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyCol += 2;
             matrix[enemyRow][enemyCol] = enemy;
 
-            saveEnemyState(enemyRow, enemyCol, enemy);
+            changeEnemyPosition(enemy, enemyRow, enemyCol);
         }
     }
 
-    private void saveEnemyState(int enemyRow, int enemyCol, TileType enemy){
+    private void changeEnemyPosition(TileType enemy, int newEnemyRow, int newEnemyCol){
         switch (enemy) {
             case WHITE_MUMMY -> {
-                whiteMummyRow = enemyRow;
-                whiteMummyCol = enemyCol;
+                whiteMummyRow = newEnemyRow;
+                whiteMummyCol = newEnemyCol;
             }
             case RED_MUMMY -> {
-                redMummyRow = enemyRow;
-                redMummyCol = enemyCol;
+                redMummyRow = newEnemyRow;
+                redMummyCol = newEnemyCol;
             }
             case SCORPION -> {
-                scorpionRow = enemyRow;
-                scorpionCol = enemyCol;
+                scorpionRow = newEnemyRow;
+                scorpionCol = newEnemyCol;
             }
         }
     }
