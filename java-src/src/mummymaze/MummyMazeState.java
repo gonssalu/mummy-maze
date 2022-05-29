@@ -180,7 +180,7 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     /* Enemy movement methods: These always return true if the enemy managed to move, and false if not */
-    private boolean moveEnemyUp(int enemyRow, int enemyCol, TileType enemy){
+    private boolean moveEnemyUp(TileType enemy, int enemyRow, int enemyCol){
         if (canEnemyMoveUp(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyRow -= 2;
@@ -192,7 +192,7 @@ public class MummyMazeState extends State implements Cloneable {
         return false;
     }
 
-    private boolean moveEnemyDown(int enemyRow, int enemyCol, TileType enemy){
+    private boolean moveEnemyDown(TileType enemy, int enemyRow, int enemyCol){
         if (canEnemyMoveDown(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyRow += 2;
@@ -204,7 +204,7 @@ public class MummyMazeState extends State implements Cloneable {
         return false;
     }
 
-    private boolean moveEnemyLeft(int enemyRow, int enemyCol, TileType enemy){
+    private boolean moveEnemyLeft(TileType enemy, int enemyRow, int enemyCol){
         if (canEnemyMoveLeft(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyCol -= 2;
@@ -215,7 +215,7 @@ public class MummyMazeState extends State implements Cloneable {
         }
         return false;
     }
-    private boolean moveEnemyRight(int enemyRow, int enemyCol, TileType enemy){
+    private boolean moveEnemyRight(TileType enemy, int enemyRow, int enemyCol){
         if (canEnemyMoveRight(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyCol += 2;
@@ -265,22 +265,24 @@ public class MummyMazeState extends State implements Cloneable {
             isHeroDead = true;
     }
 
-    private boolean performEnemyDefaultMovement(int enemyRow, int enemyCol, TileType enemy) {
+    private boolean attemptEnemyMovementOnRow(){return true;}
+
+    private boolean performEnemyDefaultMovement(TileType enemy, int enemyRow, int enemyCol) {
         boolean enemyMoved = false;
         // If the enemy is in the same column as the hero, it moves vertically
         if (enemyCol == heroCol) {
             if (enemyRow > heroRow) {
-                enemyMoved=moveEnemyUp(enemyRow, enemyCol, enemy);
+                enemyMoved=moveEnemyUp(enemy, enemyRow, enemyCol);
             } else {
-                enemyMoved=moveEnemyDown(enemyRow, enemyCol, enemy);
+                enemyMoved=moveEnemyDown(enemy, enemyRow, enemyCol);
             }
         }
         // If the enemy is in the same row as the hero, it moves horizontally
         else if (enemyRow == heroRow) {
             if (enemyCol > heroCol) {
-                enemyMoved=moveEnemyLeft(enemyRow, enemyCol, enemy);
+                enemyMoved=moveEnemyLeft(enemy, enemyRow, enemyCol);
             } else {
-                enemyMoved=moveEnemyRight(enemyRow, enemyCol, enemy);
+                enemyMoved=moveEnemyRight(enemy, enemyRow, enemyCol);
             }
         }
         // If the enemy is in a different row and column from the hero, it moves to the hero's column, therefore it is enemy-specific code
@@ -290,22 +292,22 @@ public class MummyMazeState extends State implements Cloneable {
         return enemyMoved;
     }
 
-    private boolean moveEnemy(int enemyRow, int enemyCol, TileType enemy, boolean rowFirst){
-        boolean enemyMoved = performEnemyDefaultMovement(enemyRow, enemyCol, enemy);
+    private boolean moveEnemy(TileType enemy, int enemyRow, int enemyCol, boolean rowFirst){
+        boolean enemyMoved = performEnemyDefaultMovement(enemy, enemyRow, enemyCol);
 
         int tries = 0;
         //It will only enter this while if the enemy hasn't moved yet, so an if(enemyMoved) is not needed.
         while(!enemyMoved && tries<2){
             if(rowFirst) {
                 if (enemyRow > heroRow)
-                    enemyMoved = moveEnemyUp(enemyRow, enemyCol, enemy);
+                    enemyMoved = moveEnemyUp(enemy, enemyRow, enemyCol);
                 else if(enemyRow < heroRow)
-                    enemyMoved = moveEnemyDown(enemyRow, enemyCol, enemy);
+                    enemyMoved = moveEnemyDown(enemy, enemyRow, enemyCol);
             }else{
                 if (enemyCol > heroCol)
-                    enemyMoved = moveEnemyLeft(enemyRow, enemyCol, enemy);
+                    enemyMoved = moveEnemyLeft(enemy, enemyRow, enemyCol);
                 else if(enemyCol < heroCol)
-                    enemyMoved = moveEnemyRight(enemyRow, enemyCol, enemy);
+                    enemyMoved = moveEnemyRight(enemy, enemyRow, enemyCol);
             }
             tries++;
             rowFirst = !rowFirst; //This way we are sure it tried to move in both directions.
@@ -318,15 +320,15 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     private boolean moveWhiteMummy(){
-        return moveEnemy(whiteMummyRow, whiteMummyCol, TileType.WHITE_MUMMY, false);
+        return moveEnemy(TileType.WHITE_MUMMY, whiteMummyRow, whiteMummyCol, false);
     }
 
     private boolean moveRedMummy(){
-        return moveEnemy(redMummyRow, redMummyCol, TileType.RED_MUMMY, true);
+        return moveEnemy(TileType.RED_MUMMY, redMummyRow, redMummyCol, true);
     }
 
     private boolean moveScorpion(){
-        return moveEnemy(scorpionRow, scorpionCol, TileType.SCORPION, false);
+        return moveEnemy(TileType.SCORPION, scorpionRow, scorpionCol, false);
     }
 
     public double computeTilesOutOfPlace() {
