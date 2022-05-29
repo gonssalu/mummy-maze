@@ -265,54 +265,23 @@ public class MummyMazeState extends State implements Cloneable {
             isHeroDead = true;
     }
 
-    private boolean attemptEnemyMovementOnRows(TileType enemy, int enemyRow, int enemyCol){
+    private void moveEnemy(TileType enemy, int enemyRow, int enemyCol, boolean rowFirst){
         boolean enemyMoved = false;
-
-        if (enemyRow > heroRow)
-            enemyMoved = moveEnemyUp(enemy, enemyRow, enemyCol);
-        else if(enemyRow < heroRow)
-            enemyMoved = moveEnemyDown(enemy, enemyRow, enemyCol);
-
-        return enemyMoved;
-    }
-
-    private boolean attemptEnemyMovementOnColumns(TileType enemy, int enemyRow, int enemyCol){
-        boolean enemyMoved = false;
-
-        if (enemyCol > heroCol)
-            enemyMoved = moveEnemyLeft(enemy, enemyRow, enemyCol);
-        else if(enemyCol < heroCol)
-            enemyMoved = moveEnemyRight(enemy, enemyRow, enemyCol);
-
-        return enemyMoved;
-    }
-
-    private boolean performEnemyDefaultMovement(TileType enemy, int enemyRow, int enemyCol) {
-        boolean enemyMoved = false;
-        // If the enemy is in the same column as the hero, it moves vertically
-        if (enemyCol == heroCol)
-            enemyMoved = attemptEnemyMovementOnRows(enemy, enemyRow, enemyCol);
-        // If the enemy is in the same row as the hero, it moves horizontally
-        else if (enemyRow == heroRow)
-            enemyMoved = attemptEnemyMovementOnColumns(enemy, enemyRow, enemyCol);
-
-        // If the enemy is in a different row and column from the hero, it moves to the hero's column, therefore it is enemy-specific code
-        //      which should be treated in a different method.
-
-        // enemyMoved will have the default value false which is correct for the condition above.
-        return enemyMoved;
-    }
-
-    private boolean moveEnemy(TileType enemy, int enemyRow, int enemyCol, boolean rowFirst){
-        boolean enemyMoved = performEnemyDefaultMovement(enemy, enemyRow, enemyCol);
-
         int tries = 0;
         //It will only enter this while if the enemy hasn't moved yet, so an if(enemyMoved) is not needed.
         while(!enemyMoved && tries<2){
             if(rowFirst)
-                enemyMoved = attemptEnemyMovementOnRows(enemy, enemyRow, enemyCol);
+                if (enemyRow > heroRow)
+                    enemyMoved = moveEnemyUp(enemy, enemyRow, enemyCol);
+                else if(enemyRow < heroRow)
+                    enemyMoved = moveEnemyDown(enemy, enemyRow, enemyCol);
+                //If the enemy's row is the same as the hero's no point in moving to another row
             else
-                enemyMoved = attemptEnemyMovementOnColumns(enemy, enemyRow, enemyCol);
+                if (enemyCol > heroCol)
+                    enemyMoved = moveEnemyLeft(enemy, enemyRow, enemyCol);
+                else if(enemyCol < heroCol)
+                    enemyMoved = moveEnemyRight(enemy, enemyRow, enemyCol);
+                //If the enemy's column is the same as the hero's no point in moving to another column
 
             tries++;
             rowFirst = !rowFirst; //This way we are sure it tried to move in both directions.
@@ -321,19 +290,18 @@ public class MummyMazeState extends State implements Cloneable {
         if(enemyMoved)
             checkIfEnemyKilledHero(enemy);
 
-        return enemyMoved;
     }
 
-    private boolean moveWhiteMummy(){
-        return moveEnemy(TileType.WHITE_MUMMY, whiteMummyRow, whiteMummyCol, false);
+    private void moveWhiteMummy(){
+        moveEnemy(TileType.WHITE_MUMMY, whiteMummyRow, whiteMummyCol, false);
     }
 
-    private boolean moveRedMummy(){
-        return moveEnemy(TileType.RED_MUMMY, redMummyRow, redMummyCol, true);
+    private void moveRedMummy(){
+        moveEnemy(TileType.RED_MUMMY, redMummyRow, redMummyCol, true);
     }
 
-    private boolean moveScorpion(){
-        return moveEnemy(TileType.SCORPION, scorpionRow, scorpionCol, false);
+    private void moveScorpion(){
+        moveEnemy(TileType.SCORPION, scorpionRow, scorpionCol, false);
     }
 
     public double computeTilesOutOfPlace() {
