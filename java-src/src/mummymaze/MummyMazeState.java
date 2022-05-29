@@ -5,6 +5,9 @@ import agent.State;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
+
+import static mummymaze.TileType.*;
 
 public class MummyMazeState extends State implements Cloneable {
     private final TileType[][] matrix;
@@ -32,10 +35,10 @@ public class MummyMazeState extends State implements Cloneable {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
                 if(matrix[i][j]!=null){
-                    if(TileType.shouldSaveFloorType(matrix[i][j]))
+                    if(shouldSaveFloorType(matrix[i][j]))
                         originalFloorsMatrix[i][j] = matrix[i][j];
                     else
-                        originalFloorsMatrix[i][j] = TileType.EMPTY;
+                        originalFloorsMatrix[i][j] = EMPTY;
                 }
             }
         }
@@ -50,30 +53,30 @@ public class MummyMazeState extends State implements Cloneable {
             for (int j = 0; j < matrix.length; j++) {
                 this.matrix[i][j] = matrix[i][j];
 
-                if (this.matrix[i][j] == TileType.HERO) {
+                if (this.matrix[i][j] == HERO) {
                     heroRow = i;
                     heroCol = j;
                 }
 
-                if (this.matrix[i][j] == TileType.WHITE_MUMMY) {
+                if (this.matrix[i][j] == WHITE_MUMMY) {
                     whiteMummyRow = i;
                     whiteMummyCol = j;
                     whiteMummyExists = true;
                 }
 
-                if (this.matrix[i][j] == TileType.RED_MUMMY) {
+                if (this.matrix[i][j] == RED_MUMMY) {
                     redMummyRow = i;
                     redMummyCol = j;
                     redMummyExists = true;
                 }
 
-                if (this.matrix[i][j] == TileType.SCORPION) {
+                if (this.matrix[i][j] == SCORPION) {
                     scorpionRow = i;
                     scorpionCol = j;
                     scorpionExists = true;
                 }
 
-                if (this.matrix[i][j] == TileType.EXIT) {
+                if (this.matrix[i][j] == EXIT) {
                     exitRow = i;
                     exitCol = j;
                 }
@@ -102,33 +105,33 @@ public class MummyMazeState extends State implements Cloneable {
 
     public boolean canMoveUp() {
         if (heroRow > 1)
-            return TileType.canVerticallyPass(matrix[heroRow - 1][heroCol]) && TileType.allowsHeroMovement(matrix[heroRow - 2][heroCol]);
+            return canVerticallyPass(matrix[heroRow - 1][heroCol]) && allowsHeroMovement(matrix[heroRow - 2][heroCol]);
         if (heroRow == 1)
-            return matrix[heroRow - 1][heroCol] == TileType.EXIT;
+            return matrix[heroRow - 1][heroCol] == EXIT;
         return false;
     }
 
     public boolean canMoveDown() {
         if (heroRow < getNumRows() - 2)
-            return TileType.canVerticallyPass(matrix[heroRow + 1][heroCol]) && TileType.allowsHeroMovement(matrix[heroRow + 2][heroCol]);
+            return canVerticallyPass(matrix[heroRow + 1][heroCol]) && allowsHeroMovement(matrix[heroRow + 2][heroCol]);
         if (heroRow == matrix.length-2)
-            return matrix[heroRow + 1][heroCol] == TileType.EXIT;
+            return matrix[heroRow + 1][heroCol] == EXIT;
         return false;
     }
 
     public boolean canMoveLeft() {
         if (heroCol > 1)
-            return TileType.canHorizontallyPass(matrix[heroRow][heroCol - 1]) && TileType.allowsHeroMovement(matrix[heroRow][heroCol - 2]);
+            return canHorizontallyPass(matrix[heroRow][heroCol - 1]) && allowsHeroMovement(matrix[heroRow][heroCol - 2]);
         if (heroCol == 1)
-            return matrix[heroRow][heroCol - 1] == TileType.EXIT;
+            return matrix[heroRow][heroCol - 1] == EXIT;
         return false;
     }
 
     public boolean canMoveRight() {
         if (heroCol < getNumCols() - 2)
-            return TileType.canHorizontallyPass(matrix[heroRow][heroCol + 1]) && TileType.allowsHeroMovement(matrix[heroRow][heroCol + 2]);
+            return canHorizontallyPass(matrix[heroRow][heroCol + 1]) && allowsHeroMovement(matrix[heroRow][heroCol + 2]);
         if (heroCol == matrix.length-2)
-            return matrix[heroRow][heroCol + 1] == TileType.EXIT;
+            return matrix[heroRow][heroCol + 1] == EXIT;
         return false;
     }
 
@@ -140,31 +143,31 @@ public class MummyMazeState extends State implements Cloneable {
      */
 
     public void moveUp() {
-        matrix[heroRow][heroCol] = TileType.EMPTY;
+        matrix[heroRow][heroCol] = EMPTY;
         if (heroRow == 1) heroRow--;
         else heroRow -= 2;
-        matrix[heroRow][heroCol] = TileType.HERO;
+        matrix[heroRow][heroCol] = HERO;
     }
 
     public void moveDown() {
-        matrix[heroRow][heroCol] = TileType.EMPTY;
+        matrix[heroRow][heroCol] = EMPTY;
         if (heroRow == matrix.length-2) heroRow++;
         else heroRow += 2;
-        matrix[heroRow][heroCol] = TileType.HERO;
+        matrix[heroRow][heroCol] = HERO;
     }
 
     public void moveRight() {
-        matrix[heroRow][heroCol] = TileType.EMPTY;
+        matrix[heroRow][heroCol] = EMPTY;
         if (heroCol == matrix.length-2) heroCol += 1;
         else heroCol += 2;
-        matrix[heroRow][heroCol] = TileType.HERO;
+        matrix[heroRow][heroCol] = HERO;
     }
 
     public void moveLeft() {
-        matrix[heroRow][heroCol] = TileType.EMPTY;
+        matrix[heroRow][heroCol] = EMPTY;
         if (heroCol == 1) heroCol -= 1;
         else heroCol -= 2;
-        matrix[heroRow][heroCol] = TileType.HERO;
+        matrix[heroRow][heroCol] = HERO;
     }
 
     private void updateEnemies(){
@@ -180,57 +183,31 @@ public class MummyMazeState extends State implements Cloneable {
                 moveRedMummy();
             num++;
         }
+
+        checkForFightsBetweenEnemies();
     }
 
-    /* Enemy movement methods: These always return true if the enemy managed to move, and false if not */
-    private boolean moveEnemyUp(TileType enemy, int enemyRow, int enemyCol){
-        if (TileType.canVerticallyPass(matrix[enemyRow - 1][enemyCol])) {
-            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
-            enemyRow -= 2;
-            matrix[enemyRow][enemyCol] = enemy;
-
-            changeEnemyPosition(enemy, enemyRow, enemyCol);
-            return true;
+    private void checkForFightsBetweenEnemies() {
+        //Because the scorpion is the first to be updated, if his position is where a mummy is at it means they will fight.
+        if(isMummy(matrix[scorpionRow][scorpionCol])){
+            //On a fight with a mummy the scorpion always dies.
+            scorpionExists = false; // RIP
         }
-        return false;
-    }
 
-    private boolean moveEnemyDown(TileType enemy, int enemyRow, int enemyCol){
-        if (TileType.canVerticallyPass(matrix[enemyRow + 1][enemyCol])) {
-            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
-            enemyRow += 2;
-            matrix[enemyRow][enemyCol] = enemy;
-
-            changeEnemyPosition(enemy, enemyRow, enemyCol);
-            return true;
+        //Because the red mummy is the last to be updated if there is a red mummy at the white mummy position it means they will fight.
+        if(matrix[whiteMummyRow][whiteMummyCol] == RED_MUMMY){
+            //On a fight between mummies the mummies fight with a 50/50 chance, one of them dies.
+            boolean whiteMummyWins = (new Random()).nextBoolean();
+            if (whiteMummyWins) {
+                redMummyExists = false; // RIP
+                matrix[whiteMummyRow][whiteMummyCol] = WHITE_MUMMY;
+            }else
+                whiteMummyExists = false; // RIP
         }
-        return false;
-    }
-
-    private boolean moveEnemyLeft(TileType enemy, int enemyRow, int enemyCol){
-        if (TileType.canHorizontallyPass(matrix[enemyRow][enemyCol - 1])) {
-            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
-            enemyCol -= 2;
-            matrix[enemyRow][enemyCol] = enemy;
-
-            changeEnemyPosition(enemy, enemyRow, enemyCol);
-            return true;
-        }
-        return false;
-    }
-    private boolean moveEnemyRight(TileType enemy, int enemyRow, int enemyCol){
-        if (TileType.canHorizontallyPass(matrix[enemyRow][enemyCol + 1])) {
-            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
-            enemyCol += 2;
-            matrix[enemyRow][enemyCol] = enemy;
-
-            changeEnemyPosition(enemy, enemyRow, enemyCol);
-            return true;
-        }
-        return false;
     }
 
     private void changeEnemyPosition(TileType enemy, int newEnemyRow, int newEnemyCol){
+        matrix[newEnemyRow][newEnemyCol] = enemy;
         switch (enemy) {
             case WHITE_MUMMY -> {
                 whiteMummyRow = newEnemyRow;
@@ -245,6 +222,46 @@ public class MummyMazeState extends State implements Cloneable {
                 scorpionCol = newEnemyCol;
             }
         }
+    }
+
+    /* Enemy movement methods: These always return true if the enemy managed to move, and false if not */
+    private boolean moveEnemyUp(TileType enemy, int enemyRow, int enemyCol){
+        if (canVerticallyPass(matrix[enemyRow - 1][enemyCol])) {
+            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
+            enemyRow -= 2;
+            changeEnemyPosition(enemy, enemyRow, enemyCol);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean moveEnemyDown(TileType enemy, int enemyRow, int enemyCol){
+        if (canVerticallyPass(matrix[enemyRow + 1][enemyCol])) {
+            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
+            enemyRow += 2;
+            changeEnemyPosition(enemy, enemyRow, enemyCol);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean moveEnemyLeft(TileType enemy, int enemyRow, int enemyCol){
+        if (canHorizontallyPass(matrix[enemyRow][enemyCol - 1])) {
+            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
+            enemyCol -= 2;
+            changeEnemyPosition(enemy, enemyRow, enemyCol);
+            return true;
+        }
+        return false;
+    }
+    private boolean moveEnemyRight(TileType enemy, int enemyRow, int enemyCol){
+        if (canHorizontallyPass(matrix[enemyRow][enemyCol + 1])) {
+            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
+            enemyCol += 2;
+            changeEnemyPosition(enemy, enemyRow, enemyCol);
+            return true;
+        }
+        return false;
     }
 
     private boolean shouldKillHero(TileType enemy){
@@ -296,22 +313,22 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     private void moveWhiteMummy(){
-        moveEnemy(TileType.WHITE_MUMMY, whiteMummyRow, whiteMummyCol, false);
+        moveEnemy(WHITE_MUMMY, whiteMummyRow, whiteMummyCol, false);
     }
 
     private void moveRedMummy(){
-        moveEnemy(TileType.RED_MUMMY, redMummyRow, redMummyCol, true);
+        moveEnemy(RED_MUMMY, redMummyRow, redMummyCol, true);
     }
 
     private void moveScorpion(){
-        moveEnemy(TileType.SCORPION, scorpionRow, scorpionCol, false);
+        moveEnemy(SCORPION, scorpionRow, scorpionCol, false);
     }
 
     public double computeTilesOutOfPlace() {
         int h = 0;
         for (TileType[] tileRow : matrix)
             for (TileType tile : tileRow)
-                if (TileType.isTileRelevantForHeuristic(tile)) h++;
+                if (isTileRelevantForHeuristic(tile)) h++;
         return h;
     }
 

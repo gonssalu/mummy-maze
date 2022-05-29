@@ -54,4 +54,8 @@ public enum TileType {
     public static boolean shouldSaveFloorType(TileType tileType){
         return (tileType == TileType.KEY || tileType == TileType.TRAP);
     }
+
+    public static boolean isMummy(TileType tileType) {
+        return (tileType == TileType.WHITE_MUMMY || tileType == TileType.RED_MUMMY);
+    }
 }
