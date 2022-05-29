@@ -270,19 +270,19 @@ public class MummyMazeState extends State implements Cloneable {
         int tries = 0;
         //It will only enter this while if the enemy hasn't moved yet, so an if(enemyMoved) is not needed.
         while(!enemyMoved && tries<2){
-            if(rowFirst)
+            if(rowFirst){
                 if (enemyRow > heroRow)
                     enemyMoved = moveEnemyUp(enemy, enemyRow, enemyCol);
                 else if(enemyRow < heroRow)
                     enemyMoved = moveEnemyDown(enemy, enemyRow, enemyCol);
                 //If the enemy's row is the same as the hero's no point in moving to another row
-            else
+            }else {
                 if (enemyCol > heroCol)
                     enemyMoved = moveEnemyLeft(enemy, enemyRow, enemyCol);
-                else if(enemyCol < heroCol)
+                else if (enemyCol < heroCol)
                     enemyMoved = moveEnemyRight(enemy, enemyRow, enemyCol);
                 //If the enemy's column is the same as the hero's no point in moving to another column
-
+            }
             tries++;
             rowFirst = !rowFirst; //This way we are sure it tried to move in both directions.
         }
