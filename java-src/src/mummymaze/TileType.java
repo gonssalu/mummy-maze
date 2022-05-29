@@ -39,10 +39,6 @@ public enum TileType {
                 tileType != TileType.TRAP && tileType != TileType.SCORPION);
     }
 
-    public static boolean allowsEnemyMovement(TileType tileType) {
-        return (tileType != TileType.TRAP);
-    }
-
     public static boolean canVerticallyPass(TileType tileType) {
         return (tileType != TileType.H_WALL && tileType != TileType.H_DOOR_CLOSED);
     }
@@ -53,5 +49,9 @@ public enum TileType {
 
     public static boolean isTileRelevantForHeuristic(TileType tileType) {
         return (tileType == TileType.H_DOOR_CLOSED || tileType == TileType.V_DOOR_CLOSED);
+    }
+
+    public static boolean shouldSaveFloorType(TileType tileType){
+        return (tileType == TileType.KEY || tileType == TileType.TRAP);
     }
 }
