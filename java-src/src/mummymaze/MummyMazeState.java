@@ -179,43 +179,52 @@ public class MummyMazeState extends State implements Cloneable {
         return TileType.canHorizontallyPass(matrix[enemyRow][enemyCol + 1]) && allowsEnemyMovement(matrix[enemyRow][enemyCol + 2]);
     }
 
-    private void moveEnemyUp(int enemyRow, int enemyCol, TileType enemy){
+    /* Enemy movement methods: These always return true if the enemy managed to move, and false if not */
+    private boolean moveEnemyUp(int enemyRow, int enemyCol, TileType enemy){
         if (canEnemyMoveUp(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyRow -= 2;
             matrix[enemyRow][enemyCol] = enemy;
 
             changeEnemyPosition(enemy, enemyRow, enemyCol);
+            return true;
         }
+        return false;
     }
 
-    private void moveEnemyDown(int enemyRow, int enemyCol, TileType enemy){
+    private boolean moveEnemyDown(int enemyRow, int enemyCol, TileType enemy){
         if (canEnemyMoveDown(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyRow += 2;
             matrix[enemyRow][enemyCol] = enemy;
 
             changeEnemyPosition(enemy, enemyRow, enemyCol);
+            return true;
         }
+        return false;
     }
 
-    private void moveEnemyLeft(int enemyRow, int enemyCol, TileType enemy){
+    private boolean moveEnemyLeft(int enemyRow, int enemyCol, TileType enemy){
         if (canEnemyMoveLeft(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyCol -= 2;
             matrix[enemyRow][enemyCol] = enemy;
 
             changeEnemyPosition(enemy, enemyRow, enemyCol);
+            return true;
         }
+        return false;
     }
-    private void moveEnemyRight(int enemyRow, int enemyCol, TileType enemy){
+    private boolean moveEnemyRight(int enemyRow, int enemyCol, TileType enemy){
         if (canEnemyMoveRight(enemyRow, enemyCol)) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyCol += 2;
             matrix[enemyRow][enemyCol] = enemy;
 
             changeEnemyPosition(enemy, enemyRow, enemyCol);
+            return true;
         }
+        return false;
     }
 
     private void changeEnemyPosition(TileType enemy, int newEnemyRow, int newEnemyCol){
@@ -235,42 +244,6 @@ public class MummyMazeState extends State implements Cloneable {
         }
     }
 
-    private void moveEnemy(int enemyRow, int enemyCol, TileType enemy, boolean rowFirst){
-        if(performEnemyDefaultMovement(enemyRow, enemyCol, enemy))
-            if(rowFirst) {
-                if (enemyRow > heroRow)
-                    moveEnemyUp(enemyRow, enemyCol, enemy);
-                else
-                    // Enemy row is lower, because we already know it isn't equal.
-                    moveEnemyDown(enemyRow, enemyCol, enemy);
-            }else{
-                if (enemyCol > heroCol)
-                    moveEnemyLeft(enemyRow, enemyCol, enemy);
-                else
-                    // Enemy column is lower, because we already know it isn't equal.
-                    moveEnemyRight(enemyRow, enemyCol, enemy);
-            }
-
-        checkIfEnemyKilledHero(enemy);
-    }
-
-    private void moveWhiteMummy(){
-        moveEnemy(whiteMummyRow, whiteMummyCol, TileType.WHITE_MUMMY, false);
-    }
-
-    private void moveRedMummy(){
-        moveEnemy(redMummyRow, redMummyCol, TileType.RED_MUMMY, true);
-    }
-
-    private void moveScorpion(){
-        moveEnemy(scorpionRow, scorpionCol, TileType.SCORPION, false);
-    }
-
-    private void checkIfEnemyKilledHero(TileType enemy){
-        if(shouldKillHero(enemy))
-            isHeroDead = true;
-    }
-
     private boolean shouldKillHero(TileType enemy){
         // If the enemy is in the same row and column as the hero, the hero dies
         switch (enemy) {
@@ -287,29 +260,73 @@ public class MummyMazeState extends State implements Cloneable {
         return false;
     }
 
+    private void checkIfEnemyKilledHero(TileType enemy){
+        if(shouldKillHero(enemy))
+            isHeroDead = true;
+    }
+
     private boolean performEnemyDefaultMovement(int enemyRow, int enemyCol, TileType enemy) {
+        boolean enemyMoved = false;
         // If the enemy is in the same column as the hero, it moves vertically
         if (enemyCol == heroCol) {
             if (enemyRow > heroRow) {
-                moveEnemyUp(enemyRow, enemyCol, enemy);
+                enemyMoved=moveEnemyUp(enemyRow, enemyCol, enemy);
             } else {
-                moveEnemyDown(enemyRow, enemyCol, enemy);
+                enemyMoved=moveEnemyDown(enemyRow, enemyCol, enemy);
             }
         }
         // If the enemy is in the same row as the hero, it moves horizontally
         else if (enemyRow == heroRow) {
             if (enemyCol > heroCol) {
-                moveEnemyLeft(enemyRow, enemyCol, enemy);
+                enemyMoved=moveEnemyLeft(enemyRow, enemyCol, enemy);
             } else {
-                moveEnemyRight(enemyRow, enemyCol, enemy);
+                enemyMoved=moveEnemyRight(enemyRow, enemyCol, enemy);
             }
         }
         // If the enemy is in a different row and column from the hero, it moves to the hero's column, therefore it is enemy-specific code
-        else {
-            return true;
+        //      which should be treated in a different method.
+
+        // enemyMoved will have the default value false which is correct for the condition above.
+        return enemyMoved;
+    }
+
+    private boolean moveEnemy(int enemyRow, int enemyCol, TileType enemy, boolean rowFirst){
+        boolean enemyMoved = performEnemyDefaultMovement(enemyRow, enemyCol, enemy);
+
+        int tries = 0;
+        //It will only enter this while if the enemy hasn't moved yet, so an if(enemyMoved) is not needed.
+        while(!enemyMoved && tries<2){
+            if(rowFirst) {
+                if (enemyRow > heroRow)
+                    enemyMoved = moveEnemyUp(enemyRow, enemyCol, enemy);
+                else if(enemyRow < heroRow)
+                    enemyMoved = moveEnemyDown(enemyRow, enemyCol, enemy);
+            }else{
+                if (enemyCol > heroCol)
+                    enemyMoved = moveEnemyLeft(enemyRow, enemyCol, enemy);
+                else if(enemyCol < heroCol)
+                    enemyMoved = moveEnemyRight(enemyRow, enemyCol, enemy);
+            }
+            tries++;
+            rowFirst = !rowFirst; //This way we are sure it tried to move in both directions.
         }
 
-        return false;
+        if(enemyMoved)
+            checkIfEnemyKilledHero(enemy);
+
+        return enemyMoved;
+    }
+
+    private boolean moveWhiteMummy(){
+        return moveEnemy(whiteMummyRow, whiteMummyCol, TileType.WHITE_MUMMY, false);
+    }
+
+    private boolean moveRedMummy(){
+        return moveEnemy(redMummyRow, redMummyCol, TileType.RED_MUMMY, true);
+    }
+
+    private boolean moveScorpion(){
+        return moveEnemy(scorpionRow, scorpionCol, TileType.SCORPION, false);
     }
 
     public double computeTilesOutOfPlace() {
