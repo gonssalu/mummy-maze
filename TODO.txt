@@ -1,7 +1,3 @@
-Ver a necessidade de chamar o fireMazeChanged durante a resolução do problema, se não for necessário fazer dois métodos em que apenas um o chama.
-
-Clean up debug shit.
-
 int[] getEnemyPosition()
 
 Falar com a stora sobre o outro bug

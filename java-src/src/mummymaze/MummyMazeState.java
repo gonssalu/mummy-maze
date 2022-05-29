@@ -10,7 +10,6 @@ public class MummyMazeState extends State implements Cloneable {
     private final TileType[][] matrix;
     //Listeners
     private final transient ArrayList<MummyMazeListener> listeners = new ArrayList<>(3);
-    public String stateNum = "N/A";
     private int heroRow;
     private int heroCol;
     private boolean whiteMummyExists = false;
@@ -25,11 +24,8 @@ public class MummyMazeState extends State implements Cloneable {
     private int exitRow;
     private int exitCol;
     private boolean isHeroDead;
-    //private boolean thereWasMovement;
 
     public MummyMazeState(TileType[][] matrix) {
-        stateNum = MummyMazeProblem.A + "-";
-        MummyMazeProblem.A++;
         this.matrix = new TileType[matrix.length][matrix.length];
         isHeroDead = false;
 
@@ -40,7 +36,6 @@ public class MummyMazeState extends State implements Cloneable {
                 if (this.matrix[i][j] == TileType.HERO) {
                     heroRow = i;
                     heroCol = j;
-                    //System.out.println("\n aa "+heroRow + " " + heroCol + "\n");
                 }
 
                 if (this.matrix[i][j] == TileType.WHITE_MUMMY) {
@@ -67,20 +62,20 @@ public class MummyMazeState extends State implements Cloneable {
                 }
             }
         }
+    }
 
-        //System.out.printlnif(matrix[0][0]!=null)
-            //System.out.println(toString());
+    //Execute the action without notifying a maze change.
+    public void executeActionQuietly(Action action){
+        action.execute(this);
+
+        if(!isAtGoal()){
+            updateEnemies();
+        }
     }
 
     @Override
     public void executeAction(Action action) {
-        //System.out.println(isAtGoal() + " / " + exitRow + " " + exitCol + " / " + heroRow + " " + heroCol + " / " + action.toString());
-        action.execute(this);
-        //System.out.println(isAtGoal() + " / " + exitRow + " " + exitCol + " / " + heroRow + " " + heroCol);
-        if(!isAtGoal()){ //is this needed??
-            updateEnemies();
-        }
-
+        executeActionQuietly(action);
         fireMazeChanged();
     }
 
@@ -170,7 +165,6 @@ public class MummyMazeState extends State implements Cloneable {
         if (TileType.canVerticallyPass(matrix[enemyRow - 1][enemyCol])) {
             matrix[enemyRow][enemyCol] = TileType.EMPTY;
             enemyRow -= 2;
-            //System.out.println("cc: " + matrix[enemyRow][enemyCol].getIdentifier());
             matrix[enemyRow][enemyCol] = enemy;
             saveEnemyState(enemyRow, enemyCol, enemy);
         }
@@ -259,7 +253,6 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     private boolean shouldKillHero(TileType enemy){
-        //System.out.println(toString());
         // If the enemy is in the same row and column as the hero, the hero dies
         switch (enemy) {
             case WHITE_MUMMY -> {
