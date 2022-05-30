@@ -121,7 +121,8 @@ public class MummyMazeState extends State implements Cloneable {
     public void executeAction(Action action) {
         action.execute(this);
 
-        checkForDoorToggle();
+        if(!(action instanceof ActionStay)) //Se ele estiver parado em cima da chave não ficar a dar toggle
+            checkForDoorToggle();
 
         if(!isAtGoal()){
             updateEnemies();
@@ -170,28 +171,28 @@ public class MummyMazeState extends State implements Cloneable {
      */
 
     public void moveUp() {
-        matrix[heroRow][heroCol] = EMPTY;
+        matrix[heroRow][heroCol] = originalFloorsMatrix[heroRow][heroCol];
         if (heroRow == 1) heroRow--;
         else heroRow -= 2;
         matrix[heroRow][heroCol] = HERO;
     }
 
     public void moveDown() {
-        matrix[heroRow][heroCol] = EMPTY;
+        matrix[heroRow][heroCol] = originalFloorsMatrix[heroRow][heroCol];
         if (heroRow == matrix.length-2) heroRow++;
         else heroRow += 2;
         matrix[heroRow][heroCol] = HERO;
     }
 
     public void moveRight() {
-        matrix[heroRow][heroCol] = EMPTY;
+        matrix[heroRow][heroCol] = originalFloorsMatrix[heroRow][heroCol];
         if (heroCol == matrix.length-2) heroCol += 1;
         else heroCol += 2;
         matrix[heroRow][heroCol] = HERO;
     }
 
     public void moveLeft() {
-        matrix[heroRow][heroCol] = EMPTY;
+        matrix[heroRow][heroCol] = originalFloorsMatrix[heroRow][heroCol];
         if (heroCol == 1) heroCol -= 1;
         else heroCol -= 2;
         matrix[heroRow][heroCol] = HERO;
