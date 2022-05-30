@@ -182,9 +182,10 @@ public class MummyMazeState extends State implements Cloneable {
             if(redMummyExists)
                 moveRedMummy();
             num++;
+
+            checkForFightsBetweenEnemies();
         }
 
-        checkForFightsBetweenEnemies();
     }
 
     private void checkForFightsBetweenEnemies() {

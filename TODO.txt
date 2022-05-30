@@ -3,6 +3,8 @@
 
 Falar com a stora sobre o que seria a heurística.
 
+Perguntar à stora se temos que atualizar o tabuleiro a cada turno ou a cada movimento.
+
 Testar as fights!!
 
 Implementar a Ação "ficar no sítio" do herói.
