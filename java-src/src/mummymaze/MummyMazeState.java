@@ -28,6 +28,10 @@ public class MummyMazeState extends State implements Cloneable {
     private int scorpionCol;
     private int exitRow;
     private int exitCol;
+    private int keyRow;
+    private int keyCol;
+    private int doorRow;
+    private int doorCol;
     private boolean isHeroDead;
 
     public MummyMazeState(TileType[][] matrix){
@@ -52,34 +56,40 @@ public class MummyMazeState extends State implements Cloneable {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
                 this.matrix[i][j] = matrix[i][j];
-
-                if (this.matrix[i][j] == HERO) {
-                    heroRow = i;
-                    heroCol = j;
-                }
-
-                if (this.matrix[i][j] == WHITE_MUMMY) {
-                    whiteMummyRow = i;
-                    whiteMummyCol = j;
-                    whiteMummyExists = true;
-                }
-
-                if (this.matrix[i][j] == RED_MUMMY) {
-                    redMummyRow = i;
-                    redMummyCol = j;
-                    redMummyExists = true;
-                }
-
-                if (this.matrix[i][j] == SCORPION) {
-                    scorpionRow = i;
-                    scorpionCol = j;
-                    scorpionExists = true;
-                }
-
-                if (this.matrix[i][j] == EXIT) {
-                    exitRow = i;
-                    exitCol = j;
-                }
+                if(this.matrix[i][j]!=null)
+                    switch(this.matrix[i][j]){
+                        case HERO -> {
+                            heroRow = i;
+                            heroCol = j;
+                        }
+                        case WHITE_MUMMY -> {
+                            whiteMummyRow = i;
+                            whiteMummyCol = j;
+                            whiteMummyExists = true;
+                        }
+                        case RED_MUMMY -> {
+                            redMummyRow = i;
+                            redMummyCol = j;
+                            redMummyExists = true;
+                        }
+                        case SCORPION -> {
+                            scorpionRow = i;
+                            scorpionCol = j;
+                            scorpionExists = true;
+                        }
+                        case EXIT -> {
+                            exitRow = i;
+                            exitCol = j;
+                        }
+                        case KEY -> {
+                            keyRow = i;
+                            keyCol = j;
+                        }
+                        case H_DOOR_CLOSED, H_DOOR_OPEN, V_DOOR_CLOSED, V_DOOR_OPEN -> {
+                            doorRow = i;
+                            doorCol = j;
+                        }
+                    }
             }
         }
 
@@ -88,9 +98,30 @@ public class MummyMazeState extends State implements Cloneable {
                 this.originalFloorsMatrix[i] = Arrays.copyOf(originalFloorsMatrix[i], originalFloorsMatrix[i].length);
     }
 
+    public void checkForDoorToggle(){
+        if(matrix[heroRow][heroCol] == matrix[keyRow][keyCol]){
+            switch(matrix[doorRow][doorCol]){
+                case V_DOOR_CLOSED -> {
+                    matrix[doorRow][doorCol] = V_DOOR_OPEN;
+                }
+                case V_DOOR_OPEN -> {
+                    matrix[doorRow][doorCol] = V_DOOR_CLOSED;
+                }
+                case H_DOOR_CLOSED -> {
+                    matrix[doorRow][doorCol] = H_DOOR_OPEN;
+                }
+                case H_DOOR_OPEN -> {
+                    matrix[doorRow][doorCol] = H_DOOR_CLOSED;
+                }
+            }
+        }
+    }
+
     @Override
     public void executeAction(Action action) {
         action.execute(this);
+
+        checkForDoorToggle();
 
         if(!isAtGoal()){
             updateEnemies();

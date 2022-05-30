@@ -8,3 +8,5 @@ Perguntar à stora se temos que atualizar o tabuleiro a cada turno ou a cada mov
 Como informamos o shwo solution qual das mumias ressabiadas é que ganhou?
 
 Testar a Ação "ficar no sítio" do herói.
+
+Pode haver mais que uma porta?
