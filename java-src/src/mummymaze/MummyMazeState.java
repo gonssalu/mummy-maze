@@ -88,18 +88,14 @@ public class MummyMazeState extends State implements Cloneable {
                 this.originalFloorsMatrix[i] = Arrays.copyOf(originalFloorsMatrix[i], originalFloorsMatrix[i].length);
     }
 
-    //Execute the action without notifying a maze change.
-    public void executeActionQuietly(Action action){
+    @Override
+    public void executeAction(Action action) {
         action.execute(this);
 
         if(!isAtGoal()){
             updateEnemies();
         }
-    }
 
-    @Override
-    public void executeAction(Action action) {
-        executeActionQuietly(action);
         fireMazeChanged();
     }
 
@@ -410,22 +406,6 @@ public class MummyMazeState extends State implements Cloneable {
         return matrix;
     }
 
-    public int getHeroRow() {
-        return heroRow;
-    }
-
-    public int getHeroCol() {
-        return heroCol;
-    }
-
-    public int getExitRow() {
-        return exitRow;
-    }
-
-    public int getExitCol() {
-        return exitCol;
-    }
-
     public boolean isHeroDead() {
         return isHeroDead;
     }
@@ -434,6 +414,5 @@ public class MummyMazeState extends State implements Cloneable {
     public boolean isAtGoal(){
         return (heroCol==exitCol && heroRow==exitRow);
     }
-
 
 }
