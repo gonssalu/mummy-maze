@@ -3,8 +3,8 @@
 
 Falar com a stora sobre o que seria a heurística.
 
-Perguntar à stora se temos que atualizar o tabuleiro a cada turno ou a cada movimento.
+Perguntar à stora se temos que atualizar o tabuleiro a cada turno ou a cada movimento. Ha problema de parecer q as mumias dao tp e depois desaparecem?
 
-Testar as fights!!
+Como informamos o shwo solution qual das mumias ressabiadas é que ganhou?
 
 Implementar a Ação "ficar no sítio" do herói.

@@ -183,27 +183,33 @@ public class MummyMazeState extends State implements Cloneable {
                 moveRedMummy();
             num++;
 
-            checkForFightsBetweenEnemies();
         }
 
     }
 
     private void checkForFightsBetweenEnemies() {
         //Because the scorpion is the first to be updated, if his position is where a mummy is at it means they will fight.
-        if(isMummy(matrix[scorpionRow][scorpionCol])){
+        if(matrix[scorpionRow][scorpionCol] == WHITE_MUMMY || matrix[whiteMummyRow][whiteMummyCol] == SCORPION){
             //On a fight with a mummy the scorpion always dies.
             scorpionExists = false; // RIP
+            matrix[whiteMummyRow][whiteMummyCol] = WHITE_MUMMY;
+        }else if(matrix[scorpionRow][scorpionCol] == RED_MUMMY || matrix[redMummyRow][redMummyCol] == SCORPION){
+            //On a fight with a mummy the scorpion always dies.
+            scorpionExists = false; // RIP
+            matrix[redMummyRow][redMummyCol] = RED_MUMMY;
         }
 
-        //Because the red mummy is the last to be updated if there is a red mummy at the white mummy position it means they will fight.
-        if(matrix[whiteMummyRow][whiteMummyCol] == RED_MUMMY){
+        //Id there is a red mummy at the white mummy position it means they will fight (and vice-versa).
+        if(matrix[whiteMummyRow][whiteMummyCol] == RED_MUMMY || matrix[redMummyRow][redMummyCol] == WHITE_MUMMY){
             //On a fight between mummies the mummies fight with a 50/50 chance, one of them dies.
             boolean whiteMummyWins = (new Random()).nextBoolean();
             if (whiteMummyWins) {
                 redMummyExists = false; // RIP
                 matrix[whiteMummyRow][whiteMummyCol] = WHITE_MUMMY;
-            }else
+            }else{
                 whiteMummyExists = false; // RIP
+                matrix[redMummyRow][redMummyCol] = RED_MUMMY;
+            }
         }
     }
 
@@ -308,8 +314,10 @@ public class MummyMazeState extends State implements Cloneable {
             rowFirst = !rowFirst; //This way we are sure it tried to move in both directions.
         }
 
-        if(enemyMoved)
+        if(enemyMoved){
             checkIfEnemyKilledHero(enemy);
+            checkForFightsBetweenEnemies();
+        }
 
     }
 
