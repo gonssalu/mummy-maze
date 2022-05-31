@@ -1,12 +1,5 @@
-	-Falar com a stora sobre o outro bug??
-	Its fixed for now i think nao era bem um bug simplesmente nao temos tudo implementado de modo a permitir o jogo ser possivel...
-
-Falar com a stora sobre o que seria a heurística.
+Falar com a stora sobre o que seria a heurística, ou outras heuristicas-
 
 Perguntar à stora se temos que atualizar o tabuleiro a cada turno ou a cada movimento. Ha problema de parecer q as mumias dao tp e depois desaparecem?
 
 Como informamos o shwo solution qual das mumias ressabiadas é que ganhou?
-
-Testar a Ação "ficar no sítio" do herói.
-
-Pode haver mais que uma porta?
