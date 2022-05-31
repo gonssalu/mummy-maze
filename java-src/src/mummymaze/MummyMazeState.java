@@ -361,16 +361,38 @@ public class MummyMazeState extends State implements Cloneable {
         moveEnemy(SCORPION, scorpionRow, scorpionCol, false);
     }
 
-    public double computeTilesOutOfPlace() {
-        int h = 0;
-        for (TileType[] tileRow : matrix)
-            for (TileType tile : tileRow)
-                if (isTileRelevantForHeuristic(tile)) h++;
-        return h;
+    private double calcDistToHero(int row, int col){
+        return Math.abs(heroRow - row) + Math.abs(heroCol - col);
     }
 
-    public double computeTileDistances() {
-        return Math.abs(heroRow - exitRow) + Math.abs(heroCol - exitCol);
+    public double computeDistanceClosestEnemy() {
+        final double maxPossibleDistance = ((matrix.length-2)-1)*2;
+        double h = maxPossibleDistance;
+        double aux = maxPossibleDistance;
+
+        if(whiteMummyExists)
+            aux = calcDistToHero(whiteMummyRow, whiteMummyCol);
+
+        if(aux<h)
+            h = aux;
+
+        if(redMummyExists)
+            aux = calcDistToHero(redMummyRow, redMummyCol);
+
+        if(aux<h)
+            h = aux;
+
+        if(scorpionExists)
+            aux = calcDistToHero(scorpionRow, scorpionCol);
+
+        if(aux<h)
+            h = aux;
+
+        return maxPossibleDistance-h; //So that the lowest value, the better.
+    }
+
+    public double computeExitDistance() {
+        return calcDistToHero(exitRow, exitCol);
     }
 
     public int getNumRows() {
@@ -379,16 +401,6 @@ public class MummyMazeState extends State implements Cloneable {
 
     public int getNumCols() {
         return matrix[0].length;
-    }
-
-    public TileType getTileValue(int row, int col) {
-        if (!isValidPosition(row, col))
-            throw new IndexOutOfBoundsException("Invalid position!");
-        return matrix[row][col];
-    }
-
-    public boolean isValidPosition(int row, int column) {
-        return row >= 0 && row < matrix.length && column >= 0 && column < matrix[0].length;
     }
 
     @Override
