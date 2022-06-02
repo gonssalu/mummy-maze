@@ -370,6 +370,8 @@ public class MummyMazeState extends State implements Cloneable {
         double h = maxPossibleDistance;
         double aux = maxPossibleDistance;
 
+        //verificar morte e objetivo
+
         if(whiteMummyExists)
             aux = calcDistToHero(whiteMummyRow, whiteMummyCol);
 
@@ -392,6 +394,7 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public double computeExitDistance() {
+        if(isHeroDead) return Double.MAX_VALUE;
         return calcDistToHero(exitRow, exitCol);
     }
 
