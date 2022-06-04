@@ -88,22 +88,36 @@ public class MummyMazeState extends State implements Cloneable {
 
     public void setTile(Point pos, TileType tile) { matrix[pos.x][pos.y] = tile; }
 
-    public void checkForDoorToggle(){
-        if(hero.equals(key)){
-            switch(getTile(door)){
-                case V_DOOR_CLOSED -> {
-                    setTile(door,V_DOOR_OPEN);
-                }
-                case V_DOOR_OPEN -> {
-                    setTile(door,V_DOOR_CLOSED);
-                }
-                case H_DOOR_CLOSED -> {
-                    setTile(door,H_DOOR_OPEN);
-                }
-                case H_DOOR_OPEN -> {
-                    setTile(door,H_DOOR_CLOSED);
-                }
+    public void toggleDoor(){
+        switch(getTile(door)){
+            case V_DOOR_CLOSED -> {
+                setTile(door,V_DOOR_OPEN);
             }
+            case V_DOOR_OPEN -> {
+                setTile(door,V_DOOR_CLOSED);
+            }
+            case H_DOOR_CLOSED -> {
+                setTile(door,H_DOOR_OPEN);
+            }
+            case H_DOOR_OPEN -> {
+                setTile(door,H_DOOR_CLOSED);
+            }
+        }
+    }
+
+    public void checkForDoorToggle(Action action){
+        //Check if the hero stepped on the key
+        //Only toggle the door if he just arrived at the key's tile, if he's staying there don't keep toggling it.
+        if(hero.equals(key) && !(action instanceof ActionStay)){
+            toggleDoor();
+        }else{
+            for(TileType type : enemies.keySet())
+                for(Point enemyPos : enemies.get(type))
+                    //Check if any enemy is stepping on the key
+                    if(enemyPos.equals(key)){
+                        toggleDoor();
+                        return;
+                    }
         }
     }
 
@@ -111,12 +125,11 @@ public class MummyMazeState extends State implements Cloneable {
     public void executeAction(Action action) {
         action.execute(this);
 
-        if(!(action instanceof ActionStay)) //Se ele estiver parado em cima da chave não ficar a dar toggle
-            checkForDoorToggle();
-
         if(!isAtGoal()){
             updateEnemies();
         }
+
+        checkForDoorToggle(action);
 
         fireMazeChanged();
     }
