@@ -1,19 +1,5 @@
-se a coluna do heroi for maior que a coluna da mumia significa que está à direita e entra num dos ifs
+Excel stuff
+Buttons extra
 
-múmia branca: (executar este código 2 vezes de cada vez, pois múmia mexe-se 2 vezes de cada vez)
-verificar se está na mesma coluna do herói
-verificar se está à esquerda, coluna-1 da múmia está vazia. se sim, mover para a coluna-2. senão, linha do herói em cima? verificar se a linha-1 está vazia, se sim, linha do herói abaixo? se sim e se linha+1 vazia, mover para baixo. se não, e linha-1 vazia, mover para cima
-verificar se está à direita, coluna+1 da múmia está vazia. verificar se linha-1 está vazia. se sim, mover para cima, senão, não faz nada
-
-múmia vermelha:
-mesma forma mas verifica primeiro as linhas do que as colunas
-
-pode não ser possível mover para a direita ou esquerda (se tiver uma parede)
-se a coluna-1 da múmia está vazia
-quando a múmia não se consegue mexer, move-se para a mesma linha
-
-basta comparar as colunas e verificar se uma é menor que a outra
-
-estado tem de ter forma de verificar se o herói morreu
-
-antes de mover a mumia, verificar se o heroi está na saída (dentro do move(), dar um return)
+Some changes for QOL later on:
+  - meter aqueles 2 fors (q sao sempre iguais) linkados somehow numa Promise? Set? Iterator?
