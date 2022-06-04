@@ -1,6 +1,9 @@
 package mummymaze;
 
 import agent.Agent;
+import mummymaze.heuristics.HeuristicEnemyDistance;
+import mummymaze.heuristics.HeuristicExitDistance;
+import mummymaze.util.TileType;
 
 import java.io.File;
 import java.io.IOException;

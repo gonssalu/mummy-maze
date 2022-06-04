@@ -1,6 +1,7 @@
-package mummymaze;
+package mummymaze.actions;
 
 import agent.Action;
+import mummymaze.MummyMazeState;
 
 public class ActionLeft extends Action<MummyMazeState> {
 

@@ -2,6 +2,8 @@ package mummymaze;
 
 import agent.Action;
 import agent.Problem;
+import mummymaze.actions.*;
+import mummymaze.util.TileType;
 
 import java.util.LinkedList;
 import java.util.List;

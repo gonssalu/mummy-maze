@@ -3,7 +3,7 @@ package gui;
 import mummymaze.MummyMazeEvent;
 import mummymaze.MummyMazeListener;
 import mummymaze.MummyMazeState;
-import mummymaze.TileType;
+import mummymaze.util.TileType;
 
 import javax.swing.*;
 import java.awt.*;

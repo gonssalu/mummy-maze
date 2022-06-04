@@ -5,7 +5,7 @@ import agent.Solution;
 import mummymaze.MummyMazeAgent;
 import mummymaze.MummyMazeProblem;
 import mummymaze.MummyMazeState;
-import mummymaze.TileType;
+import mummymaze.util.TileType;
 import searchmethods.BeamSearch;
 import searchmethods.DepthLimitedSearch;
 import searchmethods.SearchMethod;

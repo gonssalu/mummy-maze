@@ -2,12 +2,14 @@ package mummymaze;
 
 import agent.Action;
 import agent.State;
+import mummymaze.actions.ActionStay;
+import mummymaze.util.TileType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import static mummymaze.TileType.*;
+import static mummymaze.util.TileType.*;
 
 public class MummyMazeState extends State implements Cloneable {
     private final TileType[][] matrix;

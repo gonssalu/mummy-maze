@@ -1,4 +1,4 @@
-package mummymaze;
+package mummymaze.util;
 
 public enum TileType {
     HERO('H'),
