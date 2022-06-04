@@ -5,9 +5,8 @@ import agent.State;
 import mummymaze.actions.ActionStay;
 import mummymaze.util.TileType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
+import java.awt.*;
+import java.util.*;
 
 import static mummymaze.util.TileType.*;
 
@@ -17,23 +16,14 @@ public class MummyMazeState extends State implements Cloneable {
     private final TileType[][] originalFloorsMatrix;
     //Listeners
     private final transient ArrayList<MummyMazeListener> listeners = new ArrayList<>(3);
-    private int heroRow;
-    private int heroCol;
-    private boolean whiteMummyExists = false;
-    private int whiteMummyRow;
-    private int whiteMummyCol;
-    private boolean redMummyExists = false;
-    private int redMummyRow;
-    private int redMummyCol;
-    private boolean scorpionExists = false;
-    private int scorpionRow;
-    private int scorpionCol;
-    private int exitRow;
-    private int exitCol;
-    private int keyRow;
-    private int keyCol;
-    private int doorRow;
-    private int doorCol;
+
+    private HashMap<TileType, LinkedList<Point>> enemies;
+
+    private Point hero;
+    private Point exit;
+    private Point key;
+    private Point door;
+
     private boolean isHeroDead;
 
     public MummyMazeState(TileType[][] matrix){
@@ -53,43 +43,35 @@ public class MummyMazeState extends State implements Cloneable {
     public MummyMazeState(TileType[][] matrix, TileType[][] originalFloorsMatrix) {
         this.matrix = new TileType[matrix.length][matrix.length];
         this.originalFloorsMatrix = new TileType[matrix.length][matrix.length];
+
+        this.enemies = new HashMap<>(3);
+        this.enemies.put(SCORPION, new LinkedList<>());
+        this.enemies.put(RED_MUMMY, new LinkedList<>());
+        this.enemies.put(WHITE_MUMMY, new LinkedList<>());
+
         isHeroDead = false;
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
                 this.matrix[i][j] = matrix[i][j];
-                if(this.matrix[i][j]!=null)
-                    switch(this.matrix[i][j]){
+                TileType tile = this.matrix[i][j];
+                Point pt = new Point(i,j);
+                if(tile!=null)
+                    switch(tile){
                         case HERO -> {
-                            heroRow = i;
-                            heroCol = j;
+                            hero = pt;
                         }
-                        case WHITE_MUMMY -> {
-                            whiteMummyRow = i;
-                            whiteMummyCol = j;
-                            whiteMummyExists = true;
-                        }
-                        case RED_MUMMY -> {
-                            redMummyRow = i;
-                            redMummyCol = j;
-                            redMummyExists = true;
-                        }
-                        case SCORPION -> {
-                            scorpionRow = i;
-                            scorpionCol = j;
-                            scorpionExists = true;
+                        case WHITE_MUMMY,RED_MUMMY,SCORPION -> {
+                            this.enemies.get(tile).add(pt);
                         }
                         case EXIT -> {
-                            exitRow = i;
-                            exitCol = j;
+                            exit = pt;
                         }
                         case KEY -> {
-                            keyRow = i;
-                            keyCol = j;
+                            key = pt;
                         }
                         case H_DOOR_CLOSED, H_DOOR_OPEN, V_DOOR_CLOSED, V_DOOR_OPEN -> {
-                            doorRow = i;
-                            doorCol = j;
+                            door = pt;
                         }
                     }
             }
@@ -100,20 +82,26 @@ public class MummyMazeState extends State implements Cloneable {
                 this.originalFloorsMatrix[i] = Arrays.copyOf(originalFloorsMatrix[i], originalFloorsMatrix[i].length);
     }
 
+    public void revertToOriginalTile(Point pos){ matrix[pos.x][pos.y] = originalFloorsMatrix[pos.x][pos.y]; }
+
+    public TileType getTile(Point pos) { return matrix[pos.x][pos.y]; }
+
+    public void setTile(Point pos, TileType tile) { matrix[pos.x][pos.y] = tile; }
+
     public void checkForDoorToggle(){
-        if(matrix[heroRow][heroCol] == matrix[keyRow][keyCol]){
-            switch(matrix[doorRow][doorCol]){
+        if(hero.equals(key)){
+            switch(getTile(door)){
                 case V_DOOR_CLOSED -> {
-                    matrix[doorRow][doorCol] = V_DOOR_OPEN;
+                    setTile(door,V_DOOR_OPEN);
                 }
                 case V_DOOR_OPEN -> {
-                    matrix[doorRow][doorCol] = V_DOOR_CLOSED;
+                    setTile(door,V_DOOR_CLOSED);
                 }
                 case H_DOOR_CLOSED -> {
-                    matrix[doorRow][doorCol] = H_DOOR_OPEN;
+                    setTile(door,H_DOOR_OPEN);
                 }
                 case H_DOOR_OPEN -> {
-                    matrix[doorRow][doorCol] = H_DOOR_CLOSED;
+                    setTile(door,H_DOOR_CLOSED);
                 }
             }
         }
@@ -134,34 +122,34 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     public boolean canMoveUp() {
-        if (heroRow > 1)
-            return canVerticallyPass(matrix[heroRow - 1][heroCol]) && allowsHeroMovement(matrix[heroRow - 2][heroCol]);
-        if (heroRow == 1)
-            return matrix[heroRow - 1][heroCol] == EXIT;
+        if (hero.x > 1)
+            return canVerticallyPass(matrix[hero.x - 1][hero.y]) && allowsHeroMovement(matrix[hero.x - 2][hero.y]);
+        if (hero.x == 1)
+            return matrix[hero.x - 1][hero.y] == EXIT;
         return false;
     }
 
     public boolean canMoveDown() {
-        if (heroRow < getNumRows() - 2)
-            return canVerticallyPass(matrix[heroRow + 1][heroCol]) && allowsHeroMovement(matrix[heroRow + 2][heroCol]);
-        if (heroRow == matrix.length-2)
-            return matrix[heroRow + 1][heroCol] == EXIT;
+        if (hero.x < getNumRows() - 2)
+            return canVerticallyPass(matrix[hero.x + 1][hero.y]) && allowsHeroMovement(matrix[hero.x + 2][hero.y]);
+        if (hero.x == matrix.length-2)
+            return matrix[hero.x + 1][hero.y] == EXIT;
         return false;
     }
 
     public boolean canMoveLeft() {
-        if (heroCol > 1)
-            return canHorizontallyPass(matrix[heroRow][heroCol - 1]) && allowsHeroMovement(matrix[heroRow][heroCol - 2]);
-        if (heroCol == 1)
-            return matrix[heroRow][heroCol - 1] == EXIT;
+        if (hero.y > 1)
+            return canHorizontallyPass(matrix[hero.x][hero.y - 1]) && allowsHeroMovement(matrix[hero.x][hero.y - 2]);
+        if (hero.y == 1)
+            return matrix[hero.x][hero.y - 1] == EXIT;
         return false;
     }
 
     public boolean canMoveRight() {
-        if (heroCol < getNumCols() - 2)
-            return canHorizontallyPass(matrix[heroRow][heroCol + 1]) && allowsHeroMovement(matrix[heroRow][heroCol + 2]);
-        if (heroCol == matrix.length-2)
-            return matrix[heroRow][heroCol + 1] == EXIT;
+        if (hero.y < getNumCols() - 2)
+            return canHorizontallyPass(matrix[hero.x][hero.y + 1]) && allowsHeroMovement(matrix[hero.x][hero.y + 2]);
+        if (hero.y == matrix.length-2)
+            return matrix[hero.x][hero.y + 1] == EXIT;
         return false;
     }
 
@@ -173,231 +161,182 @@ public class MummyMazeState extends State implements Cloneable {
      */
 
     public void moveUp() {
-        matrix[heroRow][heroCol] = originalFloorsMatrix[heroRow][heroCol];
-        if (heroRow == 1) heroRow--;
-        else heroRow -= 2;
-        matrix[heroRow][heroCol] = HERO;
+        revertToOriginalTile(hero);
+        if (hero.x == 1) hero.x--;
+        else hero.x -= 2;
+        setTile(hero, HERO);
     }
 
     public void moveDown() {
-        matrix[heroRow][heroCol] = originalFloorsMatrix[heroRow][heroCol];
-        if (heroRow == matrix.length-2) heroRow++;
-        else heroRow += 2;
-        matrix[heroRow][heroCol] = HERO;
+        revertToOriginalTile(hero);
+        if (hero.x == matrix.length-2) hero.x++;
+        else hero.x += 2;
+        setTile(hero, HERO);
     }
 
     public void moveRight() {
-        matrix[heroRow][heroCol] = originalFloorsMatrix[heroRow][heroCol];
-        if (heroCol == matrix.length-2) heroCol += 1;
-        else heroCol += 2;
-        matrix[heroRow][heroCol] = HERO;
+        revertToOriginalTile(hero);
+        if (hero.y == matrix.length-2) hero.y += 1;
+        else hero.y += 2;
+        setTile(hero, HERO);
     }
 
     public void moveLeft() {
-        matrix[heroRow][heroCol] = originalFloorsMatrix[heroRow][heroCol];
-        if (heroCol == 1) heroCol -= 1;
-        else heroCol -= 2;
-        matrix[heroRow][heroCol] = HERO;
+        revertToOriginalTile(hero);
+        if (hero.y == 1) hero.y -= 1;
+        else hero.y -= 2;
+        setTile(hero, HERO);
     }
 
     private void updateEnemies(){
-        int num = 0;
+        boolean done = false;
 
-        if(scorpionExists)
-            moveScorpion();
-
-        while(!isHeroDead && num<2){
-            if(whiteMummyExists)
-                moveWhiteMummy();
-            if(redMummyExists)
-                moveRedMummy();
-            num++;
-
-        }
-
-    }
-
-    private void checkForFightsBetweenEnemies() {
-        //Because the scorpion is the first to be updated, if his position is where a mummy is at it means they will fight.
-        if(matrix[scorpionRow][scorpionCol] == WHITE_MUMMY || matrix[whiteMummyRow][whiteMummyCol] == SCORPION){
-            //On a fight with a mummy the scorpion always dies.
-            scorpionExists = false; // RIP
-            matrix[whiteMummyRow][whiteMummyCol] = WHITE_MUMMY;
-        }else if(matrix[scorpionRow][scorpionCol] == RED_MUMMY || matrix[redMummyRow][redMummyCol] == SCORPION){
-            //On a fight with a mummy the scorpion always dies.
-            scorpionExists = false; // RIP
-            matrix[redMummyRow][redMummyCol] = RED_MUMMY;
-        }
-
-        //Id there is a red mummy at the white mummy position it means they will fight (and vice-versa).
-        if(matrix[whiteMummyRow][whiteMummyCol] == RED_MUMMY || matrix[redMummyRow][redMummyCol] == WHITE_MUMMY){
-            //On a fight between mummies the mummies fight with a 50/50 chance, one of them dies.
-            boolean whiteMummyWins = (new Random()).nextBoolean();
-            if (whiteMummyWins) {
-                redMummyExists = false; // RIP
-                matrix[whiteMummyRow][whiteMummyCol] = WHITE_MUMMY;
-            }else{
-                whiteMummyExists = false; // RIP
-                matrix[redMummyRow][redMummyCol] = RED_MUMMY;
+        for(TileType enemyType : enemies.keySet()) {
+            for (int i = 0; i < enemies.get(enemyType).size(); i++) {
+                System.out.println("enemies.get(enemyType).size(): " + enemies.get(enemyType).size());
+                moveEnemy(enemyType, i);
+                if(isHeroDead){
+                    done = true;
+                    break;
+                }
             }
+            if(done) //to prevent unnecessary iterations
+                break;
         }
     }
 
-    private void changeEnemyPosition(TileType enemy, int newEnemyRow, int newEnemyCol){
-        matrix[newEnemyRow][newEnemyCol] = enemy;
-        switch (enemy) {
-            case WHITE_MUMMY -> {
-                whiteMummyRow = newEnemyRow;
-                whiteMummyCol = newEnemyCol;
+    private void checkIfEnemyDied(TileType type, int idx) {
+        boolean done = false;
+        Point pos = enemies.get(type).get(idx);
+        for(TileType enemyType : enemies.keySet()){
+            for(int i = 0; i<enemies.get(enemyType).size(); i++){
+                if(enemies.get(enemyType).get(i).equals(pos)){
+                    //If the entity who just moved finds a scorpion and isn't one, it kills it.
+                    if(enemyType == SCORPION && type!=SCORPION){
+                        //The entity which just moved kills the scorpion
+                        enemies.get(enemyType).remove(i);//POSSIBLE BUG
+                    }else{
+                        enemies.get(type).remove(pos); //POSSIBLE BUG
+                    }
+                    done=true;
+                    break;
+                }
             }
-            case RED_MUMMY -> {
-                redMummyRow = newEnemyRow;
-                redMummyCol = newEnemyCol;
-            }
-            case SCORPION -> {
-                scorpionRow = newEnemyRow;
-                scorpionCol = newEnemyCol;
-            }
+            if(done) //to prevent unnecessary iterations
+                break;
         }
     }
 
     /* Enemy movement methods: These always return true if the enemy managed to move, and false if not */
-    private boolean moveEnemyUp(TileType enemy, int enemyRow, int enemyCol){
-        if (canVerticallyPass(matrix[enemyRow - 1][enemyCol])) {
-            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
-            enemyRow -= 2;
-            changeEnemyPosition(enemy, enemyRow, enemyCol);
+
+    private boolean moveEnemyRow(TileType type, int idx, int dx){
+        Point pos = enemies.get(type).get(idx);
+        if (canVerticallyPass(matrix[pos.x + dx][pos.y])) {
+            revertToOriginalTile(pos);
+            pos.translate(dx*2, 0);
+            saveEnemyPos(type, idx, pos);
             return true;
         }
         return false;
     }
 
-    private boolean moveEnemyDown(TileType enemy, int enemyRow, int enemyCol){
-        if (canVerticallyPass(matrix[enemyRow + 1][enemyCol])) {
-            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
-            enemyRow += 2;
-            changeEnemyPosition(enemy, enemyRow, enemyCol);
+    private boolean moveEnemyCol(TileType type, int idx, int dy){
+        Point pos = enemies.get(type).get(idx);
+        if (canHorizontallyPass(matrix[pos.x][pos.y + dy])) {
+            revertToOriginalTile(pos);
+            pos.translate(0, dy*2);
+            saveEnemyPos(type, idx, pos);
             return true;
         }
         return false;
     }
 
-    private boolean moveEnemyLeft(TileType enemy, int enemyRow, int enemyCol){
-        if (canHorizontallyPass(matrix[enemyRow][enemyCol - 1])) {
-            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
-            enemyCol -= 2;
-            changeEnemyPosition(enemy, enemyRow, enemyCol);
-            return true;
-        }
-        return false;
-    }
-    private boolean moveEnemyRight(TileType enemy, int enemyRow, int enemyCol){
-        if (canHorizontallyPass(matrix[enemyRow][enemyCol + 1])) {
-            matrix[enemyRow][enemyCol] = originalFloorsMatrix[enemyRow][enemyCol];
-            enemyCol += 2;
-            changeEnemyPosition(enemy, enemyRow, enemyCol);
-            return true;
-        }
-        return false;
+    //Saves the new enemy position
+    private void saveEnemyPos(TileType type, int idx, Point pos) {
+        setTile(pos, type);
+        System.out.print("Saving enemy position: " + type + ": " + enemies.get(type).size());
+        enemies.get(type).set(idx, pos);
+        System.out.println(" - " + enemies.get(type).size());
     }
 
-    private boolean shouldKillHero(TileType enemy){
-        // If the enemy is in the same row and column as the hero, the hero dies
-        switch (enemy) {
-            case WHITE_MUMMY -> {
-                return (whiteMummyRow==heroRow&&whiteMummyCol==heroCol);
-            }
-            case RED_MUMMY -> {
-                return (redMummyRow==heroRow&&redMummyCol==heroCol);
-            }
-            case SCORPION -> {
-                return (scorpionRow==heroRow&&scorpionCol==heroCol);
-            }
-        }
-        return false;
-    }
+    private boolean moveEnemyUp(TileType type, int idx){ return moveEnemyRow(type, idx, -1); }
+    private boolean moveEnemyDown(TileType type, int idx){ return moveEnemyRow(type, idx, 1); }
+    private boolean moveEnemyLeft(TileType type, int idx){ return moveEnemyCol(type, idx, -1); }
+    private boolean moveEnemyRight(TileType type, int idx){ return moveEnemyCol(type, idx, 1); }
 
-    private void checkIfEnemyKilledHero(TileType enemy){
-        if(shouldKillHero(enemy))
-            isHeroDead = true;
-    }
+    private void moveEnemyOnce(TileType enemyType, int enemyIdx){
+        boolean rowFirst = (enemyType==RED_MUMMY);
+        System.out.print("moveEnemyOnce: " + enemyType + " " + enemyIdx);
+        System.out.println(" - " + enemies.get(enemyType).size());
+        Point pos = enemies.get(enemyType).get(enemyIdx);
 
-    private void moveEnemy(TileType enemy, int enemyRow, int enemyCol, boolean rowFirst){
         boolean enemyMoved = false;
         int tries = 0;
         //It will only enter this while if the enemy hasn't moved yet, so an if(enemyMoved) is not needed.
         while(!enemyMoved && tries<2){
             if(rowFirst){
-                if (enemyRow > heroRow)
-                    enemyMoved = moveEnemyUp(enemy, enemyRow, enemyCol);
-                else if(enemyRow < heroRow)
-                    enemyMoved = moveEnemyDown(enemy, enemyRow, enemyCol);
+                if (pos.x > hero.x)
+                    enemyMoved = moveEnemyUp(enemyType, enemyIdx);
+                else if(pos.x < hero.x)
+                    enemyMoved = moveEnemyDown(enemyType, enemyIdx);
                 //If the enemy's row is the same as the hero's no point in moving to another row
             }else {
-                if (enemyCol > heroCol)
-                    enemyMoved = moveEnemyLeft(enemy, enemyRow, enemyCol);
-                else if (enemyCol < heroCol)
-                    enemyMoved = moveEnemyRight(enemy, enemyRow, enemyCol);
+                if (pos.y > hero.y)
+                    enemyMoved = moveEnemyLeft(enemyType, enemyIdx);
+                else if (pos.y < hero.y)
+                    enemyMoved = moveEnemyRight(enemyType, enemyIdx);
                 //If the enemy's column is the same as the hero's no point in moving to another column
             }
             tries++;
-            rowFirst = !rowFirst; //This way we are sure it tried to move in both directions.
+            rowFirst = !rowFirst; //This way we are sure it tried to move in both directions
         }
 
         if(enemyMoved){
-            checkIfEnemyKilledHero(enemy);
-            checkForFightsBetweenEnemies();
+            if(enemies.get(enemyType).get(enemyIdx).equals(hero))
+                isHeroDead = true;
+
+            System.out.print("chked: " + enemies.get(enemyType).size());
+            checkIfEnemyDied(enemyType, enemyIdx);
+            System.out.println(" - " + enemies.get(enemyType).size());
         }
 
     }
 
-    private void moveWhiteMummy(){
-        moveEnemy(WHITE_MUMMY, whiteMummyRow, whiteMummyCol, false);
+    private void moveEnemy(TileType enemyType, int enemyIdx){
+        moveEnemyOnce(enemyType, enemyIdx);
+
+        if(isMummy(enemyType)) //Mummies will always try to move twice
+            moveEnemyOnce(enemyType, enemyIdx);
     }
 
-    private void moveRedMummy(){
-        moveEnemy(RED_MUMMY, redMummyRow, redMummyCol, true);
-    }
-
-    private void moveScorpion(){
-        moveEnemy(SCORPION, scorpionRow, scorpionCol, false);
-    }
-
-    private double calcDistToHero(int row, int col){
-        return Math.abs(heroRow - row) + Math.abs(heroCol - col);
+    private double calcDistToHero(Point pos){
+        return Math.abs(hero.x - pos.x) + Math.abs(hero.y - pos.y);
     }
 
     public double computeDistanceClosestEnemy() {
         final double maxPossibleDistance = ((matrix.length-2)-1)*2;
         double h = maxPossibleDistance;
-        double aux = maxPossibleDistance;
+        double aux = maxPossibleDistance+1;
 
         //verificar morte e objetivo
+        if(isHeroDead) return Double.MAX_VALUE;
+        if(isAtGoal()) return 0;
 
-        if(whiteMummyExists)
-            aux = calcDistToHero(whiteMummyRow, whiteMummyCol);
 
-        if(aux<h)
-            h = aux;
-
-        if(redMummyExists)
-            aux = calcDistToHero(redMummyRow, redMummyCol);
-
-        if(aux<h)
-            h = aux;
-
-        if(scorpionExists)
-            aux = calcDistToHero(scorpionRow, scorpionCol);
-
-        if(aux<h)
-            h = aux;
-
-        return maxPossibleDistance-h; //So that the lowest value, the better.
+        for(TileType enemyType : enemies.keySet()){
+            for(int i = 0; i<enemies.get(enemyType).size(); i++) {
+                aux = calcDistToHero(enemies.get(enemyType).get(i));
+                if(aux<h)
+                    h = aux;
+            }
+        }
+        return (aux>maxPossibleDistance?0:maxPossibleDistance-h); //So that the lowest value, the better.
+        //If the aux is bigger than the maxPossibleDistance it means no enemy was alive, so its 0
     }
 
     public double computeExitDistance() {
         if(isHeroDead) return Double.MAX_VALUE;
-        return calcDistToHero(exitRow, exitCol);
+        return calcDistToHero(exit);
     }
 
     public int getNumRows() {
@@ -461,7 +400,7 @@ public class MummyMazeState extends State implements Cloneable {
 
     @Override
     public boolean isAtGoal(){
-        return (heroCol==exitCol && heroRow==exitRow);
+        return hero.equals(exit);
     }
 
 }
