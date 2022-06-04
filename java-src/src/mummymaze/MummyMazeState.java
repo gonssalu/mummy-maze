@@ -193,7 +193,6 @@ public class MummyMazeState extends State implements Cloneable {
 
         for(TileType enemyType : enemies.keySet()) {
             for (int i = 0; i < enemies.get(enemyType).size(); i++) {
-                System.out.println("enemies.get(enemyType).size(): " + enemies.get(enemyType).size());
                 moveEnemy(enemyType, i);
                 if(isHeroDead){
                     done = true;
@@ -205,26 +204,29 @@ public class MummyMazeState extends State implements Cloneable {
         }
     }
 
-    private void checkIfEnemyDied(TileType type, int idx) {
-        boolean done = false;
+    //Returns true if the enemy in question died. False only guarantees that THIS enemy is alive.
+    private boolean checkIfEnemyDied(TileType type, int idx) {
         Point pos = enemies.get(type).get(idx);
         for(TileType enemyType : enemies.keySet()){
             for(int i = 0; i<enemies.get(enemyType).size(); i++){
+                if(enemyType == type && i == idx)
+                    continue;
                 if(enemies.get(enemyType).get(i).equals(pos)){
                     //If the entity who just moved finds a scorpion and isn't one, it kills it.
                     if(enemyType == SCORPION && type!=SCORPION){
                         //The entity which just moved kills the scorpion
-                        enemies.get(enemyType).remove(i);//POSSIBLE BUG
+                        enemies.get(enemyType).remove(i);
+                        setTile(pos, type);
+                        return false;
                     }else{
-                        enemies.get(type).remove(pos); //POSSIBLE BUG
+                        enemies.get(type).remove(pos);
+                        setTile(pos, enemyType);
+                        return true;
                     }
-                    done=true;
-                    break;
                 }
             }
-            if(done) //to prevent unnecessary iterations
-                break;
         }
+        return false;
     }
 
     /* Enemy movement methods: These always return true if the enemy managed to move, and false if not */
@@ -254,9 +256,7 @@ public class MummyMazeState extends State implements Cloneable {
     //Saves the new enemy position
     private void saveEnemyPos(TileType type, int idx, Point pos) {
         setTile(pos, type);
-        System.out.print("Saving enemy position: " + type + ": " + enemies.get(type).size());
         enemies.get(type).set(idx, pos);
-        System.out.println(" - " + enemies.get(type).size());
     }
 
     private boolean moveEnemyUp(TileType type, int idx){ return moveEnemyRow(type, idx, -1); }
@@ -264,10 +264,9 @@ public class MummyMazeState extends State implements Cloneable {
     private boolean moveEnemyLeft(TileType type, int idx){ return moveEnemyCol(type, idx, -1); }
     private boolean moveEnemyRight(TileType type, int idx){ return moveEnemyCol(type, idx, 1); }
 
-    private void moveEnemyOnce(TileType enemyType, int enemyIdx){
+    //True if the enemy is still alive, false otherwise.
+    private boolean moveEnemyOnce(TileType enemyType, int enemyIdx){
         boolean rowFirst = (enemyType==RED_MUMMY);
-        System.out.print("moveEnemyOnce: " + enemyType + " " + enemyIdx);
-        System.out.println(" - " + enemies.get(enemyType).size());
         Point pos = enemies.get(enemyType).get(enemyIdx);
 
         boolean enemyMoved = false;
@@ -295,18 +294,17 @@ public class MummyMazeState extends State implements Cloneable {
             if(enemies.get(enemyType).get(enemyIdx).equals(hero))
                 isHeroDead = true;
 
-            System.out.print("chked: " + enemies.get(enemyType).size());
-            checkIfEnemyDied(enemyType, enemyIdx);
-            System.out.println(" - " + enemies.get(enemyType).size());
+            return !checkIfEnemyDied(enemyType, enemyIdx);
         }
+
+        return true;
 
     }
 
     private void moveEnemy(TileType enemyType, int enemyIdx){
-        moveEnemyOnce(enemyType, enemyIdx);
-
-        if(isMummy(enemyType)) //Mummies will always try to move twice
-            moveEnemyOnce(enemyType, enemyIdx);
+        if(moveEnemyOnce(enemyType, enemyIdx)) //Only attempt the second movement if the enemy survived the first
+            if(isMummy(enemyType)) //Mummies will always try to move twice
+                moveEnemyOnce(enemyType, enemyIdx);
     }
 
     private double calcDistToHero(Point pos){
