@@ -118,12 +118,15 @@ public class MummyMazeState extends State implements Cloneable {
             toggleDoors();
         }else{
             for(TileType type : enemies.keySet())
-                for(Point enemyPos : enemies.get(type))
+                for(Entity en : enemies.get(type)){
+                    if(!en.isAlive())
+                        continue;
                     //Check if any enemy is stepping on the key
-                    if(enemyPos.equals(key)){
+                    if(en.equals(key)){
                         toggleDoors();
                         return;
                     }
+                }
         }
     }
 
@@ -133,8 +136,6 @@ public class MummyMazeState extends State implements Cloneable {
         System.out.println(toString());
 
         action.execute(this);
-
-        fireMazeChanged();
 
         if(!isAtGoal()){
             updateEnemies();
@@ -222,6 +223,8 @@ public class MummyMazeState extends State implements Cloneable {
 
         for(TileType enemyType : enemies.keySet()) {
             for (int i = 0; i < enemies.get(enemyType).size(); i++) {
+                if(!enemies.get(enemyType).get(i).isAlive())
+                    continue;
                 moveEnemy(enemyType, i);
                 if(isHeroDead){
                     done = true;
@@ -238,6 +241,8 @@ public class MummyMazeState extends State implements Cloneable {
         Point pos = enemies.get(type).get(idx);
         for(TileType enemyType : enemies.keySet()){
             for(int i = 0; i<enemies.get(enemyType).size(); i++){
+                if(!enemies.get(enemyType).get(i).isAlive())
+                    continue;
                 if(enemyType == type && i == idx)
                     continue;
                 if(enemies.get(enemyType).get(i).equals(pos)){
@@ -357,6 +362,8 @@ public class MummyMazeState extends State implements Cloneable {
 
         for(TileType enemyType : enemies.keySet()){
             for(int i = 0; i<enemies.get(enemyType).size(); i++) {
+                if(!enemies.get(enemyType).get(i).isAlive())
+                    continue;
                 aux = calcDistToHero(enemies.get(enemyType).get(i));
                 if(aux<h)
                     h = aux;

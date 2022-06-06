@@ -1,8 +1,7 @@
 Excel stuff
 Buttons extra
 
-Some changes for QOL later on:
-  - meter aqueles 2 fors (q sao sempre iguais) linkados somehow numa Promise? Set? Iterator?
+Que inimigo se move primeiro?
 
 NOT SURE:
 PORTA:
