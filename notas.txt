@@ -9,6 +9,8 @@ O caminho que abre automatico dos niveis é preciso ser algo especifico ou a sto
 
 Deve-se poder mudar o algoritmo antes de se selecionar um nivel?
 
+Perguntar sobre o relatório.
+
 NOT SURE:
 PORTA:
    - Neste momento todos os inimigos abrem a porta
