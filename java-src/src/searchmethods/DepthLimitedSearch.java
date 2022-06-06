@@ -48,6 +48,10 @@ public class DepthLimitedSearch extends DepthFirstSearch {
         this.limit = limit;
     }
 
+    public double getDepthLimit() {
+        return limit;
+    }
+
     @Override
     public String toString() {
         return "Limited depth first search";

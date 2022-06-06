@@ -16,7 +16,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.NoSuchElementException;
 
 public class MainFrame extends JFrame {
@@ -31,6 +33,7 @@ public class MainFrame extends JFrame {
     private final JButton buttonStop = new JButton("Stop");
     private final JButton buttonShowSolution = new JButton("Show solution");
     private final JButton buttonReset = new JButton("Reset to initial state");
+    private final JButton buttonSolveAllTests = new JButton("Solve all tests");
     private JComboBox comboBoxSearchMethods;
     private JComboBox comboBoxHeuristics;
     private JTextArea textArea;
@@ -56,6 +59,9 @@ public class MainFrame extends JFrame {
         buttonInitialState.addActionListener(new ButtonInitialState_ActionAdapter(this));
         panelButtons.add(buttonSolve);
         buttonSolve.addActionListener(new ButtonSolve_ActionAdapter(this));
+        panelButtons.add(buttonSolveAllTests);
+        buttonSolveAllTests.setEnabled(true);
+        buttonSolveAllTests.addActionListener(new ButtonSolveAllTests_ActionAdapter(this));
         panelButtons.add(buttonStop);
         buttonStop.setEnabled(false);
         buttonStop.addActionListener(new ButtonStop_ActionAdapter(this));
@@ -98,10 +104,74 @@ public class MainFrame extends JFrame {
         pack();
     }
 
+    public void buttonSolveAllTests_ActionPerformed() throws IOException {
+        JFileChooser fc = new JFileChooser(new java.io.File("../"));
+
+        if (fc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
+        if(fc.getSelectedFile().exists())
+            fc.getSelectedFile().delete();
+        Files.writeString(fc.getSelectedFile().toPath(),
+                "Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States");
+
+        try {
+
+            /* FOR EVERY FILE IN ../materials/niveis */
+            String levelName = "nivel1.txt";
+            game.setState(agent.readInitialStateFromFile(new File("../materials/Niveis/"+levelName)));
+            buttonShowSolution.setEnabled(false);
+            buttonReset.setEnabled(false);
+            buttonInitialState.setEnabled(false);
+            buttonSolve.setEnabled(false);
+            SwingWorker worker = new SwingWorker<Solution, Void>() {
+                @Override
+                public Solution doInBackground() {
+                    textArea.setText("");
+                    buttonStop.setEnabled(true);
+                    buttonSolveAllTests.setEnabled(false);
+                    try {
+                        prepareSearchAlgorithm();
+                        MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
+                        agent.solveProblem(problem);
+                    } catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
+                    return null;
+                }
+
+                @Override
+                public void done() {
+                    if (!agent.hasBeenStopped()) {
+                        textArea.setText("Ran " + levelName + "\n");
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("\n").append(levelName).append(";").append(agent.getCsvSearchReport());
+                        String fileContent = sb.toString();
+                        try {
+                            Files.writeString(fc.getSelectedFile().toPath(), fileContent);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    buttonSolveAllTests.setEnabled(true);
+                    buttonStop.setEnabled(false);
+                    buttonInitialState.setEnabled(true);
+                    buttonSolve.setEnabled(true);
+                }
+            };
+
+            worker.execute();
+
+
+
+            /*ENDS HERE*/
+        } catch (IOException e1) {
+            e1.printStackTrace(System.err);
+        } catch (NoSuchElementException e2) {
+            JOptionPane.showMessageDialog(this, "File format not valid", "Error!", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     public void buttonInitialState_ActionPerformed() {
         JFileChooser fc = new JFileChooser(new java.io.File("../materials/Niveis"));
-        // Temporary
-        // JFileChooser fc = new JFileChooser(new java.io.File("."));
         try {
             if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 game.setState(agent.readInitialStateFromFile(fc.getSelectedFile()));
@@ -147,6 +217,7 @@ public class MainFrame extends JFrame {
                 textArea.setText("");
                 buttonStop.setEnabled(true);
                 buttonSolve.setEnabled(false);
+                buttonInitialState.setEnabled(false);
                 try {
                     prepareSearchAlgorithm();
                     MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
@@ -167,6 +238,7 @@ public class MainFrame extends JFrame {
                 }
                 buttonSolve.setEnabled(true);
                 buttonStop.setEnabled(false);
+                buttonInitialState.setEnabled(true);
             }
         };
 
@@ -184,6 +256,8 @@ public class MainFrame extends JFrame {
         buttonShowSolution.setEnabled(false);
         buttonStop.setEnabled(false);
         buttonSolve.setEnabled(false);
+        buttonInitialState.setEnabled(false);
+        buttonSolveAllTests.setEnabled(false);
         SwingWorker worker = new SwingWorker<Void, Void>() {
             @Override
             public Void doInBackground() {
@@ -194,8 +268,9 @@ public class MainFrame extends JFrame {
 
             @Override
             public void done() {
-                buttonShowSolution.setEnabled(true);
                 buttonSolve.setEnabled(true);
+                buttonInitialState.setEnabled(true);
+                buttonSolveAllTests.setEnabled(true);
             }
         };
         worker.execute();
@@ -313,6 +388,24 @@ class ButtonReset_ActionAdapter implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         adaptee.buttonReset_ActionPerformed();
+    }
+}
+
+class ButtonSolveAllTests_ActionAdapter implements ActionListener {
+
+    private final MainFrame adaptee;
+
+    ButtonSolveAllTests_ActionAdapter(MainFrame adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            adaptee.buttonSolveAllTests_ActionPerformed();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }
 

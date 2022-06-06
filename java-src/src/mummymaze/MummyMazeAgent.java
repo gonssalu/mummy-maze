@@ -5,6 +5,8 @@ import mummymaze.heuristics.HeuristicEnemyAndGoalDistance;
 import mummymaze.heuristics.HeuristicEnemyDistance;
 import mummymaze.heuristics.HeuristicGoalDistance;
 import mummymaze.util.TileType;
+import searchmethods.BeamSearch;
+import searchmethods.DepthLimitedSearch;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,5 +43,25 @@ public class MummyMazeAgent extends Agent<MummyMazeState> {
         initialEnvironment = new MummyMazeState(matrix);
         resetEnvironment();
         return environment;
+    }
+
+    public String getCsvSearchReport(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(searchMethod).append(";");
+        sb.append((heuristic==null?"N/A":heuristic)).append(";");
+        if(searchMethod instanceof BeamSearch bs){
+            sb.append(bs.getBeamSize());
+        }else if(searchMethod instanceof DepthLimitedSearch dls){
+            sb.append(dls.getDepthLimit());
+        }else{
+            sb.append("N/A");
+        }
+        sb.append(";");
+        sb.append((solution==null?"N/A":solution.getCost())).append(";");
+        sb.append(searchMethod.getStatistics().numExpandedNodes).append(";");
+        sb.append(searchMethod.getStatistics().maxFrontierSize).append(";");
+        sb.append(searchMethod.getStatistics().numGeneratedSates);
+
+        return sb.toString();
     }
 }
