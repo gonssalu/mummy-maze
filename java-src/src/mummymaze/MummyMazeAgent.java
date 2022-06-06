@@ -1,8 +1,9 @@
 package mummymaze;
 
 import agent.Agent;
+import mummymaze.heuristics.HeuristicEnemyAndGoalDistance;
 import mummymaze.heuristics.HeuristicEnemyDistance;
-import mummymaze.heuristics.HeuristicExitDistance;
+import mummymaze.heuristics.HeuristicGoalDistance;
 import mummymaze.util.TileType;
 
 import java.io.File;
@@ -16,8 +17,9 @@ public class MummyMazeAgent extends Agent<MummyMazeState> {
     public MummyMazeAgent(MummyMazeState environment) {
         super(environment);
         initialEnvironment = environment.clone();
-        heuristics.add(new HeuristicExitDistance());
+        heuristics.add(new HeuristicGoalDistance());
         heuristics.add(new HeuristicEnemyDistance());
+        heuristics.add(new HeuristicEnemyAndGoalDistance());
         heuristic = heuristics.get(0);
     }
 

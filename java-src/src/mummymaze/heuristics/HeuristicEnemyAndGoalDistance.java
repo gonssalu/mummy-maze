@@ -4,15 +4,16 @@ import agent.Heuristic;
 import mummymaze.MummyMazeProblem;
 import mummymaze.MummyMazeState;
 
-public class HeuristicExitDistance extends Heuristic<MummyMazeProblem, MummyMazeState> {
+public class HeuristicEnemyAndGoalDistance extends Heuristic<MummyMazeProblem, MummyMazeState> {
 
     @Override
     public double compute(MummyMazeState state) {
-        return state.computeExitDistance();
+        return state.computeDistanceToClosestEnemy() + state.computeDistanceToGoal();
     }
 
     @Override
     public String toString() {
-        return "Distance to the exit";
+        return "Distance from closest enemy and goal";
     }
+
 }
