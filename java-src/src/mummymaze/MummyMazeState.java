@@ -3,6 +3,7 @@ package mummymaze;
 import agent.Action;
 import agent.State;
 import mummymaze.actions.ActionStay;
+import mummymaze.util.Entity;
 import mummymaze.util.TileType;
 
 import java.awt.*;
@@ -17,11 +18,11 @@ public class MummyMazeState extends State implements Cloneable {
     //Listeners
     private final transient ArrayList<MummyMazeListener> listeners = new ArrayList<>(3);
 
-    private HashMap<TileType, LinkedList<Point>> enemies;
+    private HashMap<TileType, LinkedList<Entity>> enemies;
 
     private LinkedList<Point> doors;
 
-    public Point hero; //DEBUG
+    private Entity hero;
     private Point exit;
     private Point key;
 
@@ -62,10 +63,10 @@ public class MummyMazeState extends State implements Cloneable {
                 if(tile!=null)
                     switch(tile){
                         case HERO -> {
-                            hero = pt;
+                            hero = new Entity(pt);
                         }
                         case WHITE_MUMMY,RED_MUMMY,SCORPION -> {
-                            this.enemies.get(tile).add(pt);
+                            this.enemies.get(tile).add(new Entity(pt));
                         }
                         case EXIT -> {
                             exit = pt;
@@ -247,7 +248,7 @@ public class MummyMazeState extends State implements Cloneable {
                         setTile(pos, type);
                         return false;
                     }else{
-                        enemies.get(type).get(pos).setDead();
+                        enemies.get(type).get(idx).setDead();
                         setTile(pos, enemyType);
                         return true;
                     }
@@ -260,7 +261,7 @@ public class MummyMazeState extends State implements Cloneable {
     /* Enemy movement methods: These always return true if the enemy managed to move, and false if not */
 
     private boolean moveEnemyRow(TileType type, int idx, int dx){
-        Point pos = enemies.get(type).get(idx);
+        Entity pos = enemies.get(type).get(idx);
         if (canVerticallyPass(matrix[pos.x + dx][pos.y])) {
             revertToOriginalTile(pos);
             pos.translate(dx*2, 0);
@@ -271,7 +272,7 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     private boolean moveEnemyCol(TileType type, int idx, int dy){
-        Point pos = enemies.get(type).get(idx);
+        Entity pos = enemies.get(type).get(idx);
         if (canHorizontallyPass(matrix[pos.x][pos.y + dy])) {
             revertToOriginalTile(pos);
             pos.translate(0, dy*2);
@@ -282,9 +283,9 @@ public class MummyMazeState extends State implements Cloneable {
     }
 
     //Saves the new enemy position
-    private void saveEnemyPos(TileType type, int idx, Point pos) {
-        setTile(pos, type);
-        enemies.get(type).set(idx, pos);
+    private void saveEnemyPos(TileType type, int idx, Entity en) {
+        setTile(en.getLocation(), type);
+        enemies.get(type).set(idx, en);
     }
 
     private boolean moveEnemyUp(TileType type, int idx){ return moveEnemyRow(type, idx, -1); }
