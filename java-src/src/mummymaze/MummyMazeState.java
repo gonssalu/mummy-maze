@@ -374,7 +374,6 @@ public class MummyMazeState extends State implements Cloneable {
         if (isHeroDead) return Double.MAX_VALUE;
         if (isAtGoal()) return 0;
 
-
         for (TileType enemyType : enemies.keySet()) {
             for (int i = 0; i < enemies.get(enemyType).size(); i++) {
                 if (!enemies.get(enemyType).get(i).isAlive())
@@ -384,6 +383,7 @@ public class MummyMazeState extends State implements Cloneable {
                     h = aux;
             }
         }
+
         return (aux > maxPossibleDistance ? 0 : maxPossibleDistance - h); //So that the lowest value, the better.
         //If the aux is bigger than the maxPossibleDistance it means no enemy was alive, so its 0
     }
