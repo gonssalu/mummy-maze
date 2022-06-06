@@ -111,34 +111,39 @@ public class MummyMazeState extends State implements Cloneable {
         }
     }
 
-    public void checkForDoorToggle(Action action){
+    public void checkHeroForDoorToggle(Action action){
         //Check if the hero stepped on the key
         //Only toggle the door if he just arrived at the key's tile, if he's staying there don't keep toggling it.
-        if(hero.equals(key) && !(action instanceof ActionStay)){
+        if(hero.equals(key) && !(action instanceof ActionStay))
             toggleDoors();
-        }else{
-            for(TileType type : enemies.keySet())
-                for(Entity en : enemies.get(type)){
-                    if(!en.isAlive())
-                        continue;
-                    //Check if any enemy is stepping on the key
-                    if(en.equals(key)){
-                        toggleDoors();
-                        return;
-                    }
+    }
+
+    public void checkEnemyForDoorToggle(){
+        //Check if an enemy stepped on the key
+
+        for(TileType type : enemies.keySet())
+            for(Entity en : enemies.get(type)){
+                if(!en.isAlive())
+                    continue;
+                //Check if any enemy is stepping on the key
+                if(en.equals(key)){
+                    toggleDoors();
+                    return;
                 }
-        }
+            }
     }
 
     @Override
     public void executeAction(Action action) {
         action.execute(this);
 
+        checkHeroForDoorToggle(action);
+
         if(!isAtGoal()){
             updateEnemies();
 
             if(!isHeroDead)
-                checkForDoorToggle(action);
+                checkEnemyForDoorToggle();
         }
 
 
