@@ -5,6 +5,8 @@ Que inimigo se move primeiro?
 
 Quando o herói passa por cima da chave quando um (por ex.) escorpião está mesmo em frente à porta, a porta "fecha na cara" do escorpião ou o escorpião consegue passar mesmo antes da porta fechar?
 
+O caminho que abre automatico dos niveis é preciso ser algo especifico ou a stora dps muda?
+
 NOT SURE:
 PORTA:
    - Neste momento todos os inimigos abrem a porta
