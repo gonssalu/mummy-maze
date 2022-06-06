@@ -132,14 +132,10 @@ public class MummyMazeState extends State implements Cloneable {
 
     @Override
     public void executeAction(Action action) {
-        System.out.println("\t\t" + hashCode() + " + " + action.getClass().getName());
-        System.out.println(toString());
-
         action.execute(this);
 
         if(!isAtGoal()){
             updateEnemies();
-            System.out.println("\t\t\t" + isHeroDead);
 
             if(!isHeroDead)
                 checkForDoorToggle(action);
@@ -147,8 +143,6 @@ public class MummyMazeState extends State implements Cloneable {
 
 
         fireMazeChanged();
-        System.out.println("\t\t\t" + hashCode());
-        System.out.println(toString() + "\n\n");
     }
 
     public boolean canMoveUp() {
@@ -306,9 +300,7 @@ public class MummyMazeState extends State implements Cloneable {
         int tries = 0;
         //It will only enter this while if the enemy hasn't moved yet, so an if(enemyMoved) is not needed.
         while(!enemyMoved && tries<2){
-            System.out.println("Enemy " + enemyIdx + " of type " + enemyType + " tries to move.");
             Point pos = enemies.get(enemyType).get(enemyIdx);
-            System.out.println("Enemy " + enemyIdx + " of type " + enemyType + " is at " + pos.x + "," + pos.y);
             if(rowFirst){
                 if (pos.x > hero.x)
                     enemyMoved = moveEnemyUp(enemyType, enemyIdx);
@@ -328,13 +320,11 @@ public class MummyMazeState extends State implements Cloneable {
 
         if(enemyMoved) {
             Point pos = enemies.get(enemyType).get(enemyIdx);
-            System.out.println("MOVEMENT on enemy " + enemyIdx + " of type " + enemyType + " is at " + pos.x + "," + pos.y);
             if(enemies.get(enemyType).get(enemyIdx).equals(hero))
                 isHeroDead = true;
 
             return !checkIfEnemyDied(enemyType, enemyIdx);
         }
-        System.out.println("\n");
 
         return true;
 
@@ -408,8 +398,7 @@ public class MummyMazeState extends State implements Cloneable {
                 buffer.append(' ');
             }
         }
-        //return buffer.toString();
-        return ""; //DEBUG
+        return buffer.toString();
     }
 
     @Override

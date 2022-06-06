@@ -29,15 +29,10 @@ public class MummyMazeProblem extends Problem<MummyMazeState> {
         List<Action<MummyMazeState>> possibleActions = new LinkedList<>();
 
         //If the hero has died, you can't keep going, no possible actions
-        System.out.print(state.hashCode() + " - ");
         if (state.isHeroDead()){
-            System.out.println("dead");
-            System.out.println(state.toString() + "\n\n\n");
             return possibleActions;
         }
 
-        System.out.println("alive");
-        System.out.println(state.toString() + "\n\n\n");
         for (Action action : actions)
             if (action.isValid(state)) 
                 possibleActions.add(action);

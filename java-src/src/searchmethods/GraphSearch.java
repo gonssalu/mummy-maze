@@ -46,8 +46,6 @@ public abstract class GraphSearch<L extends NodeCollection> implements SearchMet
             Node n = frontier.poll();
             State state = n.getState();
             if (problem.isGoal(state)) {
-                //DEBUG
-                System.out.println("\n\n\n\n" + state.toString() + "\n" + state.hashCode());
                 return new Solution(problem, n);
             }
             explored.add(state);

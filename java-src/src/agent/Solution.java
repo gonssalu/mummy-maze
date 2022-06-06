@@ -17,9 +17,6 @@ public class Solution {
             actions.addFirst(node.getState().getAction());
             node = node.getParent();
         }
-        //DEBUG
-        for(Action action : actions)
-            System.out.println(action.toString());
     }
 
     public double getCost() {
