@@ -5,6 +5,7 @@ import agent.Problem;
 import mummymaze.actions.*;
 import mummymaze.util.TileType;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,11 +29,15 @@ public class MummyMazeProblem extends Problem<MummyMazeState> {
         List<Action<MummyMazeState>> possibleActions = new LinkedList<>();
 
         //If the hero has died, you can't keep going, no possible actions
+        System.out.print(state.hashCode() + " - ");
         if (state.isHeroDead()){
-            state.getMatrix()[0][0] = TileType.TRAP;
+            System.out.println("dead");
+            System.out.println(state.toString() + "\n\n\n");
             return possibleActions;
         }
 
+        System.out.println("alive");
+        System.out.println(state.toString() + "\n\n\n");
         for (Action action : actions)
             if (action.isValid(state)) 
                 possibleActions.add(action);
@@ -44,7 +49,6 @@ public class MummyMazeProblem extends Problem<MummyMazeState> {
         MummyMazeState successor = state.clone();
 
         successor.executeAction(action);
-        //action.execute(successor);
         return successor;
     }
 

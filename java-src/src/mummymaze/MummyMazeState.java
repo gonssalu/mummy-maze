@@ -19,10 +19,11 @@ public class MummyMazeState extends State implements Cloneable {
 
     private HashMap<TileType, LinkedList<Point>> enemies;
 
-    private Point hero;
+    private LinkedList<Point> doors;
+
+    public Point hero; //DEBUG
     private Point exit;
     private Point key;
-    private Point door;
 
     private boolean isHeroDead;
 
@@ -49,6 +50,8 @@ public class MummyMazeState extends State implements Cloneable {
         this.enemies.put(RED_MUMMY, new LinkedList<>());
         this.enemies.put(WHITE_MUMMY, new LinkedList<>());
 
+        this.doors = new LinkedList<>();
+
         isHeroDead = false;
 
         for (int i = 0; i < matrix.length; i++) {
@@ -71,7 +74,7 @@ public class MummyMazeState extends State implements Cloneable {
                             key = pt;
                         }
                         case H_DOOR_CLOSED, H_DOOR_OPEN, V_DOOR_CLOSED, V_DOOR_OPEN -> {
-                            door = pt;
+                            doors.add(pt);
                         }
                     }
             }
@@ -88,19 +91,21 @@ public class MummyMazeState extends State implements Cloneable {
 
     public void setTile(Point pos, TileType tile) { matrix[pos.x][pos.y] = tile; }
 
-    public void toggleDoor(){
-        switch(getTile(door)){
-            case V_DOOR_CLOSED -> {
-                setTile(door,V_DOOR_OPEN);
-            }
-            case V_DOOR_OPEN -> {
-                setTile(door,V_DOOR_CLOSED);
-            }
-            case H_DOOR_CLOSED -> {
-                setTile(door,H_DOOR_OPEN);
-            }
-            case H_DOOR_OPEN -> {
-                setTile(door,H_DOOR_CLOSED);
+    public void toggleDoors(){
+        for(Point door : doors){
+            switch(getTile(door)){
+                case V_DOOR_CLOSED -> {
+                    setTile(door,V_DOOR_OPEN);
+                }
+                case V_DOOR_OPEN -> {
+                    setTile(door,V_DOOR_CLOSED);
+                }
+                case H_DOOR_CLOSED -> {
+                    setTile(door,H_DOOR_OPEN);
+                }
+                case H_DOOR_OPEN -> {
+                    setTile(door,H_DOOR_CLOSED);
+                }
             }
         }
     }
@@ -109,13 +114,13 @@ public class MummyMazeState extends State implements Cloneable {
         //Check if the hero stepped on the key
         //Only toggle the door if he just arrived at the key's tile, if he's staying there don't keep toggling it.
         if(hero.equals(key) && !(action instanceof ActionStay)){
-            toggleDoor();
+            toggleDoors();
         }else{
             for(TileType type : enemies.keySet())
                 for(Point enemyPos : enemies.get(type))
                     //Check if any enemy is stepping on the key
                     if(enemyPos.equals(key)){
-                        toggleDoor();
+                        toggleDoors();
                         return;
                     }
         }
@@ -123,15 +128,25 @@ public class MummyMazeState extends State implements Cloneable {
 
     @Override
     public void executeAction(Action action) {
+        System.out.println("\t\t" + hashCode() + " + " + action.getClass().getName());
+        System.out.println(toString());
+
         action.execute(this);
+
+        fireMazeChanged();
 
         if(!isAtGoal()){
             updateEnemies();
+            System.out.println("\t\t\t" + isHeroDead);
+
+            if(!isHeroDead)
+                checkForDoorToggle(action);
         }
 
-        checkForDoorToggle(action);
 
         fireMazeChanged();
+        System.out.println("\t\t\t" + hashCode());
+        System.out.println(toString() + "\n\n");
     }
 
     public boolean canMoveUp() {
@@ -228,11 +243,11 @@ public class MummyMazeState extends State implements Cloneable {
                     //If the entity who just moved finds a scorpion and isn't one, it kills it.
                     if(enemyType == SCORPION && type!=SCORPION){
                         //The entity which just moved kills the scorpion
-                        enemies.get(enemyType).remove(i);
+                        enemies.get(enemyType).get(i).setDead();
                         setTile(pos, type);
                         return false;
                     }else{
-                        enemies.get(type).remove(pos);
+                        enemies.get(type).get(pos).setDead();
                         setTile(pos, enemyType);
                         return true;
                     }
@@ -280,12 +295,14 @@ public class MummyMazeState extends State implements Cloneable {
     //True if the enemy is still alive, false otherwise.
     private boolean moveEnemyOnce(TileType enemyType, int enemyIdx){
         boolean rowFirst = (enemyType==RED_MUMMY);
-        Point pos = enemies.get(enemyType).get(enemyIdx);
 
         boolean enemyMoved = false;
         int tries = 0;
         //It will only enter this while if the enemy hasn't moved yet, so an if(enemyMoved) is not needed.
         while(!enemyMoved && tries<2){
+            System.out.println("Enemy " + enemyIdx + " of type " + enemyType + " tries to move.");
+            Point pos = enemies.get(enemyType).get(enemyIdx);
+            System.out.println("Enemy " + enemyIdx + " of type " + enemyType + " is at " + pos.x + "," + pos.y);
             if(rowFirst){
                 if (pos.x > hero.x)
                     enemyMoved = moveEnemyUp(enemyType, enemyIdx);
@@ -303,12 +320,15 @@ public class MummyMazeState extends State implements Cloneable {
             rowFirst = !rowFirst; //This way we are sure it tried to move in both directions
         }
 
-        if(enemyMoved){
+        if(enemyMoved) {
+            Point pos = enemies.get(enemyType).get(enemyIdx);
+            System.out.println("MOVEMENT on enemy " + enemyIdx + " of type " + enemyType + " is at " + pos.x + "," + pos.y);
             if(enemies.get(enemyType).get(enemyIdx).equals(hero))
                 isHeroDead = true;
 
             return !checkIfEnemyDied(enemyType, enemyIdx);
         }
+        System.out.println("\n");
 
         return true;
 
@@ -380,7 +400,8 @@ public class MummyMazeState extends State implements Cloneable {
                 buffer.append(' ');
             }
         }
-        return buffer.toString();
+        //return buffer.toString();
+        return ""; //DEBUG
     }
 
     @Override
