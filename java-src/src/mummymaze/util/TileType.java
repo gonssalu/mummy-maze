@@ -14,8 +14,8 @@ public enum TileType {
     KEY('C'),
     H_DOOR_OPEN('_'),
     H_DOOR_CLOSED('='),
-    V_DOOR_OPEN('"'),
-    V_DOOR_CLOSED('(');
+    V_DOOR_OPEN(')'),
+    V_DOOR_CLOSED('"');
 
     private final char identifier;
 
@@ -51,7 +51,7 @@ public enum TileType {
         return (tileType == TileType.H_DOOR_CLOSED || tileType == TileType.V_DOOR_CLOSED);
     }
 
-    public static boolean shouldSaveFloorType(TileType tileType){
+    public static boolean shouldSaveFloorType(TileType tileType) {
         return (tileType == TileType.KEY || tileType == TileType.TRAP);
     }
 
