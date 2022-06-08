@@ -3,3 +3,5 @@ Buttons extra
 
 Solution cost
 Abrir a porta antes que o inimigo passe (ou indicar no relatório)
+
+No relatório do projeto não é necessário apresentarem resultados para os algoritmos Limited Depth First Search e Beam Search.
