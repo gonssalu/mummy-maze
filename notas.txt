@@ -2,3 +2,8 @@ Contador solution cost
 Abrir a porta *imediatamente* (antes que o inimigo passe)
 
 No relatório do projeto não é necessário apresentar resultados para os algoritmos Limited Depth First Search e Beam Search.
+
+Relatório:
+legenda para cada tabela
+imagens
+símbolo de observações
