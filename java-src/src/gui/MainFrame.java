@@ -11,6 +11,8 @@ import searchmethods.DepthLimitedSearch;
 import searchmethods.SearchMethod;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,7 +21,11 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.concurrent.RunnableFuture;
 
 public class MainFrame extends JFrame {
 
@@ -38,6 +44,7 @@ public class MainFrame extends JFrame {
     private JComboBox comboBoxHeuristics;
     private JTextArea textArea;
     private GameArea game;
+    private boolean keepRunning;
 
     public MainFrame() {
         try {
@@ -107,31 +114,50 @@ public class MainFrame extends JFrame {
     public void buttonSolveAllTests_ActionPerformed() throws IOException {
         JFileChooser fc = new JFileChooser(new java.io.File("../"));
 
+        fc.resetChoosableFileFilters();
+        fc.setFileFilter(new FileNameExtensionFilter("csv file","csv"));
+
         if (fc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
+
+
+        if(!fc.getSelectedFile().getAbsolutePath().endsWith(".csv"))
+            fc.setSelectedFile(new File(fc.getSelectedFile().getAbsolutePath() + ".csv"));
         if(fc.getSelectedFile().exists())
             fc.getSelectedFile().delete();
         Files.writeString(fc.getSelectedFile().toPath(),
                 "Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States");
 
+        StringBuilder sb = new StringBuilder();
         try {
-
-            /* FOR EVERY FILE IN ../materials/niveis */
-            String levelName = "nivel1.txt";
-            game.setState(agent.readInitialStateFromFile(new File("../materials/Niveis/"+levelName)));
             buttonShowSolution.setEnabled(false);
             buttonReset.setEnabled(false);
             buttonInitialState.setEnabled(false);
             buttonSolve.setEnabled(false);
+            buttonStop.setEnabled(true);
+            buttonSolveAllTests.setEnabled(false);
+            textArea.setText("Solving all tests...\n");
+            keepRunning = true;
+
             SwingWorker worker = new SwingWorker<Solution, Void>() {
                 @Override
                 public Solution doInBackground() {
-                    textArea.setText("");
-                    buttonStop.setEnabled(true);
-                    buttonSolveAllTests.setEnabled(false);
                     try {
-                        prepareSearchAlgorithm();
-                        MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
-                        agent.solveProblem(problem);
+                        for (File file : Objects.requireNonNull(new File("./Niveis").listFiles())) {
+                            Thread.sleep(3000);
+                            if(!keepRunning) break;
+                            agent.readInitialStateFromFile(file);
+                            prepareSearchAlgorithmForSolveAll();  //CHANGE THIS
+                            MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
+
+                            textArea.setText(textArea.getText() + "\nRunning " + file.getName() + "...");
+
+                            agent.solveProblem(problem);
+
+                            textArea.setText(textArea.getText() + " Done.");
+
+                            sb.append("\n").append(file.getName()).append(";").append(agent.getCsvSearchReport());
+
+                        }
                     } catch (Exception e) {
                         e.printStackTrace(System.err);
                     }
@@ -140,16 +166,17 @@ public class MainFrame extends JFrame {
 
                 @Override
                 public void done() {
-                    if (!agent.hasBeenStopped()) {
-                        textArea.setText("Ran " + levelName + "\n");
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("\n").append(levelName).append(";").append(agent.getCsvSearchReport());
-                        String fileContent = sb.toString();
+                    String fileContent = sb.toString();
+                    if(fileContent.length() > 0)
                         try {
-                            Files.writeString(fc.getSelectedFile().toPath(), fileContent);
+                            Files.writeString(fc.getSelectedFile().toPath(), fileContent, StandardOpenOption.APPEND);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                    if (!agent.hasBeenStopped()) {
+                        textArea.setText(textArea.getText() +"\n\nDone! All tests were saved in " + fc.getSelectedFile().getName());
+                    }else{
+                        textArea.setText(textArea.getText() +"\n\nAction stopped! All finished tests were saved in " + fc.getSelectedFile().getName());
                     }
                     buttonSolveAllTests.setEnabled(true);
                     buttonStop.setEnabled(false);
@@ -161,17 +188,13 @@ public class MainFrame extends JFrame {
             worker.execute();
 
 
-
-            /*ENDS HERE*/
-        } catch (IOException e1) {
-            e1.printStackTrace(System.err);
         } catch (NoSuchElementException e2) {
             JOptionPane.showMessageDialog(this, "File format not valid", "Error!", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void buttonInitialState_ActionPerformed() {
-        JFileChooser fc = new JFileChooser(new java.io.File("../materials/Niveis"));
+        JFileChooser fc = new JFileChooser(new java.io.File("./Niveis"));
         try {
             if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 game.setState(agent.readInitialStateFromFile(fc.getSelectedFile()));
@@ -250,6 +273,7 @@ public class MainFrame extends JFrame {
         buttonShowSolution.setEnabled(false);
         buttonStop.setEnabled(false);
         buttonSolve.setEnabled(true);
+        keepRunning = false;
     }
 
     public void buttonShowSolution_ActionPerformed() {
@@ -289,6 +313,16 @@ public class MainFrame extends JFrame {
         } else if (agent.getSearchMethod() instanceof BeamSearch) {
             BeamSearch searchMethod = (BeamSearch) agent.getSearchMethod();
             searchMethod.setBeamSize(Integer.parseInt(textFieldSearchParameter.getText()));
+        }
+    }
+
+    private void prepareSearchAlgorithmForSolveAll() {
+        if (agent.getSearchMethod() instanceof DepthLimitedSearch) {
+            DepthLimitedSearch searchMethod = (DepthLimitedSearch) agent.getSearchMethod();
+            searchMethod.setLimit(10);
+        } else if (agent.getSearchMethod() instanceof BeamSearch) {
+            BeamSearch searchMethod = (BeamSearch) agent.getSearchMethod();
+            searchMethod.setBeamSize(10);
         }
     }
 }

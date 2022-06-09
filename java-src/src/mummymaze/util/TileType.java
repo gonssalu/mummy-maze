@@ -31,7 +31,7 @@ public enum TileType {
         for (TileType tileType : TileType.values())
             if (tileType.getIdentifier() == identifier)
                 return tileType;
-        throw new IllegalArgumentException("No tile type was found with that identifier.");
+        throw new IllegalArgumentException("No tile type was found with identifier '" + identifier + "'.");
     }
 
     public static boolean allowsHeroMovement(TileType tileType) {
