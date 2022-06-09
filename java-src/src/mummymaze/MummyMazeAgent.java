@@ -53,11 +53,15 @@ public class MummyMazeAgent extends Agent<MummyMazeState> {
             sb.append(bs.getBeamSize());
         }else if(searchMethod instanceof DepthLimitedSearch dls){
             sb.append(dls.getDepthLimit());
-        }else{
+        }else
             sb.append("N/A");
-        }
+
         sb.append(";");
-        sb.append((solution==null?"N/A":solution.getCost())).append(";");
+        if(solution==null){
+            sb.append("NO;N/A;");
+        }else{
+            sb.append((hasBeenStopped()?"STOPPED":"YES")).append(";").append(solution.getCost()).append(";");
+        }
         sb.append(searchMethod.getStatistics().numExpandedNodes).append(";");
         sb.append(searchMethod.getStatistics().maxFrontierSize).append(";");
         sb.append(searchMethod.getStatistics().numGeneratedSates);

@@ -6,6 +6,7 @@ import mummymaze.MummyMazeAgent;
 import mummymaze.MummyMazeProblem;
 import mummymaze.MummyMazeState;
 import mummymaze.util.TileType;
+import searchmethods.AStarSearch;
 import searchmethods.BeamSearch;
 import searchmethods.DepthLimitedSearch;
 import searchmethods.SearchMethod;
@@ -41,7 +42,7 @@ public class MainFrame extends JFrame {
     private JComboBox comboBoxHeuristics;
     private JTextArea textArea;
     private GameArea game;
-    private boolean keepRunning;
+    private SwingWorker runningWorker;
 
     public MainFrame() {
         try {
@@ -122,7 +123,7 @@ public class MainFrame extends JFrame {
         if(fc.getSelectedFile().exists())
             fc.getSelectedFile().delete();
         Files.writeString(fc.getSelectedFile().toPath(),
-                "Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States\n");
+                "Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States\n");
 
         StringBuilder sb = new StringBuilder();
         try {
@@ -135,30 +136,63 @@ public class MainFrame extends JFrame {
             comboBoxHeuristics.setEnabled(false);
             comboBoxSearchMethods.setEnabled(false);
             textArea.setText("Solving all tests...\n");
-            keepRunning = true;
 
             SwingWorker worker = new SwingWorker<Void, Void>() {
                 @Override
                 public Void doInBackground() {
                     try {
                         for (File file : Objects.requireNonNull(new File("./Niveis").listFiles())) {
-                            if(!keepRunning) break;
                             agent.readInitialStateFromFile(file);
                             textArea.append("\nRunning tests on " + file.getName() + "...");
-                            for (SearchMethod searchMethod : agent.getSearchMethodsArray()) {
-                                if(!keepRunning) break;
-                                agent.resetEnvironment();
-                                agent.setSearchMethod(searchMethod);
-                                textArea.append("\n\t" + searchMethod + "...");
+                            for (int i = 0; i<agent.getSearchMethodsArray().length; i++) {
 
-                                prepareSearchAlgorithmForSolveAll();  //CHANGE THIS
-                                MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
-                                try{
-                                    agent.solveProblem(problem);
-                                    textArea.append(" Ok.");
-                                    sb.append("\n").append(file.getName()).append(";").append(agent.getCsvSearchReport());
-                                }catch(Exception e){
-                                    textArea.append(" Not ok.");
+                                SearchMethod searchMethod = agent.getSearchMethodsArray()[i];
+                                Heuristic[] heuristics = agent.getHeuristicsArray();
+
+                                //Only run with every heuristic on AStarSearch (index>4),
+                                //  but run at least once otherwise so (h==0).
+                                for(int h = 0; (h<heuristics.length && (h==0|| (/*i>4 &&*/ i==6) )); h++ ){
+
+                                    Heuristic heuristic = null;
+
+                                    textArea.append("\n\t" + searchMethod);
+
+                                    //use the first heuristic in informed but not AStarSearch
+                                    if(i>4){
+                                        heuristic = agent.getHeuristicsArray()[h];
+                                        textArea.append(" (" + heuristic + " )");
+                                    }
+
+                                    //If beam search or limited search define a limit/beam size
+                                    if(i == 3 || i == 7){
+                                        int limit = 10;
+                                        if (searchMethod instanceof DepthLimitedSearch dls) {
+                                            dls.setLimit(limit);
+                                        } else if (searchMethod instanceof BeamSearch bs) {
+                                            bs.setBeamSize(limit);
+                                        }
+                                    }
+
+                                    agent.setHeuristic(heuristic);
+
+                                    agent.resetEnvironment();
+                                    agent.setSearchMethod(searchMethod);
+
+                                    textArea.append("...");
+                                    MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
+                                    try{
+                                        agent.solveProblem(problem);
+                                        if(agent.hasBeenStopped())
+                                            textArea.append(" Stopped.");
+                                        else
+                                            textArea.append(" Ok.");
+                                        sb.append("\n").append(file.getName()).append(";");
+                                        sb.append(agent.getCsvSearchReport());
+                                    }catch(Exception e){
+                                        textArea.append(" Not ok.");
+                                        sb.append("\n").append(file.getName()).append(";");
+                                        sb.append(agent.getCsvSearchReport().replaceFirst("ERROR", ""));
+                                    }
                                 }
                             }
 
@@ -174,6 +208,8 @@ public class MainFrame extends JFrame {
 
                 @Override
                 public void done() {
+                    if(isCancelled())
+                        sb.append("\nSTOPPED BY USER");
                     String fileContent = sb.toString();
                     if(fileContent.length() > 0)
                         try {
@@ -181,7 +217,7 @@ public class MainFrame extends JFrame {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    if (!agent.hasBeenStopped()) {
+                    if (!agent.hasBeenStopped() && !isCancelled()) {
                         textArea.append("\n\nDone! All tests were saved in " + fc.getSelectedFile().getName());
                     }else{
                         textArea.append("\n\nAction stopped! All finished tests were saved in " + fc.getSelectedFile().getName());
@@ -192,9 +228,14 @@ public class MainFrame extends JFrame {
                     buttonSolve.setEnabled(true);
                     comboBoxSearchMethods.setEnabled(true);
                     comboBoxHeuristics.setEnabled(true);
+                    int index = comboBoxSearchMethods.getSelectedIndex();
+                    agent.setSearchMethod((SearchMethod) comboBoxSearchMethods.getItemAt(index));
+                    index = comboBoxHeuristics.getSelectedIndex();
+                    agent.setHeuristic((Heuristic) comboBoxHeuristics.getItemAt(index));
+
                 }
             };
-
+            runningWorker = worker;
             worker.execute();
 
 
@@ -247,6 +288,7 @@ public class MainFrame extends JFrame {
         SwingWorker worker = new SwingWorker<Solution, Void>() {
             @Override
             public Solution doInBackground() {
+                System.out.println(textArea.getText());
                 textArea.setText("");
                 buttonStop.setEnabled(true);
                 buttonSolve.setEnabled(false);
@@ -282,10 +324,11 @@ public class MainFrame extends JFrame {
 
     public void buttonStop_ActionPerformed() {
         agent.stop();
+        if(runningWorker != null)
+            runningWorker.cancel(true);
         buttonShowSolution.setEnabled(false);
         buttonStop.setEnabled(false);
         buttonSolve.setEnabled(true);
-        keepRunning = false;
     }
 
     public void buttonShowSolution_ActionPerformed() {
@@ -325,16 +368,6 @@ public class MainFrame extends JFrame {
         } else if (agent.getSearchMethod() instanceof BeamSearch) {
             BeamSearch searchMethod = (BeamSearch) agent.getSearchMethod();
             searchMethod.setBeamSize(Integer.parseInt(textFieldSearchParameter.getText()));
-        }
-    }
-
-    private void prepareSearchAlgorithmForSolveAll() {
-        if (agent.getSearchMethod() instanceof DepthLimitedSearch) {
-            DepthLimitedSearch searchMethod = (DepthLimitedSearch) agent.getSearchMethod();
-            searchMethod.setLimit(10);
-        } else if (agent.getSearchMethod() instanceof BeamSearch) {
-            BeamSearch searchMethod = (BeamSearch) agent.getSearchMethod();
-            searchMethod.setBeamSize(10);
         }
     }
 }
