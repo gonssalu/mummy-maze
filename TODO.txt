@@ -6,4 +6,6 @@ permitir input por cmd para usar um batch para ajjudar maybe?? (maybe not cuz ti
 
 Contador para saber quanto tempo cada search demora
 
+Meter no nome do ficheiro auto tipo algo q identifique a versao do programa e tipo auto name maybe??? idk pensar melhor
+
 

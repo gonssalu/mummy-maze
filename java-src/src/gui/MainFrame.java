@@ -173,17 +173,16 @@ public class MainFrame extends JFrame {
 
                                     textArea.append("...");
                                     MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
+                                    sb.append("\n").append(file.getName()).append(";");
                                     try{
                                         agent.solveProblem(problem);
                                         if(agent.hasBeenStopped())
                                             textArea.append(" Stopped.");
                                         else
                                             textArea.append(" Ok.");
-                                        sb.append("\n").append(file.getName()).append(";");
                                         sb.append(agent.getCsvSearchReport());
                                     }catch(Exception e){
                                         textArea.append(" Not ok.");
-                                        sb.append("\n").append(file.getName()).append(";");
                                         sb.append(agent.getCsvSearchReport().replaceFirst("ERROR", ""));
                                     }
                                 }
@@ -201,8 +200,10 @@ public class MainFrame extends JFrame {
 
                 @Override
                 public void done() {
-                    if(isCancelled())
+                    if(isCancelled()){
+                        sb.append(agent.getCsvSearchReport());
                         sb.append("\nSTOPPED BY USER");
+                    }
                     String fileContent = sb.toString();
                     if(fileContent.length() > 0)
                         try {
