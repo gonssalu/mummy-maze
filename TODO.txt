@@ -1,1 +1,2 @@
-Primeira mumia a entrar ganha, n pode haver duas mumias diferentes
+set correct size, loop through size.
+change search algs, SPECIALLY IDA*
