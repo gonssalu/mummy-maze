@@ -1,15 +1,9 @@
-Excel stuff
-Buttons extra
+Contador solution cost
+Abrir a porta *imediatamente* (antes que o inimigo passe)
 
-Que inimigo se move primeiro?
+No relatório do projeto não é necessário apresentar resultados para os algoritmos Limited Depth First Search e Beam Search.
 
-Quando o herói passa por cima da chave quando um (por ex.) escorpião está mesmo em frente à porta, a porta "fecha na cara" do escorpião ou o escorpião consegue passar mesmo antes da porta fechar?
-
-O caminho que abre automatico dos niveis é preciso ser algo especifico ou a stora dps muda?
-
-Deve-se poder mudar o algoritmo antes de se selecionar um nivel?
-
-NOT SURE:
-PORTA:
-   - Neste momento todos os inimigos abrem a porta
-Quando clico no "Solve" após mostrar a solução ele da erro
+Relatório:
+legenda para cada tabela
+imagens
+símbolo de observações

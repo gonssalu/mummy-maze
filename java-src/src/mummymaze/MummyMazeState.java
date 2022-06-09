@@ -127,33 +127,15 @@ public class MummyMazeState extends State implements Cloneable {
             toggleDoors();
     }
 
-    public void checkEnemyForDoorToggle() {
-        //Check if an enemy stepped on the key
-
-        for (TileType type : enemies.keySet())
-            for (Entity en : enemies.get(type)) {
-                if (!en.isAlive())
-                    continue;
-                //Check if any enemy is stepping on the key
-                if (en.equals(key)) {
-                    toggleDoors();
-                    return;
-                }
-            }
-    }
-
     @Override
     public void executeAction(Action action) {
         action.execute(this);
 
         checkHeroForDoorToggle(action);
 
-        if (!isAtGoal()) {
+        if (!isAtGoal())
             updateEnemies();
 
-            if (!isHeroDead)
-                checkEnemyForDoorToggle();
-        }
 
 
         fireMazeChanged();
@@ -344,11 +326,19 @@ public class MummyMazeState extends State implements Cloneable {
         }
 
         if (enemyMoved) {
-            Point pos = enemies.get(enemyType).get(enemyIdx);
-            if (enemies.get(enemyType).get(enemyIdx).equals(hero))
-                isHeroDead = true;
+            boolean enemyDied = checkIfEnemyDied(enemyType, enemyIdx);
+            if(!enemyDied){
+                Point pos = enemies.get(enemyType).get(enemyIdx);
+                if (pos.equals(hero))
+                    isHeroDead = true;
+                else{
+                    if(pos.equals(key)) //If enemy steps on the key, toggle the doors
+                        toggleDoors();
+                }
+            }
 
-            return !checkIfEnemyDied(enemyType, enemyIdx);
+
+            return !enemyDied;
         }
 
         return true;

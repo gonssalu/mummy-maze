@@ -4,7 +4,6 @@ import agent.Action;
 import agent.Problem;
 import agent.Solution;
 import agent.State;
-import mummymaze.MummyMazeState;
 import utils.NodeCollection;
 
 import java.util.HashSet;
