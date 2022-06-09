@@ -1,7 +1,4 @@
-Excel stuff
-Buttons extra
+Contador solution cost
+Abrir a porta *imediatamente* (antes que o inimigo passe)
 
-Solution cost
-Abrir a porta antes que o inimigo passe (ou indicar no relatório)
-
-No relatório do projeto não é necessário apresentarem resultados para os algoritmos Limited Depth First Search e Beam Search.
+No relatório do projeto não é necessário apresentar resultados para os algoritmos Limited Depth First Search e Beam Search.
