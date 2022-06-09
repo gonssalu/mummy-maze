@@ -15,35 +15,41 @@ public class IDAStarSearch extends InformedSearch {
     private double limit;
     private double newLimit;
 
-    /*@Override
+    @Override
     public Solution search(Problem problem) {
         statistics.reset();
         stopped = false;
+        this.heuristic = problem.getHeuristic();
+        limit = heuristic.compute(problem.getInitialState());
 
-        //TODO
+        Solution solution;
+        boolean stop = false;
+        do {
+            solution = graphSearch(problem);
+            if(newLimit==limit)
+                stop = true;
+            limit = newLimit;
+        } while (solution == null && !stop);
 
-        return null;
-    }*/
+        return solution;
+    }
 
     @Override
     protected Solution graphSearch(Problem problem) {
+        newLimit = Double.MAX_VALUE;
         frontier.clear();
         frontier.add(new Node(problem.getInitialState()));
-
         while (!frontier.isEmpty() && !stopped) {
             Node n = frontier.poll();
             State state = n.getState();
             if (problem.isGoal(state)) {
                 return new Solution(problem, n);
             }
-            int successorsSize = 0;
-            if (n.getDepth() < limit) {
-                List<Action> actions = problem.getActions(state);
-                successorsSize = actions.size();
-                for (Action action : actions) {
-                    State successor = problem.getSuccessor(state, action);
-                    addSuccessorToFrontier(successor, n);
-                }
+            List<Action> actions = problem.getActions(state);
+            int successorsSize = actions.size();
+            for (Action action : actions) {
+                State successor = problem.getSuccessor(state, action);
+                addSuccessorToFrontier(successor, n);
             }
             computeStatistics(successorsSize);
         }
