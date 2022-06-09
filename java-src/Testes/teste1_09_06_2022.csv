@@ -1,0 +1,84 @@
+Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States
+
+nivel1.txt;Breadth first search;N/A;N/A;YES;11.0;64;12;172
+nivel1.txt;Uniform cost search;N/A;N/A;YES;11.0;67;12;183
+nivel1.txt;Depth first search;N/A;N/A;YES;13.0;220;23;338
+nivel1.txt;Iterative deepening search;N/A;13.0;YES;11.0;5314;18;11065
+nivel1.txt;Greedy best first search;Distance to the exit;N/A;YES;11.0;17;29;66
+nivel1.txt;Greedy best first search;Distance from closest enemy;N/A;YES;14.0;24;12;91
+nivel1.txt;Greedy best first search;Distance from closest enemy and goal;N/A;YES;11.0;26;28;94
+nivel1.txt;A* search;Distance to the exit;N/A;YES;11.0;17;29;66
+nivel1.txt;A* search;Distance from closest enemy;N/A;YES;12.0;45;26;165
+nivel1.txt;A* search;Distance from closest enemy and goal;N/A;YES;12.0;25;30;97
+nivel1.txt;IDA* search;Distance to the exit;N/A;YES;11.0;17;8;66
+nivel1.txt;IDA* search;Distance from closest enemy;N/A;YES;11.0;1351;20;5025
+nivel1.txt;IDA* search;Distance from closest enemy and goal;N/A;YES;11.0;55;12;200
+nivel10.txt;Breadth first search;N/A;N/A;YES;38.0;165;10;423
+nivel10.txt;Uniform cost search;N/A;N/A;YES;38.0;167;11;430
+nivel10.txt;Depth first search;N/A;N/A;YES;53.0;187;24;348
+nivel10.txt;Iterative deepening search;N/A;40.0;YES;38.0;140820;24;243419
+nivel10.txt;Greedy best first search;Distance to the exit;N/A;YES;38.0;105;53;355
+nivel10.txt;Greedy best first search;Distance from closest enemy;N/A;YES;42.0;93;50;327
+nivel10.txt;Greedy best first search;Distance from closest enemy and goal;N/A;YES;38.0;91;52;314
+nivel10.txt;A* search;Distance to the exit;N/A;YES;38.0;102;54;347
+nivel10.txt;A* search;Distance from closest enemy;N/A;YES;40.0;116;48;395
+nivel10.txt;A* search;Distance from closest enemy and goal;N/A;YES;38.0;97;54;330
+nivel10.txt;IDA* search;Distance to the exit;N/A;YES;38.0;6024;12;21736
+nivel10.txt;IDA* search;Distance from closest enemy;N/A;YES;40.0;4839;14;16704
+nivel10.txt;IDA* search;Distance from closest enemy and goal;N/A;YES;38.0;4910;13;17035
+nivel11.txt;Breadth first search;N/A;N/A;YES;16.0;522;68;1199
+nivel11.txt;Uniform cost search;N/A;N/A;YES;16.0;522;66;1206
+nivel11.txt;Depth first search;N/A;N/A;YES;26.0;41;21;116
+nivel11.txt;Iterative deepening search;N/A;18.0;YES;16.0;146501;22;264356
+nivel11.txt;Greedy best first search;Distance to the exit;N/A;YES;19.0;326;89;1019
+nivel11.txt;Greedy best first search;Distance from closest enemy;N/A;YES;19.0;159;98;506
+nivel11.txt;Greedy best first search;Distance from closest enemy and goal;N/A;YES;17.0;145;54;475
+nivel11.txt;A* search;Distance to the exit;N/A;YES;16.0;327;121;1025
+nivel11.txt;A* search;Distance from closest enemy;N/A;YES;16.0;363;150;1117
+nivel11.txt;A* search;Distance from closest enemy and goal;N/A;YES;16.0;218;77;707
+nivel11.txt;IDA* search;Distance to the exit;N/A;YES;16.0;6578;87;20903
+nivel11.txt;IDA* search;Distance from closest enemy;N/A;YES;16.0;5427;119;17855
+nivel11.txt;IDA* search;Distance from closest enemy and goal;N/A;YES;16.0;1569;57;5309
+nivel12.txt;Breadth first search;N/A;N/A;YES;29.0;255;38;580
+nivel12.txt;Uniform cost search;N/A;N/A;YES;29.0;256;36;582
+nivel12.txt;Depth first search;N/A;N/A;YES;36.0;2301;28;3804
+nivel12.txt;Iterative deepening search;N/A;31.0;YES;29.0;517608;27;908410
+nivel12.txt;Greedy best first search;Distance to the exit;N/A;YES;29.0;152;91;510
+nivel12.txt;Greedy best first search;Distance from closest enemy;N/A;YES;35.0;150;84;500
+nivel12.txt;Greedy best first search;Distance from closest enemy and goal;N/A;YES;29.0;146;95;496
+nivel12.txt;A* search;Distance to the exit;N/A;YES;29.0;155;88;516
+nivel12.txt;A* search;Distance from closest enemy;N/A;YES;29.0;166;83;550
+nivel12.txt;A* search;Distance from closest enemy and goal;N/A;YES;29.0;155;86;515
+nivel12.txt;IDA* search;Distance to the exit;N/A;YES;29.0;6742;36;22449
+nivel12.txt;IDA* search;Distance from closest enemy;N/A;YES;29.0;7228;46;24816
+nivel12.txt;IDA* search;Distance from closest enemy and goal;N/A;YES;29.0;5618;41;18824
+nivel13.txt;Breadth first search;N/A;N/A;YES;33.0;107;8;283
+nivel13.txt;Uniform cost search;N/A;N/A;YES;33.0;108;9;286
+nivel13.txt;Depth first search;N/A;N/A;YES;39.0;86;19;211
+nivel13.txt;Iterative deepening search;N/A;35.0;YES;33.0;8066;17;19512
+nivel13.txt;Greedy best first search;Distance to the exit;N/A;YES;33.0;70;23;227
+nivel13.txt;Greedy best first search;Distance from closest enemy;N/A;YES;33.0;83;22;267
+nivel13.txt;Greedy best first search;Distance from closest enemy and goal;N/A;YES;33.0;84;23;271
+nivel13.txt;A* search;Distance to the exit;N/A;YES;33.0;82;24;267
+nivel13.txt;A* search;Distance from closest enemy;N/A;YES;33.0;88;21;282
+nivel13.txt;A* search;Distance from closest enemy and goal;N/A;YES;33.0;85;22;274
+nivel13.txt;IDA* search;Distance to the exit;N/A;YES;33.0;1418;8;4498
+nivel13.txt;IDA* search;Distance from closest enemy;N/A;YES;33.0;3179;13;10230
+nivel13.txt;IDA* search;Distance from closest enemy and goal;N/A;YES;33.0;1611;7;5133
+nivel14.txt;Breadth first search;N/A;N/A;YES;34.0;325;22;712
+nivel14.txt;Uniform cost search;N/A;N/A;YES;34.0;324;26;709
+nivel14.txt;Depth first search;N/A;N/A;YES;37.0;229;24;459
+nivel14.txt;Iterative deepening search;N/A;36.0;YES;34.0;163300;26;250197
+nivel14.txt;Greedy best first search;Distance to the exit;N/A;YES;34.0;119;63;377
+nivel14.txt;Greedy best first search;Distance from closest enemy;N/A;YES;36.0;106;57;351
+nivel14.txt;Greedy best first search;Distance from closest enemy and goal;N/A;YES;36.0;94;35;309
+nivel14.txt;A* search;Distance to the exit;N/A;YES;34.0;222;94;663
+nivel14.txt;A* search;Distance from closest enemy;N/A;YES;34.0;238;90;706
+nivel14.txt;A* search;Distance from closest enemy and goal;N/A;YES;34.0;212;79;634
+nivel14.txt;IDA* search;Distance to the exit;N/A;YES;34.0;5738;28;16849
+nivel14.txt;IDA* search;Distance from closest enemy;N/A;YES;34.0;7800;35;23446
+nivel14.txt;IDA* search;Distance from closest enemy and goal;N/A;YES;34.0;4323;37;13088
+nivel15.txt;Breadth first search;N/A;N/A;YES;39.0;462;39;1081
+nivel15.txt;Uniform cost search;N/A;N/A;YES;39.0;462;38;1081
+nivel15.txt;Depth first search;N/A;N/A;YES;40.0;37692939;56;53897403
+STOPPED BY USER

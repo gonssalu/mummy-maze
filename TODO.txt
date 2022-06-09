@@ -1,2 +1,9 @@
-set correct size, loop through size.
-change search algs, SPECIALLY IDA*
+change search algs, SPECIALLY IDA* [o ida neste momento esta melhor mas penso que nao é o melhor possivel]
+
+botao do all tests para cada nivel separadamente
+
+permitir input por cmd para usar um batch para ajjudar maybe?? (maybe not cuz time ticking)
+
+Contador para saber quanto tempo cada search demora
+
+
