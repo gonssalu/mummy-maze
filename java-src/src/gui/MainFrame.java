@@ -11,7 +11,6 @@ import searchmethods.DepthLimitedSearch;
 import searchmethods.SearchMethod;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -22,10 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.concurrent.RunnableFuture;
 
 public class MainFrame extends JFrame {
 
@@ -112,7 +109,7 @@ public class MainFrame extends JFrame {
     }
 
     public void buttonSolveAllTests_ActionPerformed() throws IOException {
-        JFileChooser fc = new JFileChooser(new java.io.File("../"));
+        JFileChooser fc = new JFileChooser(new java.io.File("./Testes"));
 
         fc.resetChoosableFileFilters();
         fc.setFileFilter(new FileNameExtensionFilter("csv file","csv"));
@@ -125,7 +122,7 @@ public class MainFrame extends JFrame {
         if(fc.getSelectedFile().exists())
             fc.getSelectedFile().delete();
         Files.writeString(fc.getSelectedFile().toPath(),
-                "Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States");
+                "Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States\n");
 
         StringBuilder sb = new StringBuilder();
         try {
@@ -135,27 +132,38 @@ public class MainFrame extends JFrame {
             buttonSolve.setEnabled(false);
             buttonStop.setEnabled(true);
             buttonSolveAllTests.setEnabled(false);
+            comboBoxHeuristics.setEnabled(false);
+            comboBoxSearchMethods.setEnabled(false);
             textArea.setText("Solving all tests...\n");
             keepRunning = true;
 
-            SwingWorker worker = new SwingWorker<Solution, Void>() {
+            SwingWorker worker = new SwingWorker<Void, Void>() {
                 @Override
-                public Solution doInBackground() {
+                public Void doInBackground() {
                     try {
                         for (File file : Objects.requireNonNull(new File("./Niveis").listFiles())) {
-                            Thread.sleep(3000);
                             if(!keepRunning) break;
                             agent.readInitialStateFromFile(file);
-                            prepareSearchAlgorithmForSolveAll();  //CHANGE THIS
-                            MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
+                            textArea.append("\nRunning tests on " + file.getName() + "...");
+                            for (SearchMethod searchMethod : agent.getSearchMethodsArray()) {
+                                if(!keepRunning) break;
+                                agent.resetEnvironment();
+                                agent.setSearchMethod(searchMethod);
+                                textArea.append("\n\t" + searchMethod + "...");
 
-                            textArea.setText(textArea.getText() + "\nRunning " + file.getName() + "...");
+                                prepareSearchAlgorithmForSolveAll();  //CHANGE THIS
+                                MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
+                                try{
+                                    agent.solveProblem(problem);
+                                    textArea.append(" Ok.");
+                                    sb.append("\n").append(file.getName()).append(";").append(agent.getCsvSearchReport());
+                                }catch(Exception e){
+                                    textArea.append(" Not ok.");
+                                }
+                            }
 
-                            agent.solveProblem(problem);
 
-                            textArea.setText(textArea.getText() + " Done.");
-
-                            sb.append("\n").append(file.getName()).append(";").append(agent.getCsvSearchReport());
+                            textArea.append("\nFinished tests on " + file.getName() + ".\n");
 
                         }
                     } catch (Exception e) {
@@ -174,14 +182,16 @@ public class MainFrame extends JFrame {
                             e.printStackTrace();
                         }
                     if (!agent.hasBeenStopped()) {
-                        textArea.setText(textArea.getText() +"\n\nDone! All tests were saved in " + fc.getSelectedFile().getName());
+                        textArea.append("\n\nDone! All tests were saved in " + fc.getSelectedFile().getName());
                     }else{
-                        textArea.setText(textArea.getText() +"\n\nAction stopped! All finished tests were saved in " + fc.getSelectedFile().getName());
+                        textArea.append("\n\nAction stopped! All finished tests were saved in " + fc.getSelectedFile().getName());
                     }
                     buttonSolveAllTests.setEnabled(true);
                     buttonStop.setEnabled(false);
                     buttonInitialState.setEnabled(true);
                     buttonSolve.setEnabled(true);
+                    comboBoxSearchMethods.setEnabled(true);
+                    comboBoxHeuristics.setEnabled(true);
                 }
             };
 
@@ -240,6 +250,7 @@ public class MainFrame extends JFrame {
                 textArea.setText("");
                 buttonStop.setEnabled(true);
                 buttonSolve.setEnabled(false);
+                buttonSolveAllTests.setEnabled(false);
                 buttonInitialState.setEnabled(false);
                 try {
                     prepareSearchAlgorithm();
@@ -261,6 +272,7 @@ public class MainFrame extends JFrame {
                 }
                 buttonSolve.setEnabled(true);
                 buttonStop.setEnabled(false);
+                buttonSolveAllTests.setEnabled(true);
                 buttonInitialState.setEnabled(true);
             }
         };
