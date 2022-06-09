@@ -146,31 +146,24 @@ public class MainFrame extends JFrame {
                             textArea.append("\nRunning tests on " + file.getName() + "...");
                             for (int i = 0; i<agent.getSearchMethodsArray().length; i++) {
 
+                                if(i==3 || i==7) continue; //Don't run tests on the search methods Limited Depth First Search and Beam Search, like the teacher said.
+
                                 SearchMethod searchMethod = agent.getSearchMethodsArray()[i];
                                 Heuristic[] heuristics = agent.getHeuristicsArray();
 
-                                //Only run with every heuristic on AStarSearch (index>4),
-                                //  but run at least once otherwise so (h==0).
-                                for(int h = 0; (h<heuristics.length && (h==0|| (/*i>4 &&*/ i==6) )); h++ ){
+                                //If (index>4) the search method is informed therefore it should run a test for each heuristic available
+                                //If the search method is not informed it should only run this one time (h==0)
+                                for(int h = 0; (h<heuristics.length && ( h==0 || i>4 )); h++ ){
 
+                                    //If the search method is not informed this will stay null
                                     Heuristic heuristic = null;
 
                                     textArea.append("\n\t" + searchMethod);
 
-                                    //use the first heuristic in informed but not AStarSearch
+                                    //Only choose an heuristic if the search method is informed
                                     if(i>4){
                                         heuristic = agent.getHeuristicsArray()[h];
                                         textArea.append(" (" + heuristic + " )");
-                                    }
-
-                                    //If beam search or limited search define a limit/beam size
-                                    if(i == 3 || i == 7){
-                                        int limit = 10;
-                                        if (searchMethod instanceof DepthLimitedSearch dls) {
-                                            dls.setLimit(limit);
-                                        } else if (searchMethod instanceof BeamSearch bs) {
-                                            bs.setBeamSize(limit);
-                                        }
                                     }
 
                                     agent.setHeuristic(heuristic);
