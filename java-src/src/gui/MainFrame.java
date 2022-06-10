@@ -43,6 +43,9 @@ public class MainFrame extends JFrame {
     private JTextArea textArea;
     private GameArea game;
     private SwingWorker runningWorker;
+    private StringBuilder sb;
+
+    private final String FILE_HEADER = "Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States\n";
 
     public MainFrame() {
         try {
@@ -123,9 +126,9 @@ public class MainFrame extends JFrame {
         if(fc.getSelectedFile().exists())
             fc.getSelectedFile().delete();
         Files.writeString(fc.getSelectedFile().toPath(),
-                "Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States\n");
+                FILE_HEADER);
 
-        StringBuilder sb = new StringBuilder();
+        sb = new StringBuilder();
         try {
             buttonShowSolution.setEnabled(false);
             buttonReset.setEnabled(false);
@@ -142,55 +145,7 @@ public class MainFrame extends JFrame {
                 public Void doInBackground() {
                     try {
                         for (File file : Objects.requireNonNull(new File("./Niveis").listFiles())) {
-                            agent.readInitialStateFromFile(file);
-                            textArea.append("\nRunning tests on " + file.getName() + "...");
-                            for (int i = 0; i<agent.getSearchMethodsArray().length; i++) {
-
-                                if(i==3 || i==7) continue; //Don't run tests on the search methods Limited Depth First Search and Beam Search, like the teacher said.
-
-                                SearchMethod searchMethod = agent.getSearchMethodsArray()[i];
-                                Heuristic[] heuristics = agent.getHeuristicsArray();
-
-                                //If (index>4) the search method is informed therefore it should run a test for each heuristic available
-                                //If the search method is not informed it should only run this one time (h==0)
-                                for(int h = 0; (h<heuristics.length && ( h==0 || i>4 )); h++ ){
-
-                                    //If the search method is not informed this will stay null
-                                    Heuristic heuristic = null;
-
-                                    textArea.append("\n\t" + searchMethod);
-
-                                    //Only choose an heuristic if the search method is informed
-                                    if(i>4){
-                                        heuristic = agent.getHeuristicsArray()[h];
-                                        textArea.append(" (" + heuristic + " )");
-                                    }
-
-                                    agent.setHeuristic(heuristic);
-
-                                    agent.resetEnvironment();
-                                    agent.setSearchMethod(searchMethod);
-
-                                    textArea.append("...");
-                                    MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
-                                    sb.append("\n").append(file.getName()).append(";");
-                                    try{
-                                        agent.solveProblem(problem);
-                                        if(agent.hasBeenStopped())
-                                            textArea.append(" Stopped.");
-                                        else
-                                            textArea.append(" Ok.");
-                                        sb.append(agent.getCsvSearchReport());
-                                    }catch(Exception e){
-                                        textArea.append(" Not ok.");
-                                        sb.append(agent.getCsvSearchReport().replaceFirst("ERROR", ""));
-                                    }
-                                }
-                            }
-
-
-                            textArea.append("\nFinished tests on " + file.getName() + ".\n");
-
+                            testOnFile(file);
                         }
                     } catch (Exception e) {
                         e.printStackTrace(System.err);
@@ -222,10 +177,8 @@ public class MainFrame extends JFrame {
                     buttonSolve.setEnabled(true);
                     comboBoxSearchMethods.setEnabled(true);
                     comboBoxHeuristics.setEnabled(true);
-                    int index = comboBoxSearchMethods.getSelectedIndex();
-                    agent.setSearchMethod((SearchMethod) comboBoxSearchMethods.getItemAt(index));
-                    index = comboBoxHeuristics.getSelectedIndex();
-                    agent.setHeuristic((Heuristic) comboBoxHeuristics.getItemAt(index));
+                    agent.setSearchMethod((SearchMethod) comboBoxSearchMethods.getItemAt(comboBoxSearchMethods.getSelectedIndex()));
+                    agent.setHeuristic((Heuristic) comboBoxHeuristics.getItemAt(comboBoxHeuristics.getSelectedIndex()));
 
                 }
             };
@@ -236,6 +189,57 @@ public class MainFrame extends JFrame {
         } catch (NoSuchElementException e2) {
             JOptionPane.showMessageDialog(this, "File format not valid", "Error!", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    //It has to be synchronized because it is called from a different thread
+    private synchronized void testOnFile(File file) throws IOException {
+        agent.readInitialStateFromFile(file);
+        textArea.append("\nRunning tests on " + file.getName() + "...");
+        for (int i = 0; i<agent.getSearchMethodsArray().length; i++) {
+
+            if(i==3 || i==7) continue; //Don't run tests on the search methods Limited Depth First Search and Beam Search, like the teacher said.
+
+            SearchMethod searchMethod = agent.getSearchMethodsArray()[i];
+            Heuristic[] heuristics = agent.getHeuristicsArray();
+
+            //If (index>4) the search method is informed therefore it should run a test for each heuristic available
+            //If the search method is not informed it should only run this one time (h==0)
+            for(int h = 0; (h<heuristics.length && ( h==0 || i>4 )); h++ ){
+
+                //If the search method is not informed this will stay null
+                Heuristic heuristic = null;
+
+                textArea.append("\n\t" + searchMethod);
+
+                //Only choose an heuristic if the search method is informed
+                if(i>4){
+                    heuristic = agent.getHeuristicsArray()[h];
+                    textArea.append(" (" + heuristic + " )");
+                }
+
+                agent.setHeuristic(heuristic);
+
+                agent.resetEnvironment(); //Reset the level for each test
+                agent.setSearchMethod(searchMethod);
+
+                textArea.append("...");
+                MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
+                sb.append("\n").append(file.getName()).append(";");
+                try{
+                    agent.solveProblem(problem);
+                    if(agent.hasBeenStopped())
+                        textArea.append(" Stopped.");
+                    else
+                        textArea.append(" Ok.");
+                    sb.append(agent.getCsvSearchReport());
+                }catch(Exception e){
+                    textArea.append(" Not ok.");
+                    sb.append(agent.getCsvSearchReport().replaceFirst("ERROR", ""));
+                }
+            }
+        }
+
+        textArea.append("\nFinished tests on " + file.getName() + ".\n");
     }
 
     public void buttonInitialState_ActionPerformed() {
