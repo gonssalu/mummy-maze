@@ -49,7 +49,7 @@ public class MainFrame extends JFrame {
     private LinkedList<StringBuilder> stringBuilders;
     private LinkedList<File> outputFiles;
 
-    private final String FILE_HEADER = "Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States\n";
+    private final String FILE_HEADER = "Level;Search Algorithm;Heuristic;Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States\n";
 
     public MainFrame() {
         try {
@@ -368,7 +368,6 @@ public class MainFrame extends JFrame {
         SwingWorker worker = new SwingWorker<Solution, Void>() {
             @Override
             public Solution doInBackground() {
-                System.out.println(textArea.getText());
                 textArea.setText("");
                 buttonStop.setEnabled(true);
                 buttonSolve.setEnabled(false);
