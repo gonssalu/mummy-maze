@@ -229,7 +229,7 @@ public class MainFrame extends JFrame {
     }
 
     //It has to be synchronized because it is called from a different thread
-    private synchronized void finishTests(boolean wasCancelled) {
+    private void finishTests(boolean wasCancelled) {
         for(int f = 0; f<outputFiles.size(); f++){
             File currentPath = outputFiles.get(f);
             if(stringBuilders.size()<=f) continue; //In case it was stopped in an unfortunate timing
