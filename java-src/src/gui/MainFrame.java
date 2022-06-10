@@ -21,9 +21,10 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class MainFrame extends JFrame {
 
@@ -42,8 +43,10 @@ public class MainFrame extends JFrame {
     private JComboBox comboBoxHeuristics;
     private JTextArea textArea;
     private GameArea game;
+
     private SwingWorker runningWorker;
-    private StringBuilder sb;
+    private LinkedList<StringBuilder> stringBuilders;
+    private LinkedList<File> outputFiles;
 
     private final String FILE_HEADER = "Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States\n";
 
@@ -116,35 +119,26 @@ public class MainFrame extends JFrame {
         JFileChooser fc = new JFileChooser(new java.io.File("./Testes"));
 
         fc.resetChoosableFileFilters();
-        fc.setFileFilter(new FileNameExtensionFilter("csv file","csv"));
+        fc.setDialogTitle("Select a folder to save the tests too");
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         if (fc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
 
-
-        if(!fc.getSelectedFile().getAbsolutePath().endsWith(".csv"))
-            fc.setSelectedFile(new File(fc.getSelectedFile().getAbsolutePath() + ".csv"));
-        if(fc.getSelectedFile().exists())
-            fc.getSelectedFile().delete();
-        Files.writeString(fc.getSelectedFile().toPath(),
-                FILE_HEADER);
-
-        sb = new StringBuilder();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy-HH_mm_ss");
+        Date date = new Date();
+        String dateStr = formatter.format(date);
+        String rn = String.valueOf((new Random()).nextInt(99999 - 10000) + 10000);
+        String folderName = fc.getSelectedFile().toPath() + "/" + dateStr + "-" + rn + "/";
+        Files.createDirectories(Path.of(folderName));
         try {
-            buttonShowSolution.setEnabled(false);
-            buttonReset.setEnabled(false);
-            buttonInitialState.setEnabled(false);
-            buttonSolve.setEnabled(false);
-            buttonStop.setEnabled(true);
-            buttonSolveAllTests.setEnabled(false);
-            comboBoxHeuristics.setEnabled(false);
-            comboBoxSearchMethods.setEnabled(false);
-            textArea.setText("Solving all tests...\n");
+            prepareForTests("Solving all levels...\n");
 
             SwingWorker worker = new SwingWorker<Void, Void>() {
                 @Override
                 public Void doInBackground() {
                     try {
                         for (File file : Objects.requireNonNull(new File("./Niveis").listFiles())) {
+                            prepareFile(folderName + file.getName() + ".csv");
                             testOnFile(file);
                         }
                     } catch (Exception e) {
@@ -155,31 +149,7 @@ public class MainFrame extends JFrame {
 
                 @Override
                 public void done() {
-                    if(isCancelled()){
-                        sb.append(agent.getCsvSearchReport());
-                        sb.append("\nSTOPPED BY USER");
-                    }
-                    String fileContent = sb.toString();
-                    if(fileContent.length() > 0)
-                        try {
-                            Files.writeString(fc.getSelectedFile().toPath(), fileContent, StandardOpenOption.APPEND);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    if (!agent.hasBeenStopped() && !isCancelled()) {
-                        textArea.append("\n\nDone! All tests were saved in " + fc.getSelectedFile().getName());
-                    }else{
-                        textArea.append("\n\nAction stopped! All finished tests were saved in " + fc.getSelectedFile().getName());
-                    }
-                    buttonSolveAllTests.setEnabled(true);
-                    buttonStop.setEnabled(false);
-                    buttonInitialState.setEnabled(true);
-                    buttonSolve.setEnabled(true);
-                    comboBoxSearchMethods.setEnabled(true);
-                    comboBoxHeuristics.setEnabled(true);
-                    agent.setSearchMethod((SearchMethod) comboBoxSearchMethods.getItemAt(comboBoxSearchMethods.getSelectedIndex()));
-                    agent.setHeuristic((Heuristic) comboBoxHeuristics.getItemAt(comboBoxHeuristics.getSelectedIndex()));
-
+                    finishTests(isCancelled());
                 }
             };
             runningWorker = worker;
@@ -191,8 +161,68 @@ public class MainFrame extends JFrame {
         }
     }
 
+    private void prepareForTests(String msg) {
+        buttonShowSolution.setEnabled(false);
+        buttonReset.setEnabled(false);
+        buttonInitialState.setEnabled(false);
+        buttonSolve.setEnabled(false);
+        buttonStop.setEnabled(true);
+        buttonSolveAllTests.setEnabled(false);
+        comboBoxHeuristics.setEnabled(false);
+        comboBoxSearchMethods.setEnabled(false);
+
+        outputFiles = new LinkedList<>();
+        stringBuilders = new LinkedList<>();
+
+        textArea.setText(msg);
+    }
+
+    //It has to be synchronized because it is called from a different thread
+    private synchronized void finishTests(boolean wasCancelled) {
+        for(int f = 0; f<outputFiles.size(); f++){
+            File currentPath = outputFiles.get(f);
+            if(stringBuilders.size()<=f) continue; //In case it was stopped in an unfortunate timing
+            StringBuilder sb = stringBuilders.get(f);
+            if(wasCancelled && f==outputFiles.size()-1){ //If its on the last file and was cancelled the last test was interrupted
+                sb.append(agent.getCsvSearchReport());
+                sb.append("\nSTOPPED BY USER");
+            }
+            String fileContent = sb.toString();
+            if(fileContent.length() > 0)
+                try {
+                    Files.writeString(currentPath.toPath(), fileContent, StandardOpenOption.APPEND);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
+
+        if (!agent.hasBeenStopped() && !wasCancelled) {
+            textArea.append("\n\nDone! All tests were saved in the chosen folder.");
+        }else{
+            textArea.append("\n\nAction stopped! All finished tests were saved in the chosen folder.");
+        }
+
+        buttonSolveAllTests.setEnabled(true);
+        buttonStop.setEnabled(false);
+        buttonInitialState.setEnabled(true);
+        buttonSolve.setEnabled(true);
+        comboBoxSearchMethods.setEnabled(true);
+        comboBoxHeuristics.setEnabled(true);
+        agent.setSearchMethod((SearchMethod) comboBoxSearchMethods.getItemAt(comboBoxSearchMethods.getSelectedIndex()));
+        agent.setHeuristic((Heuristic) comboBoxHeuristics.getItemAt(comboBoxHeuristics.getSelectedIndex()));
+    }
+
+    //It has to be synchronized because it is called from a different thread
+    private synchronized void prepareFile(String path) throws IOException {
+        outputFiles.add(new File(path));
+        Files.writeString(outputFiles.getLast().toPath(),
+                FILE_HEADER, StandardOpenOption.CREATE);
+        stringBuilders.add(new StringBuilder());
+    }
+
     //It has to be synchronized because it is called from a different thread
     private synchronized void testOnFile(File file) throws IOException {
+        StringBuilder sb = stringBuilders.getLast();
         agent.readInitialStateFromFile(file);
         textArea.append("\nRunning tests on " + file.getName() + "...");
         for (int i = 0; i<agent.getSearchMethodsArray().length; i++) {
@@ -238,7 +268,7 @@ public class MainFrame extends JFrame {
                 }
             }
         }
-
+        stringBuilders.set(stringBuilders.size()-1, sb);
         textArea.append("\nFinished tests on " + file.getName() + ".\n");
     }
 

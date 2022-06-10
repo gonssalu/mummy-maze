@@ -1,0 +1,15 @@
+Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States
+
+nivel10.txt;Breadth first search;N/A;N/A;YES;38.0;165;10;423
+nivel10.txt;Uniform cost search;N/A;N/A;YES;38.0;167;11;430
+nivel10.txt;Depth first search;N/A;N/A;YES;53.0;187;24;348
+nivel10.txt;Iterative deepening search;N/A;40.0;YES;38.0;140820;24;243419
+nivel10.txt;Greedy best first search;Distance to the exit;N/A;YES;38.0;105;53;355
+nivel10.txt;Greedy best first search;Distance from closest enemy;N/A;YES;42.0;93;50;327
+nivel10.txt;Greedy best first search;Distance from closest enemy and goal;N/A;YES;38.0;91;52;314
+nivel10.txt;A* search;Distance to the exit;N/A;YES;38.0;102;54;347
+nivel10.txt;A* search;Distance from closest enemy;N/A;YES;40.0;116;48;395
+nivel10.txt;A* search;Distance from closest enemy and goal;N/A;YES;38.0;97;54;330
+nivel10.txt;IDA* search;Distance to the exit;N/A;YES;38.0;6024;12;21736
+nivel10.txt;IDA* search;Distance from closest enemy;N/A;YES;40.0;4839;14;16704
+nivel10.txt;IDA* search;Distance from closest enemy and goal;N/A;YES;38.0;4910;13;17035
