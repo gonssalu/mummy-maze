@@ -38,7 +38,8 @@ public class MainFrame extends JFrame {
     private final JButton buttonStop = new JButton("Stop");
     private final JButton buttonShowSolution = new JButton("Show solution");
     private final JButton buttonReset = new JButton("Reset to initial state");
-    private final JButton buttonSolveAllTests = new JButton("Solve all tests");
+    private final JButton buttonSolveAllTests = new JButton("Test all levels");
+    private final JButton buttonTestALevel = new JButton("Test a level");
     private JComboBox comboBoxSearchMethods;
     private JComboBox comboBoxHeuristics;
     private JTextArea textArea;
@@ -70,6 +71,9 @@ public class MainFrame extends JFrame {
         buttonInitialState.addActionListener(new ButtonInitialState_ActionAdapter(this));
         panelButtons.add(buttonSolve);
         buttonSolve.addActionListener(new ButtonSolve_ActionAdapter(this));
+        panelButtons.add(buttonTestALevel);
+        buttonTestALevel.setEnabled(true);
+        buttonTestALevel.addActionListener(new ButtonTestALevel_ActionAdapter(this));
         panelButtons.add(buttonSolveAllTests);
         buttonSolveAllTests.setEnabled(true);
         buttonSolveAllTests.addActionListener(new ButtonSolveAllTests_ActionAdapter(this));
@@ -111,6 +115,13 @@ public class MainFrame extends JFrame {
         mainPanel.add(panelSearchMethods, BorderLayout.CENTER);
         mainPanel.add(puzzlePanel, BorderLayout.SOUTH);
         contentPane.add(mainPanel);
+
+        try {
+            if(!Files.exists(Path.of("./Testes")))
+                Files.createDirectory(Path.of("./Testes")); // Be sure this directory exists.
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         pack();
     }
@@ -161,6 +172,45 @@ public class MainFrame extends JFrame {
         }
     }
 
+    public void buttonTestALevel_ActionPerformed() throws IOException {
+        JFileChooser fc = new JFileChooser(new java.io.File("./Niveis"));
+        fc.setDialogTitle("Chose a level to test");
+        if (fc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy-HH_mm_ss");
+        Date date = new Date();
+        String dateStr = formatter.format(date);
+        String rn = String.valueOf((new Random()).nextInt(99999 - 10000) + 10000);
+        String fullPath = "./Testes/" + fc.getSelectedFile().toPath() + "/" + fc.getSelectedFile().getName() + "-" + dateStr + "-" + rn + ".csv";
+        try {
+            prepareForTests("Solving level " + fc.getSelectedFile().getName() + "...\n");
+
+            SwingWorker worker = new SwingWorker<Void, Void>() {
+                @Override
+                public Void doInBackground() {
+                    try {
+                        prepareFile(fullPath);
+                        testOnFile(fc.getSelectedFile());
+                    } catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
+                    return null;
+                }
+
+                @Override
+                public void done() {
+                    finishTests(isCancelled());
+                }
+            };
+            runningWorker = worker;
+            worker.execute();
+
+
+        } catch (NoSuchElementException e2) {
+            JOptionPane.showMessageDialog(this, "File format not valid", "Error!", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void prepareForTests(String msg) {
         buttonShowSolution.setEnabled(false);
         buttonReset.setEnabled(false);
@@ -170,6 +220,7 @@ public class MainFrame extends JFrame {
         buttonSolveAllTests.setEnabled(false);
         comboBoxHeuristics.setEnabled(false);
         comboBoxSearchMethods.setEnabled(false);
+        buttonTestALevel.setEnabled(false);
 
         outputFiles = new LinkedList<>();
         stringBuilders = new LinkedList<>();
@@ -203,6 +254,7 @@ public class MainFrame extends JFrame {
         }
 
         buttonSolveAllTests.setEnabled(true);
+        buttonTestALevel.setEnabled(true);
         buttonStop.setEnabled(false);
         buttonInitialState.setEnabled(true);
         buttonSolve.setEnabled(true);
@@ -510,6 +562,24 @@ class ButtonSolveAllTests_ActionAdapter implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         try {
             adaptee.buttonSolveAllTests_ActionPerformed();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+}
+
+class ButtonTestALevel_ActionAdapter implements ActionListener {
+
+    private final MainFrame adaptee;
+
+    ButtonTestALevel_ActionAdapter(MainFrame adaptee) {
+        this.adaptee = adaptee;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            adaptee.buttonTestALevel_ActionPerformed();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
