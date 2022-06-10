@@ -1,0 +1,15 @@
+Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States
+
+nivel11.txt;Breadth first search;N/A;N/A;YES;16.0;522;68;1199
+nivel11.txt;Uniform cost search;N/A;N/A;YES;16.0;522;66;1206
+nivel11.txt;Depth first search;N/A;N/A;YES;26.0;41;21;116
+nivel11.txt;Iterative deepening search;N/A;18.0;YES;16.0;146501;22;264356
+nivel11.txt;Greedy best first search;Distance to the exit;N/A;YES;19.0;326;89;1019
+nivel11.txt;Greedy best first search;Distance from closest enemy;N/A;YES;19.0;159;98;506
+nivel11.txt;Greedy best first search;Distance from closest enemy and goal;N/A;YES;17.0;145;54;475
+nivel11.txt;A* search;Distance to the exit;N/A;YES;16.0;327;121;1025
+nivel11.txt;A* search;Distance from closest enemy;N/A;YES;16.0;363;150;1117
+nivel11.txt;A* search;Distance from closest enemy and goal;N/A;YES;16.0;218;77;707
+nivel11.txt;IDA* search;Distance to the exit;N/A;YES;16.0;6578;87;20903
+nivel11.txt;IDA* search;Distance from closest enemy;N/A;YES;16.0;5427;119;17855
+nivel11.txt;IDA* search;Distance from closest enemy and goal;N/A;YES;16.0;1569;57;5309

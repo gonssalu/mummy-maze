@@ -181,7 +181,7 @@ public class MainFrame extends JFrame {
         Date date = new Date();
         String dateStr = formatter.format(date);
         String rn = String.valueOf((new Random()).nextInt(99999 - 10000) + 10000);
-        String fullPath = "./Testes/" + fc.getSelectedFile().toPath() + "/" + fc.getSelectedFile().getName() + "-" + dateStr + "-" + rn + ".csv";
+        String fullPath = "./Testes/" + fc.getSelectedFile().getName() + "-" + dateStr + "-" + rn + ".csv";
         try {
             prepareForTests("Solving level " + fc.getSelectedFile().getName() + "...\n");
 
