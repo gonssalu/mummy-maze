@@ -47,7 +47,7 @@ public class DepthLimitedSearch extends DepthFirstSearch {
         return null;
     }
 
-    public double getLimit() {
+    public double getDepthLimit() {
         return limit;
     }
 

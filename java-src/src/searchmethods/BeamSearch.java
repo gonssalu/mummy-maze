@@ -59,6 +59,10 @@ public class BeamSearch extends AStarSearch {
         this.beamSize = beamSize;
     }
 
+    public int getBeamSize() {
+        return beamSize;
+    }
+
     @Override
     public String toString() {
         return "Beam search";
