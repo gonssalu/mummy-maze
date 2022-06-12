@@ -1,77 +1,75 @@
 package searchmethods;
 
-import agent.Action;
-import agent.Problem;
-import agent.Solution;
-import agent.State;
+import agent.*;
 
 import java.util.List;
 
-public class IDAStarSearch extends InformedSearch {
-    /*
-     * Note that, on each iteration, the search is done in a depth first search way.
+public class IDAStarSearch extends IterativeDeepeningSearch {
+    /**
+     * This algorithm is an hybrid: it is an informed algorithm but it is based
+     * on the Iterative Deepening Algorithm (IDA). That's why we make it extend the
+     * IterativeDeepeningSearch class instead of the InformedSearch one: it uses
+     * a NodeLinkedList instead of a NodePriorityQueue. Despite the fact that it
+     * is based on the IDA, we don't reuse any code of it because all methods
+     * (search, searchGraph and addSucessorToFrontier) have their particularities.
+     *
+     * Note that, on each iteration, the search is done in a depth first search way.    
      */
 
-    private double limit;
+    protected Heuristic heuristic;
     private double newLimit;
 
     @Override
     public Solution search(Problem problem) {
-        statistics.reset();
+        statistics.reset();        
         stopped = false;
         this.heuristic = problem.getHeuristic();
         limit = heuristic.compute(problem.getInitialState());
-
         Solution solution;
-        boolean stop = false;
+        int previousNumGeneratedStates;
         do {
+            previousNumGeneratedStates = statistics.numGeneratedSates;
             solution = graphSearch(problem);
-            if(newLimit==limit)
-                stop = true;
-            limit = newLimit;
-        } while (solution == null && !stop);
+        } while (solution == null && statistics.numGeneratedSates != previousNumGeneratedStates);
 
         return solution;
     }
 
     @Override
     protected Solution graphSearch(Problem problem) {
-        newLimit = Double.MAX_VALUE;
+        newLimit = Double.POSITIVE_INFINITY;
         frontier.clear();
         frontier.add(new Node(problem.getInitialState()));
+
         while (!frontier.isEmpty() && !stopped) {
             Node n = frontier.poll();
             State state = n.getState();
-            if (problem.isGoal(state)) {
+            if (problem.isGoal(state) &&  n.getF() <= limit) {
                 return new Solution(problem, n);
             }
             List<Action> actions = problem.getActions(state);
-            int successorsSize = actions.size();
-            for (Action action : actions) {
+            for(Action action : actions){
                 State successor = problem.getSuccessor(state, action);
                 addSuccessorToFrontier(successor, n);
             }
-            computeStatistics(successorsSize);
+            computeStatistics(actions.size());
         }
+        limit = newLimit;
         return null;
     }
 
     @Override
     public void addSuccessorToFrontier(State successor, Node parent) {
-
-        double g = parent.getG() + successor.getAction().getCost();
         if (!frontier.containsState(successor)) {
+            double g = parent.getG() + successor.getAction().getCost();
             double f = g + heuristic.compute(successor);
             if (f <= limit) {
                 if (!parent.isCycle(successor)) {
-                    frontier.add(new Node(successor, parent, g, f));
+                    frontier.addFirst(new Node(successor, parent, g, f));
                 }
             } else {
                 newLimit = Math.min(newLimit, f);
             }
-        } else if (frontier.getNode(successor).getG() > g) {
-            frontier.removeNode(successor);
-            frontier.add(new Node(successor, parent, g, g + heuristic.compute(successor)));
         }
     }
 

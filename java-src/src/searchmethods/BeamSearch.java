@@ -29,35 +29,30 @@ public class BeamSearch extends AStarSearch {
         while (!frontier.isEmpty() && !stopped) {
             Node n = frontier.poll();
             State state = n.getState();
-
-            if (problem.isGoal(state))
-                return new Solution(problem, n);
-
             explored.add(state);
             List<Action> actions = problem.getActions(state);
-
-            for (Action action : actions) {
+            for(Action action : actions){
                 State successor = problem.getSuccessor(state, action);
+                if (problem.isGoal(successor)) {
+                    Node successorNode = new Node(successor, n);
+                    return new Solution(problem, successorNode);
+                }
                 addSuccessorToFrontier(successor, n);
             }
-
             manageFrontierSize();
             computeStatistics(actions.size());
         }
         return null;
     }
 
-    private void manageFrontierSize() {
+    private void manageFrontierSize(){
         if (frontier.size() > beamSize) {
             NodePriorityQueue aux = new NodePriorityQueue();
-            for (int i = 0; i < beamSize; i++)
-                aux.add(frontier.poll());
+            for (int i = 0; i < beamSize; i++) {
+                aux.add(frontier.poll()) ;
+            }
             frontier = aux;
         }
-    }
-
-    public int getBeamSize() {
-        return beamSize;
     }
 
     public void setBeamSize(int beamSize) {

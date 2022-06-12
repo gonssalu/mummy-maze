@@ -4,9 +4,8 @@ import agent.Action;
 import agent.Problem;
 import agent.Solution;
 import agent.State;
-import utils.NodeLinkedList;
-
 import java.util.List;
+import utils.NodeLinkedList;
 
 public class DepthFirstSearch extends GraphSearch<NodeLinkedList> {
 
@@ -14,6 +13,15 @@ public class DepthFirstSearch extends GraphSearch<NodeLinkedList> {
         frontier = new NodeLinkedList();
     }
 
+    /**
+     * In this version of Depth First Search we are returning the solution
+     * when we generate a goal state (we don't add it to the frontier).
+     * This is not a "pure" depth first search but it is completely unnecessary
+     * to continue the search if we find a goal state!
+     * In this (optimized) version we are assuming that the initial state is never a goal state.
+     * If this could happen, we should have an initial condition to verify that.
+     * Graph Search without explored list
+     */
     @Override
     protected Solution graphSearch(Problem problem) {
         frontier.clear();
@@ -22,12 +30,13 @@ public class DepthFirstSearch extends GraphSearch<NodeLinkedList> {
         while (!frontier.isEmpty() && !stopped) {
             Node n = frontier.poll();
             State state = n.getState();
-            if (problem.isGoal(state)) {
-                return new Solution(problem, n);
-            }
             List<Action> actions = problem.getActions(state);
-            for (Action action : actions) {
+            for(Action action : actions){
                 State successor = problem.getSuccessor(state, action);
+                if (problem.isGoal(successor)) {
+                    Node successorNode = new Node(successor, n);
+                    return new Solution(problem, successorNode);
+                }
                 addSuccessorToFrontier(successor, n);
             }
             computeStatistics(actions.size());

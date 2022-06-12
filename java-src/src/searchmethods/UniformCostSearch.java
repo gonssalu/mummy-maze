@@ -5,18 +5,19 @@ import utils.NodePriorityQueue;
 
 public class UniformCostSearch extends GraphSearch<NodePriorityQueue> {
 
-    public UniformCostSearch() {
+    public UniformCostSearch(){
         frontier = new NodePriorityQueue();
-    }
-
+    }    
+    
     // f = g
     @Override
     public void addSuccessorToFrontier(State successor, Node parent) {
         double g = parent.getG() + successor.getAction().getCost();
-        if (!frontier.containsState(successor)) {
-            if (!explored.contains(successor))
+        if(!frontier.containsState(successor)){
+            if(!explored.contains(successor)){
                 frontier.add(new Node(successor, parent, g, g));
-        } else if (g < frontier.getNode(successor).getG()) {
+            }
+        } else if (g < frontier.getNode(successor).getG()){
             frontier.removeNode(successor);
             frontier.add(new Node(successor, parent, g, g));
         }

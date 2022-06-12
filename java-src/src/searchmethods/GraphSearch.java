@@ -4,17 +4,16 @@ import agent.Action;
 import agent.Problem;
 import agent.Solution;
 import agent.State;
-import utils.NodeCollection;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import utils.NodeCollection;
 
 public abstract class GraphSearch<L extends NodeCollection> implements SearchMethod {
 
     protected L frontier;
     protected Set<State> explored = new HashSet<>();
-    protected Statistics statistics = new Statistics();
+    protected Statistics statistics = new Statistics();    
     protected boolean stopped;
 
     @Override
@@ -48,11 +47,14 @@ public abstract class GraphSearch<L extends NodeCollection> implements SearchMet
                 return new Solution(problem, n);
             }
             explored.add(state);
+
             List<Action> actions = problem.getActions(state);
-            for (Action action : actions) {
+            System.out.println("pai"+state);
+            for(Action action : actions){
                 State successor = problem.getSuccessor(state, action);
 
                 addSuccessorToFrontier(successor, n);
+
             }
             computeStatistics(actions.size());
         }
@@ -66,9 +68,9 @@ public abstract class GraphSearch<L extends NodeCollection> implements SearchMet
         statistics.numGeneratedSates += successorsSize;
         statistics.maxFrontierSize = Math.max(statistics.maxFrontierSize, frontier.size());
     }
-
+    
     @Override
-    public Statistics getStatistics() {
+    public Statistics getStatistics(){
         return statistics;
     }
 
@@ -82,3 +84,4 @@ public abstract class GraphSearch<L extends NodeCollection> implements SearchMet
         return stopped;
     }
 }
+    

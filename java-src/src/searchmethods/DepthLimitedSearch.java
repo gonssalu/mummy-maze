@@ -4,7 +4,6 @@ import agent.Action;
 import agent.Problem;
 import agent.Solution;
 import agent.State;
-
 import java.util.List;
 
 public class DepthLimitedSearch extends DepthFirstSearch {
@@ -19,23 +18,27 @@ public class DepthLimitedSearch extends DepthFirstSearch {
         this.limit = limit;
     }
 
+    /**
+     * Same comments as for Depth First Search.
+     */
     @Override
     protected Solution graphSearch(Problem problem) {
         frontier.clear();
         frontier.add(new Node(problem.getInitialState()));
 
         while (!frontier.isEmpty() && !stopped) {
-            Node n = frontier.poll();
-            State state = n.getState();
-            if (problem.isGoal(state)) {
-                return new Solution(problem, n);
-            }
+            Node n = (Node) frontier.poll();
             int successorsSize = 0;
             if (n.getDepth() < limit) {
+                State state = n.getState();
                 List<Action> actions = problem.getActions(state);
                 successorsSize = actions.size();
-                for (Action action : actions) {
+                for(Action action : actions){
                     State successor = problem.getSuccessor(state, action);
+                    if (problem.isGoal(successor)) {
+                        Node successorNode = new Node(successor, n);
+                        return new Solution(problem, successorNode);
+                    }
                     addSuccessorToFrontier(successor, n);
                 }
             }
@@ -44,12 +47,12 @@ public class DepthLimitedSearch extends DepthFirstSearch {
         return null;
     }
 
-    public void setLimit(int limit) {
-        this.limit = limit;
+    public double getLimit() {
+        return limit;
     }
 
-    public double getDepthLimit() {
-        return limit;
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
 
     @Override
