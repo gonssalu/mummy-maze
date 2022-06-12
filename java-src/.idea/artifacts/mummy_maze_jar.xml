@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="mummy-maze:jar">
+  <artifact type="jar" name="mummy-maze:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/mummy_maze_jar</output-path>
     <root id="archive" name="mummy-maze.jar">
       <element id="module-output" name="mummy-maze" />
