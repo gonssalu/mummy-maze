@@ -1,7 +1,0 @@
-Level;Search Algorithm;Heuristic;Beam/Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States
-
-nivel12.txt;Breadth first search;N/A;N/A;YES;29.0;255;38;580
-nivel12.txt;Uniform cost search;N/A;N/A;YES;29.0;256;36;582
-nivel12.txt;Depth first search;N/A;N/A;YES;36.0;2301;28;3804
-nivel12.txt;Iterative deepening search;N/A;1109.0;STOPPED;36.0;338626;23;590861
-STOPPED BY USER
