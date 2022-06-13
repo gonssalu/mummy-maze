@@ -390,6 +390,7 @@ public class MainFrame extends JFrame {
                 if (!agent.hasBeenStopped()) {
                     textArea.setText(agent.getSearchReport());
                     if (agent.hasSolution()) {
+                        game.setSolutionCost(agent.getSolutionCost());
                         buttonShowSolution.setEnabled(true);
                     }
                 }

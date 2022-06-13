@@ -68,4 +68,10 @@ public class MummyMazeAgent extends Agent<MummyMazeState> {
 
         return sb.toString();
     }
+
+    public double getSolutionCost(){
+        if(hasSolution())
+            return solution.getCost();
+        return 0.0;
+    }
 }
