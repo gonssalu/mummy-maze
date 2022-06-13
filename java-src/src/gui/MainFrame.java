@@ -49,7 +49,7 @@ public class MainFrame extends JFrame {
     private LinkedList<StringBuilder> stringBuilders;
     private LinkedList<File> outputFiles;
 
-    private final String FILE_HEADER = "Level;Search Algorithm;Heuristic;Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States\n";
+    private final String FILE_HEADER = "Search Algorithm;Heuristic;Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States\n";
 
     public MainFrame() {
         try {
@@ -149,8 +149,8 @@ public class MainFrame extends JFrame {
                 public Void doInBackground() {
                     try {
                         for (File file : Objects.requireNonNull(new File("./Niveis").listFiles())) {
-                            prepareFile(folderName + file.getName() + ".csv");
-                            testOnFile(file);
+                            prepareFile(folderName + file.getName() + ".csv","Level;");
+                            testOnFile(file, true);
                         }
                     } catch (Exception e) {
                         e.printStackTrace(System.err);
@@ -189,8 +189,8 @@ public class MainFrame extends JFrame {
                 @Override
                 public Void doInBackground() {
                     try {
-                        prepareFile(fullPath);
-                        testOnFile(fc.getSelectedFile());
+                        prepareFile(fullPath, "");
+                        testOnFile(fc.getSelectedFile(), false);
                     } catch (Exception e) {
                         e.printStackTrace(System.err);
                     }
@@ -265,15 +265,15 @@ public class MainFrame extends JFrame {
     }
 
     //It has to be synchronized because it is called from a different thread
-    private synchronized void prepareFile(String path) throws IOException {
+    private synchronized void prepareFile(String path, String extraHeader) throws IOException {
         outputFiles.add(new File(path));
         Files.writeString(outputFiles.getLast().toPath(),
-                FILE_HEADER, StandardOpenOption.CREATE);
+                extraHeader + FILE_HEADER, StandardOpenOption.CREATE);
         stringBuilders.add(new StringBuilder());
     }
 
     //It has to be synchronized because it is called from a different thread
-    private synchronized void testOnFile(File file) throws IOException {
+    private synchronized void testOnFile(File file, boolean withLvlInfo) throws IOException {
         StringBuilder sb = stringBuilders.getLast();
         agent.readInitialStateFromFile(file);
         textArea.append("\nRunning tests on " + file.getName() + "...");
@@ -306,7 +306,9 @@ public class MainFrame extends JFrame {
 
                 textArea.append("...");
                 MummyMazeProblem problem = new MummyMazeProblem(agent.getEnvironment().clone());
-                sb.append("\n").append(file.getName()).append(";");
+                sb.append("\n");
+                if(withLvlInfo)
+                    sb.append(file.getName()).append(";");
                 try{
                     agent.solveProblem(problem);
                     if(agent.hasBeenStopped())
