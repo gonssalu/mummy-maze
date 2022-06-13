@@ -49,7 +49,7 @@ public class MainFrame extends JFrame {
     private LinkedList<StringBuilder> stringBuilders;
     private LinkedList<File> outputFiles;
 
-    private final String FILE_HEADER = "Search Algorithm;Heuristic;Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States\n";
+    private final String FILE_HEADER = "Search Algorithm;Heuristic;Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States;Time to solve (milliseconds)\n";
 
     public MainFrame() {
         try {

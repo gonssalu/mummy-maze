@@ -3,6 +3,7 @@ package agent;
 import searchmethods.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Agent<E extends State> {
 
@@ -12,6 +13,7 @@ public class Agent<E extends State> {
     protected ArrayList<Heuristic> heuristics;
     protected Heuristic heuristic;
     protected Solution solution;
+    protected long timeInMillis;
 
     public Agent(E environment) {
         this.environment = environment;
@@ -30,11 +32,13 @@ public class Agent<E extends State> {
     }
 
     public Solution solveProblem(Problem problem) {
+        timeInMillis = System.currentTimeMillis();
         if (heuristic != null) {
             problem.setHeuristic(heuristic);
             heuristic.setProblem(problem);
         }
         solution = searchMethod.search(problem);
+        timeInMillis = System.currentTimeMillis() - timeInMillis;
         return solution;
     }
 
@@ -50,6 +54,7 @@ public class Agent<E extends State> {
 
     public void stop() {
         getSearchMethod().stop();
+        timeInMillis = System.currentTimeMillis() - timeInMillis;
     }
 
     public boolean hasBeenStopped() {
@@ -98,9 +103,10 @@ public class Agent<E extends State> {
         } else {
             sb.append("Solution cost: " + solution.getCost() + "\n");
         }
-        sb.append("Num of expanded nodes: " + searchMethod.getStatistics().numExpandedNodes + "\n");
-        sb.append("Max frontier size: " + searchMethod.getStatistics().maxFrontierSize + "\n");
-        sb.append("Num of generated states: " + searchMethod.getStatistics().numGeneratedSates + "\n");
+        sb.append("Num of expanded nodes: ").append(searchMethod.getStatistics().numExpandedNodes).append("\n");
+        sb.append("Max frontier size: ").append(searchMethod.getStatistics().maxFrontierSize).append("\n");
+        sb.append("Num of generated states: ").append(searchMethod.getStatistics().numGeneratedSates).append("\n");
+        sb.append("Time to solve: ").append(timeInMillis).append(" milliseconds\n");
 
         return sb.toString();
     }

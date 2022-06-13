@@ -1,3 +1,1 @@
 permitir input por cmd para usar um batch para ajjudar maybe?? (maybe not cuz time ticking)
-
-Contador para saber quanto tempo cada search demora

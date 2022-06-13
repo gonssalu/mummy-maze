@@ -64,7 +64,8 @@ public class MummyMazeAgent extends Agent<MummyMazeState> {
         }
         sb.append(searchMethod.getStatistics().numExpandedNodes).append(";");
         sb.append(searchMethod.getStatistics().maxFrontierSize).append(";");
-        sb.append(searchMethod.getStatistics().numGeneratedSates);
+        sb.append(searchMethod.getStatistics().numGeneratedSates).append(";");
+        sb.append(timeInMillis).append(";");
 
         return sb.toString();
     }
