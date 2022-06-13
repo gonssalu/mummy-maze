@@ -1,0 +1,15 @@
+Search Algorithm;Heuristic;Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States;Time to solve (milliseconds)
+
+Breadth first search;N/A;N/A;YES;37.0;331;33;770;7;
+Uniform cost search;N/A;N/A;YES;37.0;329;36;763;5;
+Depth first search;N/A;N/A;YES;41.0;363;22;806;5;
+Iterative deepening search;N/A;39.0;YES;37.0;302299;23;638803;3699;
+Greedy best first search;Distance to the exit;N/A;YES;37.0;215;89;691;4;
+Greedy best first search;Distance from closest enemy;N/A;YES;40.0;160;64;525;4;
+Greedy best first search;Distance from closest enemy and goal;N/A;YES;37.0;202;80;656;4;
+A* search;Distance to the exit;N/A;YES;37.0;223;97;712;5;
+A* search;Distance from closest enemy;N/A;YES;38.0;234;97;748;5;
+A* search;Distance from closest enemy and goal;N/A;YES;37.0;223;97;714;5;
+IDA* search;Distance to the exit;N/A;YES;37.0;10064;33;34290;189;
+IDA* search;Distance from closest enemy;N/A;YES;37.0;18032;38;58702;292;
+IDA* search;Distance from closest enemy and goal;N/A;YES;37.0;9405;36;31461;160;
