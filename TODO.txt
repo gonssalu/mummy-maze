@@ -1,1 +1,0 @@
-permitir input por cmd para usar um batch para ajjudar maybe?? (maybe not cuz time ticking)
