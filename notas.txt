@@ -1,4 +1,0 @@
-No relatório do projeto não é necessário apresentar resultados para os algoritmos Limited Depth First Search e Beam Search.
-
-Relatório:
-símbolo de observações
