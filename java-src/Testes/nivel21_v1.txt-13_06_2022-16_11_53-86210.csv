@@ -1,7 +1,15 @@
 Search Algorithm;Heuristic;Limit Size;Solution Found;Solution Cost;Num of Expanded Nodes;Max Frontier Size;Num of Generated States;Time to solve (milliseconds)
-
-Breadth first search;N/A;N/A;NO;N/A;144;16;265;6;
-Uniform cost search;N/A;N/A;NO;N/A;144;15;265;5;
-Depth first search;N/A;N/A;NO;N/A;113201;19;184172;1774;
-Iterative deepening search;N/A;5613.0;NO;N/A;557857554;19;907559502;5259898;
-STOPPED BY USER
+;;;;;;;;
+Breadth first search;N/A;N/A;NO;N/A;144;16;265;6
+Uniform cost search;N/A;N/A;NO;N/A;144;15;265;5
+Depth first search;N/A;N/A;NO;N/A;113201;19;184172;1774
+Iterative deepening search;N/A;5613.0;STOPPED;N/A;557857554;19;907559502;5259898
+Greedy best first search;Distance to the exit;N/A;NO;N/A;144;51;265;12
+Greedy best first search;Distance from closest enemy;N/A;NO;N/A;144;50;265;12
+Greedy best first search;Distance from closest enemy and goal;N/A;NO;N/A;144;50;265;6
+A* search;Distance to the exit;N/A;NO;N/A;144;51;265;8
+A* search;Distance from closest enemy;N/A;NO;N/A;144;50;265;2
+A* search;Distance from closest enemy and goal;N/A;NO;N/A;144;50;265;4
+IDA* search;Distance to the exit;N/A;NO;N/A;10837;58;31336;296
+IDA* search;Distance from closest enemy;N/A;NO;N/A;15946;71;44851;228
+IDA* search;Distance from closest enemy and goal;N/A;NO;N/A;14161;18;41030;177
