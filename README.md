@@ -41,6 +41,6 @@ Pode tambem [consultar o relátorio](materials/relatorio.pdf) do projeto com alg
 
 <a href="https://www.ipleiria.pt/estg/"><img src="https://www.ipleiria.pt/normasgraficas/wp-content/uploads/sites/80/2017/09/estg_h-01.jpg" width="300" alt="Escola Superior de Tecnologia e Gestão" title="Escola Superior de Tecnologia e Gestão"></a>
 
-## :warning: AVISO :warning:
+## :warning: AVISO JORGENSEN :warning:
 
 Só para que saibas Jorge que nem vale a pena tentares copiar, ponho já o código **todo privado**, copião.
