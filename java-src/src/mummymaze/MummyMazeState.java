@@ -374,8 +374,8 @@ public class MummyMazeState extends State implements Cloneable {
             }
         }
 
-        return (aux > maxPossibleDistance ? 0 : maxPossibleDistance - h); //So that the lowest value, the better.
-        //If the aux is bigger than the maxPossibleDistance it means no enemy was alive, so its 0
+        return (aux > maxPossibleDistance ? computeDistanceToGoal() : maxPossibleDistance - h); //So that the lowest value, the better.
+        //If the aux is bigger than the maxPossibleDistance it means no enemy was alive, so we call the other heuristic
     }
 
     public double computeDistanceToGoal() {
