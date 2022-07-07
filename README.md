@@ -35,6 +35,10 @@ Pode tambem [consultar o relátorio](materials/relatorio.pdf) do projeto com alg
 <a href="https://www.jetbrains.com/idea/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/intellij/intellij-original.svg" alt="intellij idea" title="IntelliJ IDEA" width="40" height="40" /></a>
 <a href="https://github.com/devicons/devicon" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/devicon/devicon-original-wordmark.svg" alt="devicon" title="Devicon" width="40" height="40" /></a></p>
 
+## :100: Avaliação Final
+
+Obtivemos uma classificação de <b>17,3 valores</b> (em 20).
+
 ## :mortar_board: Outras Informações
 
 -   Licenciatura em [Engenharia Informática](https://www.ipleiria.pt/curso/licenciatura-em-engenharia-informatica/)
